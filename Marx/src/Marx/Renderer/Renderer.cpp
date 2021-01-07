@@ -14,14 +14,22 @@ namespace Marx
 	{
 	}
 
-	void Renderer::submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray)
+	void Renderer::submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, const DX::XMMATRIX& transform, DX::XMFLOAT4 color)
 	{
-		static D3D11ConstantBuffer constBuffer(0, sizeof(DX::XMMATRIX), nullptr);
+		static ConstantBuffer* sceneVSConstBuffer = VSConstantBuffer::create(0, sizeof(DX::XMMATRIX), nullptr);
+		static ConstantBuffer* modelVSConstBuffer = VSConstantBuffer::create(1, sizeof(DX::XMMATRIX), nullptr);
+		static ConstantBuffer* modelPSConstBuffer = PSConstantBuffer::create(0, sizeof(DX::XMFLOAT4), nullptr);
 
 		shader->bind();
 		vertexArray->bind();
-		constBuffer.update(&s_sceneData->viewProjectionMatrix);
-		constBuffer.bind();
+
+		sceneVSConstBuffer->update(&s_sceneData->viewProjectionMatrix);
+		sceneVSConstBuffer->bind();
+		modelVSConstBuffer->update(&transform);
+		modelVSConstBuffer->bind();
+		modelPSConstBuffer->update(&color);
+		modelPSConstBuffer->bind();
+
 		RenderCommand::drawIndexed(vertexArray);
 	}
 }

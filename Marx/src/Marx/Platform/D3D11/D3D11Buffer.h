@@ -54,15 +54,18 @@ namespace Marx
 	class D3D11VertexBuffer : public VertexBuffer
 	{
 	public:
-		D3D11VertexBuffer(float* vertices, uint32_t size);
+		D3D11VertexBuffer(void* vertices, uint32_t size);
 		virtual ~D3D11VertexBuffer();
 	public:
 		virtual void bind() const override;
 		virtual void setLayout(const BufferLayout& layout) override;
+		virtual void update(void* vertices) override;
+		virtual void updatePartial(void* vertices, uint32_t vertexOffset, uint32_t vertexCount) override;
 	public:
 		static std::vector<D3D11_INPUT_ELEMENT_DESC> genElementDesc(const BufferLayout& layout);
 		static ID3DBlob* genDummyShader(const BufferLayout& layout);
 	private:
+		uint32_t m_size;
 		uint32_t m_stride;
 		ComPtr<ID3D11Buffer> m_pVertexBuffer;
 		ComPtr<ID3D11InputLayout> m_pInputLayout;
@@ -79,9 +82,14 @@ namespace Marx
 		virtual ~DX11IndexBuffer();
 	public:
 		virtual void bind() const override;
+		virtual void setCount(uint32_t count) override { m_count = count; }
 		virtual uint32_t getCount() const override { return m_count; }
+		virtual uint32_t getMaxCount() const override { return m_maxCount; }
+		virtual void update(uint32_t* indices) override;
+		virtual void updatePartial(uint32_t* indices, uint32_t indexOffset, uint32_t indexCount) override;
 	public:
 		uint32_t m_count;
+		uint32_t m_maxCount;
 		ComPtr<ID3D11Buffer> m_pIndexBuffer;
 		D3D11_PRIMITIVE_TOPOLOGY m_primitiveTopology;
 	};
@@ -107,10 +115,23 @@ namespace Marx
 	// ---------- ConstantBuffer ---------- //
 	//////////////////////////////////////////
 
-	class D3D11ConstantBuffer : public ConstantBuffer
+	class D3D11VSConstantBuffer : public ConstantBuffer
 	{
 	public:
-		D3D11ConstantBuffer(uint32_t slot, uint32_t size, const void* data);
+		D3D11VSConstantBuffer(uint32_t slot, uint32_t size, const void* data);
+	public:
+		virtual void bind() const override;
+		virtual void update(const void* data) override;
+	private:
+		uint32_t m_slot;
+		uint32_t m_size;
+		ComPtr<ID3D11Buffer> m_pBuffer;
+	};
+
+	class D3D11PSConstantBuffer : public ConstantBuffer
+	{
+	public:
+		D3D11PSConstantBuffer(uint32_t slot, uint32_t size, const void* data);
 	public:
 		virtual void bind() const override;
 		virtual void update(const void* data) override;

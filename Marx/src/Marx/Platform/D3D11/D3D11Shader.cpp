@@ -10,11 +10,6 @@
 
 namespace Marx
 {
-	Shader* Shader::create(const std::string& vertexSrc, const std::string& pixelSrc)
-	{
-		return new D3D11Shader(vertexSrc, pixelSrc);
-	}
-
 	D3D11Shader::D3D11Shader(const std::string& vertexSrc, const std::string& pixelSrc)
 	{
 		MX_DEBUG_HR_DECL;

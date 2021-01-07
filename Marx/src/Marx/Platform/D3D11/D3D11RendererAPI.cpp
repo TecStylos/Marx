@@ -18,7 +18,7 @@ namespace Marx
 		D3D11GraphicsContext::get()->clear(m_clearColor);
 	}
 
-	void D3D11RendererAPI::drawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+	void D3D11RendererAPI::drawIndexed(const Reference<VertexArray>& vertexArray)
 	{
 		D3D11GraphicsContext::D3D11Manager::getContext()->DrawIndexed(vertexArray->getIndexBuffer()->getCount(), 0, 0);
 	}

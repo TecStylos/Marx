@@ -9,7 +9,7 @@
 
 namespace Marx
 {
-	VertexBuffer* VertexBuffer::create(float* vertices, uint32_t size)
+	VertexBuffer* VertexBuffer::create(void* vertices, uint32_t size)
 	{
 		switch (Renderer::getAPI())
 		{
@@ -17,12 +17,12 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
 			return nullptr;
 		case RendererAPI::API::D3D11:
-#ifdef MX_PLATFORM_WINDOWS
+		#ifdef MX_PLATFORM_WINDOWS
 			return new D3D11VertexBuffer(vertices, size);
-#else
+		#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
-#endif
+		#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -57,7 +57,7 @@ namespace Marx
 	// ---------- ConstantBuffer ---------- //
 	//////////////////////////////////////////
 
-	ConstantBuffer* ConstantBuffer::create(uint32_t slot, uint32_t size, const void* data)
+	ConstantBuffer* VSConstantBuffer::create(uint32_t slot, uint32_t size, const void* data)
 	{
 		switch (Renderer::getAPI())
 		{
@@ -66,7 +66,27 @@ namespace Marx
 			return nullptr;
 		case RendererAPI::API::D3D11:
 		#ifdef MX_PLATFORM_WINDOWS
-			return new D3D11ConstantBuffer(slot, size, data);
+			return new D3D11VSConstantBuffer(slot, size, data);
+		#else
+			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
+			return nullptr;
+		#endif
+		}
+
+		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
+	}
+
+	ConstantBuffer* PSConstantBuffer::create(uint32_t slot, uint32_t size, const void* data)
+	{
+		switch (Renderer::getAPI())
+		{
+		case RendererAPI::API::None:
+			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
+			return nullptr;
+		case RendererAPI::API::D3D11:
+		#ifdef MX_PLATFORM_WINDOWS
+			return new D3D11PSConstantBuffer(slot, size, data);
 		#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;

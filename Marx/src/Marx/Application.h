@@ -33,7 +33,7 @@ namespace Marx
 	private:
 		ImGuiLayer* m_pImGuiLayer;
 		DISABLE_DLL_INTERFACE_WARN;
-		std::unique_ptr<Window> m_pWindow;
+		Scope<Window> m_pWindow;
 		REENABLE_DLL_INTERFACE_WARN;
 		bool m_running = true;
 		LayerStack m_layerStack;

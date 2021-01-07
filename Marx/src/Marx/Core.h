@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef MX_PLATFORM_WINDOWS
   #if MX_DYNAMIC_LINK
     #ifdef MX_BUILD_DLL
@@ -42,3 +44,11 @@
 
 // Binding method to class for event callbacks
 #define MX_BIND_EVENT_METHOD(fn) std::bind(&fn, this, std::placeholders::_1)
+
+namespace Marx
+{
+    template<typename T>
+    using Scope = std::unique_ptr<T>;
+    template<typename T>
+    using Reference = std::shared_ptr<T>;
+}

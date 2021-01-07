@@ -4,9 +4,9 @@
 
 #include "Marx/Application.h"
 #include "Marx/Layer.h"
-#include "Marx/Log.h"
 
 // Core
+#include "Marx/Core/Log.h"
 #include "Marx/Core/Timestep.h"
 
 // Input
@@ -15,6 +15,7 @@
 #include "Marx/Input.h"
 
 // ImGui
+#include "imgui/imgui.h"
 #include "Marx/ImGui/ImGuiLayer.h"
 
 // Renderer

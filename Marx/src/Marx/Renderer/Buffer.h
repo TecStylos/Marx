@@ -87,8 +87,10 @@ namespace Marx
 		virtual ~VertexBuffer() {}
 		virtual void bind() const = 0;
 		virtual void setLayout(const BufferLayout& layout) = 0;
+		virtual void update(void* vertices) = 0;
+		virtual void updatePartial(void* vertices, uint32_t vertexOffset, uint32_t vertexCount) = 0;
 	public:
-		static VertexBuffer* create(float* vertices, uint32_t size);
+		static VertexBuffer* create(void* vertices, uint32_t size);
 	};
 
 	///////////////////////////////////////
@@ -107,7 +109,11 @@ namespace Marx
 	public:
 		virtual ~IndexBuffer() {}
 		virtual void bind() const = 0;
+		virtual void setCount(uint32_t count) = 0;
 		virtual uint32_t getCount() const = 0;
+		virtual uint32_t getMaxCount() const = 0;
+		virtual void update(uint32_t* vertices) = 0;
+		virtual void updatePartial(uint32_t* indices, uint32_t indexOffset, uint32_t indexCount) = 0;
 	public:
 		static IndexBuffer* create(uint32_t* indices, uint32_t count, PrimitiveType primType);
 	};
@@ -123,7 +129,14 @@ namespace Marx
 	public:
 		virtual void bind() const = 0;
 		virtual void update(const void* data) = 0;
-	public:
-		static ConstantBuffer* create(uint32_t slot, uint32_t size, const void* data = nullptr);
 	};
+
+	namespace VSConstantBuffer
+	{
+		ConstantBuffer* create(uint32_t slot, uint32_t size, const void* data = nullptr);
+	}
+	namespace PSConstantBuffer
+	{
+		ConstantBuffer* create(uint32_t slot, uint32_t size, const void* data = nullptr);
+	}
 }

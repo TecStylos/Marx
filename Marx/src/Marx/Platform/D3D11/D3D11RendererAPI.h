@@ -10,7 +10,7 @@ namespace Marx
 		virtual void setClearColor(float r, float g, float b, float a) override;
 		virtual void clear() override;
 		
-		virtual void drawIndexed(const std::shared_ptr<VertexArray>& vertexArray) override;
+		virtual void drawIndexed(const Reference<VertexArray>& vertexArray) override;
 	private:
 		float m_clearColor[4];
 	};

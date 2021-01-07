@@ -166,7 +166,7 @@
     <ClInclude Include="src\Marx\Platform\XInput\XController.h" />
     <ClInclude Include="src\Marx\Layer.h" />
     <ClInclude Include="src\Marx\LayerStack.h" />
-    <ClInclude Include="src\Marx\Log.h" />
+    <ClInclude Include="src\Marx\Core\Log.h" />
     <ClInclude Include="src\Marx\Platform\D3D11\D3D11Buffer.h" />
     <ClInclude Include="src\Marx\Platform\D3D11\D3D11ExceptionMacros.h" />
     <ClInclude Include="src\Marx\Platform\D3D11\D3D11GraphicsContext.h" />
@@ -197,7 +197,7 @@
     <ClCompile Include="src\Marx\Platform\XInput\XController.cpp" />
     <ClCompile Include="src\Marx\Layer.cpp" />
     <ClCompile Include="src\Marx\LayerStack.cpp" />
-    <ClCompile Include="src\Marx\Log.cpp" />
+    <ClCompile Include="src\Marx\Core\Log.cpp" />
     <ClCompile Include="src\Marx\Platform\D3D11\D3D11Buffer.cpp" />
     <ClCompile Include="src\Marx\Platform\D3D11\D3D11GraphicsContext.cpp" />
     <ClCompile Include="src\Marx\Platform\D3D11\D3D11InfoManager.cpp" />

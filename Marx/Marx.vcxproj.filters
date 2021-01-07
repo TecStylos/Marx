@@ -85,9 +85,6 @@
     <ClInclude Include="src\Marx\LayerStack.h">
       <Filter>Marx</Filter>
     </ClInclude>
-    <ClInclude Include="src\Marx\Log.h">
-      <Filter>Marx</Filter>
-    </ClInclude>
     <ClInclude Include="src\Marx\Window.h">
       <Filter>Marx</Filter>
     </ClInclude>
@@ -129,6 +126,9 @@
     <ClInclude Include="src\Marx\Platform\Win32\Win32Includes.h" />
     <ClInclude Include="src\Marx\Renderer\Camera.h" />
     <ClInclude Include="src\Marx\Core\Timestep.h" />
+    <ClInclude Include="src\Marx\Core\Log.h">
+      <Filter>Marx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Marx\Application.cpp">
@@ -147,9 +147,6 @@
       <Filter>Marx</Filter>
     </ClCompile>
     <ClCompile Include="src\Marx\LayerStack.cpp">
-      <Filter>Marx</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Marx\Log.cpp">
       <Filter>Marx</Filter>
     </ClCompile>
     <ClCompile Include="src\mxpch.cpp" />
@@ -177,5 +174,8 @@
       <Filter>Marx\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Marx\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Marx\Core\Log.cpp">
+      <Filter>Marx</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

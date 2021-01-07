@@ -12,12 +12,12 @@ namespace Marx
 		m_pIndexBuffer->bind();
 	}
 
-	void D3D11VertexArray::setVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+	void D3D11VertexArray::setVertexBuffer(const Reference<VertexBuffer>& vertexBuffer)
 	{
 		m_pVertexBuffer = vertexBuffer;
 	}
 
-	void D3D11VertexArray::setIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+	void D3D11VertexArray::setIndexBuffer(const Reference<IndexBuffer>& indexBuffer)
 	{
 		m_pIndexBuffer = indexBuffer;
 	}

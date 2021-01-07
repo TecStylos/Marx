@@ -2,7 +2,7 @@
 
 #include "Application.h"
 
-#include "Marx/Log.h"
+#include "Marx/Core/Log.h"
 #include "Marx/Input/ControllerManager.h"
 
 #include "Marx/Input.h"

@@ -16,7 +16,7 @@ namespace Marx
 		static void beginScene(const OrthographicCamera& camera);
 		static void endScene();
 	public:
-		static void submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray);
+		static void submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, const DX::XMMATRIX& transform, DX::XMFLOAT4 color);
 	public:
 		inline static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
 	private:

@@ -5,7 +5,9 @@ namespace Marx
 {
 	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
 		: m_projectionMatrix(DX::XMMatrixOrthographicOffCenterLH(left, right, bottom, top, -1.0f, 1.0f))
-	{}
+	{
+		recalculateViewMatrix();
+	}
 
 	void OrthographicCamera::recalculateViewMatrix()
 	{
