@@ -60,7 +60,7 @@ namespace Marx
 		virtual void bind() const override;
 		virtual void setLayout(const BufferLayout& layout) override;
 		virtual void update(void* vertices) override;
-		virtual void updatePartial(void* vertices, uint32_t vertexOffset, uint32_t vertexCount) override;
+		virtual void updatePartial(void** vertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) override;
 	public:
 		static std::vector<D3D11_INPUT_ELEMENT_DESC> genElementDesc(const BufferLayout& layout);
 		static ID3DBlob* genDummyShader(const BufferLayout& layout);
@@ -86,7 +86,7 @@ namespace Marx
 		virtual uint32_t getCount() const override { return m_count; }
 		virtual uint32_t getMaxCount() const override { return m_maxCount; }
 		virtual void update(uint32_t* indices) override;
-		virtual void updatePartial(uint32_t* indices, uint32_t indexOffset, uint32_t indexCount) override;
+		virtual void updatePartial(uint32_t** pIndices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) override;
 	public:
 		uint32_t m_count;
 		uint32_t m_maxCount;

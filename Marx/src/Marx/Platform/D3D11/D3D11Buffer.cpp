@@ -63,17 +63,28 @@ namespace Marx
 
 	void D3D11VertexBuffer::update(void* vertices)
 	{
-		updatePartial(vertices, 0, m_size / m_stride);
+		uint32_t offset = 0;
+		uint32_t count = m_size / m_stride;
+		updatePartial(&vertices, &offset, &count, 1);
 	}
 
-	void D3D11VertexBuffer::updatePartial(void* vertices, uint32_t vertexOffset, uint32_t vertexCount)
+	void D3D11VertexBuffer::updatePartial(void** vertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers)
 	{
 		MX_CORE_ASSERT(m_stride, "Vertex stride not set!");
 
 		auto context = D3D11GraphicsContext::D3D11Manager::getContext();
 		D3D11_MAPPED_SUBRESOURCE resource;
 		context->Map(m_pVertexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &resource);
-		memcpy((char*)resource.pData + vertexOffset * (size_t)m_stride, vertices, vertexCount * (size_t)m_stride);
+
+		for (uint32_t i = 0; i < nBuffers; ++i)
+		{
+			memcpy(
+				(char*)resource.pData + pOffset[i] * (size_t)m_stride, 
+				vertices[i],
+				pCount[i] * (size_t)m_stride
+			);
+		}
+
 		context->Unmap(m_pVertexBuffer.Get(), 0);
 	}
 
@@ -157,15 +168,26 @@ namespace Marx
 
 	void DX11IndexBuffer::update(uint32_t* indices)
 	{
-		updatePartial(indices, 0, getMaxCount());
+		uint32_t offset = 0;
+		uint32_t count = getMaxCount();
+		updatePartial(&indices, &offset, &count, 1);
 	}
 
-	void DX11IndexBuffer::updatePartial(uint32_t* indices, uint32_t indexOffset, uint32_t indexCount)
+	void DX11IndexBuffer::updatePartial(uint32_t** pIndices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers)
 	{
 		auto context = D3D11GraphicsContext::D3D11Manager::getContext();
 		D3D11_MAPPED_SUBRESOURCE resource;
 		context->Map(m_pIndexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &resource);
-		memcpy((char*)resource.pData + indexOffset * sizeof(uint32_t), indices, indexCount * sizeof(uint32_t));
+
+		for (uint32_t i = 0; i < nBuffers; ++i)
+		{
+			memcpy(
+				(char*)resource.pData + pOffset[i] * sizeof(uint32_t),
+				pIndices[i],
+				pCount[i] * sizeof(uint32_t)
+			);
+		}
+
 		context->Unmap(m_pIndexBuffer.Get(), 0);
 	}
 

@@ -78,7 +78,7 @@ namespace Marx
 		virtual void bind() const = 0;
 		virtual void setLayout(const BufferLayout& layout) = 0;
 		virtual void update(void* vertices) = 0;
-		virtual void updatePartial(void* vertices, uint32_t vertexOffset, uint32_t vertexCount) = 0;
+		virtual void updatePartial(void** vertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) = 0;
 	public:
 		static Reference<VertexBuffer> create(void* vertices, uint32_t size);
 	};
@@ -103,7 +103,7 @@ namespace Marx
 		virtual uint32_t getCount() const = 0;
 		virtual uint32_t getMaxCount() const = 0;
 		virtual void update(uint32_t* vertices) = 0;
-		virtual void updatePartial(uint32_t* indices, uint32_t indexOffset, uint32_t indexCount) = 0;
+		virtual void updatePartial(uint32_t** pIndices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) = 0;
 	public:
 		static Reference<IndexBuffer> create(uint32_t* indices, uint32_t count, PrimitiveType primType);
 	};
