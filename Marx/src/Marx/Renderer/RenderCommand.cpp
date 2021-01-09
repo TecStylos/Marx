@@ -5,5 +5,5 @@
 
 namespace Marx
 {
-	RendererAPI* RenderCommand::s_rendererAPI = new D3D11RendererAPI();
+	Scope<RendererAPI> RenderCommand::s_rendererAPI = std::make_unique<D3D11RendererAPI>();
 }

@@ -5,6 +5,11 @@
 
 namespace Marx
 {
+	void D3D11RendererAPI::init()
+	{
+		D3D11GraphicsContext::get()->enableBlending(true);
+	}
+
 	void D3D11RendererAPI::setClearColor(float r, float g, float b, float a)
 	{
 		m_clearColor[0] = r;
@@ -21,5 +26,15 @@ namespace Marx
 	void D3D11RendererAPI::drawIndexed(const Reference<VertexArray>& vertexArray)
 	{
 		D3D11GraphicsContext::D3D11Manager::getContext()->DrawIndexed(vertexArray->getIndexBuffer()->getCount(), 0, 0);
+	}
+
+	void D3D11RendererAPI::enableDepthTest(bool enabled)
+	{
+		D3D11GraphicsContext::get()->enableDepthTest(enabled);
+	}
+
+	void D3D11RendererAPI::enableBlending(bool enabled)
+	{
+		D3D11GraphicsContext::get()->enableBlending(enabled);
 	}
 }

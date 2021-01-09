@@ -1,12 +1,12 @@
 #include "mxpch.h"
-#include "VertexArray.h"
+#include "Texture.h"
 
 #include "Renderer.h"
-#include "Marx/Platform/D3D11/D3D11VertexArray.h"
+#include "Marx/Platform/D3D11/D3D11Texture.h"
 
 namespace Marx
 {
-	Reference<VertexArray> VertexArray::create()
+	Reference<Texture2D> Texture2D::create(const std::string& path)
 	{
 		switch (Renderer::getAPI())
 		{
@@ -15,7 +15,7 @@ namespace Marx
 			return nullptr;
 		case RendererAPI::API::D3D11:
 		#ifdef MX_PLATFORM_WINDOWS
-			return std::make_shared<D3D11VertexArray>();
+			return std::make_shared<D3D11Texture2D>(path);
 		#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;

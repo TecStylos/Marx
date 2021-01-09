@@ -51,6 +51,8 @@ namespace Marx
 		createRenderTargetView();
 		createDepthStencil();
 		createDepthStencilView();
+		createDepthStencilStates();
+		createBlendStates();
 		setViewport(0, 0, m_width, m_height);
 		setRenderTarget();
 
@@ -75,6 +77,9 @@ namespace Marx
 			D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 			1.0f, 0
 		);
+
+		D3D11Manager::getContext()->OMSetDepthStencilState(m_pDepthStencilStates[m_depthEnabled].Get(), 0xFF);
+		D3D11Manager::getContext()->OMSetBlendState(m_pBlendStates[m_blendEnabled].Get(), NULL, 0xFFFFFFFF);
 	}
 
 	void D3D11GraphicsContext::swapBuffers()
@@ -222,6 +227,76 @@ namespace Marx
 				m_pDepthStencil.Get(),
 				&depthStencilViewDesc,
 				m_pDepthStencilView.GetAddressOf()
+			)
+		);
+	}
+
+	void D3D11GraphicsContext::createDepthStencilStates()
+	{
+		MX_DEBUG_HR_DECL;
+
+		D3D11_DEPTH_STENCIL_DESC desc;
+		desc.DepthEnable = false;
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		desc.DepthFunc = D3D11_COMPARISON_LESS;
+		desc.StencilEnable = true;
+		desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+		desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+		desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+		MX_VERIFY_THROW_HR_INFO(
+			D3D11Manager::getDevice()->CreateDepthStencilState(
+				&desc,
+				m_pDepthStencilStates[0].GetAddressOf()
+			)
+		);
+
+		desc.DepthEnable = true;
+
+		MX_VERIFY_THROW_HR_INFO(
+			D3D11Manager::getDevice()->CreateDepthStencilState(
+				&desc,
+				m_pDepthStencilStates[1].GetAddressOf()
+			)
+		);
+	}
+
+	void D3D11GraphicsContext::createBlendStates()
+	{
+		MX_DEBUG_HR_DECL;
+
+		D3D11_BLEND_DESC desc;
+		desc.AlphaToCoverageEnable = false;
+		desc.IndependentBlendEnable = false;
+		desc.RenderTarget[0].BlendEnable = false;
+		desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		MX_VERIFY_THROW_HR_INFO(
+			D3D11Manager::getDevice()->CreateBlendState(
+				&desc,
+				m_pBlendStates[0].GetAddressOf()
+			)
+		);
+
+		desc.RenderTarget[0].BlendEnable = true;
+
+		MX_VERIFY_THROW_HR_INFO(
+			D3D11Manager::getDevice()->CreateBlendState(
+				&desc,
+				m_pBlendStates[1].GetAddressOf()
 			)
 		);
 	}

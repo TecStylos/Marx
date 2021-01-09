@@ -16,8 +16,6 @@ namespace Marx
 		~D3D11Shader();
 	public:
 		virtual void bind() const override;
-		inline ID3D11VertexShader* getVertexShader() const { return m_pVertexShader.Get(); }
-		inline ID3D11PixelShader* getPixelShader() const { return m_pPixelShader.Get(); }
 	public:
 		static HRESULT compileShaderFromSrc(const std::string& src, const char* pTarget, ID3DBlob** ppBytecode);
 	private:

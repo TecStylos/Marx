@@ -6,7 +6,7 @@
 
 namespace Marx
 {
-	Shader* Shader::create(const std::string& vertexSrc, const std::string& pixelSrc)
+	Reference<Shader> Shader::create(const std::string& vertexSrc, const std::string& pixelSrc)
 	{
 		switch (Renderer::getAPI())
 		{
@@ -15,7 +15,7 @@ namespace Marx
 			return nullptr;
 		case RendererAPI::API::D3D11:
 		#ifdef MX_PLATFORM_WINDOWS
-			return new D3D11Shader(vertexSrc, pixelSrc);
+			return std::make_shared<D3D11Shader>(vertexSrc, pixelSrc);
 		#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;

@@ -7,7 +7,7 @@
 
 namespace Marx
 {
-	D3D11InfoManager* D3D11InfoManager::s_pInfoMan = new D3D11InfoManager;
+	D3D11InfoManager* D3D11InfoManager::s_pInfoMan = new D3D11InfoManager();
 
 	D3D11InfoManager::D3D11InfoManager()
 	{

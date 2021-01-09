@@ -47,8 +47,8 @@
 
 namespace Marx
 {
-    template<typename T>
+    template<class T>
     using Scope = std::unique_ptr<T>;
-    template<typename T>
+    template<class T>
     using Reference = std::shared_ptr<T>;
 }

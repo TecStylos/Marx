@@ -1,181 +1,282 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Marx">
-      <UniqueIdentifier>{7DF4887C-692B-8A0D-1218-7010FE2D060F}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Marx\Events">
-      <UniqueIdentifier>{C11109FA-2DC7-81EF-B6BB-7BC6227078F3}</UniqueIdentifier>
+    <Filter Include="src\Marx">
+      <UniqueIdentifier>{F41322CF-E0E0-7CDA-09FA-6A82F525B268}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Marx\Exceptions">
-      <UniqueIdentifier>{4E10706A-BA9B-DD2E-C3AC-60232FB7392F}</UniqueIdentifier>
+    <Filter Include="src\Marx\Core">
+      <UniqueIdentifier>{CCD00923-3891-8559-01CC-CED66D4BCA35}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Marx\ImGui">
-      <UniqueIdentifier>{6713A84D-53CB-E99A-BCD2-C2F6A8A9848B}</UniqueIdentifier>
+    <Filter Include="src\Marx\Events">
+      <UniqueIdentifier>{5845E311-C4D0-50D6-CDE1-D3CA39ECACD6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Marx\Input">
-      <UniqueIdentifier>{3C4EA94D-2806-EB9A-910D-C4F67DE4858B}</UniqueIdentifier>
+    <Filter Include="src\Marx\Exceptions">
+      <UniqueIdentifier>{6537D884-D198-B592-5A06-FC44C666EC51}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Marx\Platform">
-      <UniqueIdentifier>{718DB2BC-DD4D-2EF3-A688-7770120873CF}</UniqueIdentifier>
+    <Filter Include="src\Marx\ImGui">
+      <UniqueIdentifier>{1EB0AE84-0A7E-A28A-F311-13B1DF7E7EEF}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Marx\Platform\DX11">
-      <UniqueIdentifier>{5EE2626E-4AC6-23C4-B326-1E179F290E46}</UniqueIdentifier>
+    <Filter Include="src\Marx\Input">
+      <UniqueIdentifier>{F3EAAF84-DFB8-A38A-C84C-14B1B4B97FEF}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Marx\Platform\Windows">
-      <UniqueIdentifier>{AB18EBC9-1785-A6C4-E078-3E224CA4C82C}</UniqueIdentifier>
+    <Filter Include="src\Marx\Platform">
+      <UniqueIdentifier>{C802E833-3419-E6C9-7D90-71EBE9E5B651}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Marx\Platform\D3D11">
+      <UniqueIdentifier>{B40F6F0C-2047-B7A3-2951-1BC79507DE9C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Marx\Platform\DX11">
+      <UniqueIdentifier>{15463A65-0140-63B7-EAAC-F9C7D645C923}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Marx\Platform\Win32">
+      <UniqueIdentifier>{AA30E50D-1668-2DA5-1F72-91C88B28549E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Marx\Platform\XInput">
+      <UniqueIdentifier>{FF6A9ECA-EB8F-ED4A-14DB-D2DA005FEC68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Marx\Renderer">
+      <UniqueIdentifier>{1A0AC50E-8620-C3A4-CF97-4EC63BED932C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor">
+      <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\stb_image">
+      <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Marx.h" />
+    <ClInclude Include="src\Marx.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="src\Marx\Application.h">
-      <Filter>Marx</Filter>
+      <Filter>src\Marx</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Core.h">
-      <Filter>Marx</Filter>
+      <Filter>src\Marx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Core\Log.h">
+      <Filter>src\Marx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Core\Timestep.h">
+      <Filter>src\Marx\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\EntryPoint.h">
-      <Filter>Marx</Filter>
+      <Filter>src\Marx</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Events\ControllerEvents.h">
-      <Filter>Marx\Events</Filter>
+      <Filter>src\Marx\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Events\Event.h">
-      <Filter>Marx\Events</Filter>
+      <Filter>src\Marx\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Events\KeyboardEvents.h">
-      <Filter>Marx\Events</Filter>
+      <Filter>src\Marx\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Events\MouseEvents.h">
-      <Filter>Marx\Events</Filter>
+      <Filter>src\Marx\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Events\WindowEvents.h">
-      <Filter>Marx\Events</Filter>
+      <Filter>src\Marx\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Exceptions\ExceptionMacros.h">
-      <Filter>Marx\Exceptions</Filter>
+      <Filter>src\Marx\Exceptions</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Exceptions\MarxException.h">
-      <Filter>Marx\Exceptions</Filter>
+      <Filter>src\Marx\Exceptions</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\ImGui\ImGuiLayer.h">
-      <Filter>Marx\ImGui</Filter>
+      <Filter>src\Marx\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Input.h">
-      <Filter>Marx</Filter>
+      <Filter>src\Marx</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Input\Controller.h">
-      <Filter>Marx\Input</Filter>
+      <Filter>src\Marx\Input</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Input\ControllerInputs.h">
-      <Filter>Marx\Input</Filter>
+      <Filter>src\Marx\Input</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Input\ControllerManager.h">
-      <Filter>Marx\Input</Filter>
+      <Filter>src\Marx\Input</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Input\KeyCodes.h">
-      <Filter>Marx\Input</Filter>
+      <Filter>src\Marx\Input</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Input\MouseCodes.h">
-      <Filter>Marx\Input</Filter>
+      <Filter>src\Marx\Input</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Layer.h">
-      <Filter>Marx</Filter>
+      <Filter>src\Marx</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\LayerStack.h">
-      <Filter>Marx</Filter>
+      <Filter>src\Marx</Filter>
     </ClInclude>
-    <ClInclude Include="src\Marx\Window.h">
-      <Filter>Marx</Filter>
+    <ClInclude Include="src\Marx\Platform\D3D11\D3D11Buffer.h">
+      <Filter>src\Marx\Platform\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="src\mxpch.h" />
-    <ClInclude Include="src\Marx\Renderer\GraphicsContext.h" />
-    <ClInclude Include="src\Marx\Renderer\Buffer.h" />
-    <ClInclude Include="src\Marx\Renderer\Renderer.h" />
-    <ClInclude Include="src\Marx\Renderer\Shader.h" />
-    <ClInclude Include="src\Marx\Platform\XInput\XController.h">
-      <Filter>Marx\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Marx\Platform\D3D11\D3D11Buffer.h" />
     <ClInclude Include="src\Marx\Platform\D3D11\D3D11ExceptionMacros.h">
-      <Filter>Marx\Platform\DX11</Filter>
+      <Filter>src\Marx\Platform\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="src\Marx\Platform\D3D11\D3D11GraphicsContext.h" />
+    <ClInclude Include="src\Marx\Platform\D3D11\D3D11GraphicsContext.h">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClInclude>
     <ClInclude Include="src\Marx\Platform\D3D11\D3D11InfoException.h">
-      <Filter>Marx\Platform\DX11</Filter>
+      <Filter>src\Marx\Platform\D3D11</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Platform\D3D11\D3D11InfoManager.h">
-      <Filter>Marx\Platform\DX11</Filter>
+      <Filter>src\Marx\Platform\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="src\Marx\Platform\D3D11\D3D11Shader.h" />
-    <ClInclude Include="src\Marx\Renderer\RendererAPI.h" />
-    <ClInclude Include="src\Marx\Renderer\RenderCommand.h" />
-    <ClInclude Include="src\Marx\Renderer\VertexArray.h" />
-    <ClInclude Include="src\Marx\Platform\D3D11\D3D11VertexArray.h" />
-    <ClInclude Include="src\Marx\Platform\D3D11\D3D11RendererAPI.h" />
-    <ClInclude Include="src\Marx\Platform\DX11\DX11Includes.h" />
+    <ClInclude Include="src\Marx\Platform\D3D11\D3D11RendererAPI.h">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Platform\D3D11\D3D11Shader.h">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Platform\D3D11\D3D11Texture.h">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Platform\D3D11\D3D11VertexArray.h">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Platform\DX11\DX11Includes.h">
+      <Filter>src\Marx\Platform\DX11</Filter>
+    </ClInclude>
     <ClInclude Include="src\Marx\Platform\Win32\HrException.h">
-      <Filter>Marx\Platform\Windows</Filter>
+      <Filter>src\Marx\Platform\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Platform\Win32\Win32Includes.h">
+      <Filter>src\Marx\Platform\Win32</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Platform\Win32\Win32Input.h">
-      <Filter>Marx\Platform\Windows</Filter>
+      <Filter>src\Marx\Platform\Win32</Filter>
     </ClInclude>
     <ClInclude Include="src\Marx\Platform\Win32\Win32Window.h">
-      <Filter>Marx\Platform\Windows</Filter>
+      <Filter>src\Marx\Platform\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\Marx\Platform\Win32\Win32Includes.h" />
-    <ClInclude Include="src\Marx\Renderer\Camera.h" />
-    <ClInclude Include="src\Marx\Core\Timestep.h" />
-    <ClInclude Include="src\Marx\Core\Log.h">
-      <Filter>Marx</Filter>
+    <ClInclude Include="src\Marx\Platform\XInput\XController.h">
+      <Filter>src\Marx\Platform\XInput</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Renderer\Buffer.h">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Renderer\Camera.h">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Renderer\GraphicsContext.h">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Renderer\RenderCommand.h">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Renderer\Renderer.h">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Renderer\RendererAPI.h">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Renderer\Shader.h">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Renderer\Texture.h">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Renderer\VertexArray.h">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marx\Window.h">
+      <Filter>src\Marx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mxpch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\stb_image\stb_image.h">
+      <Filter>vendor\stb_image</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Marx\Application.cpp">
-      <Filter>Marx</Filter>
+      <Filter>src\Marx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Core\Log.cpp">
+      <Filter>src\Marx\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Marx\ImGui\ImGuiBuild.cpp">
-      <Filter>Marx\ImGui</Filter>
+      <Filter>src\Marx\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Marx\ImGui\ImGuiLayer.cpp">
-      <Filter>Marx\ImGui</Filter>
+      <Filter>src\Marx\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Marx\Input\ControllerManager.cpp">
-      <Filter>Marx\Input</Filter>
+      <Filter>src\Marx\Input</Filter>
     </ClCompile>
     <ClCompile Include="src\Marx\Layer.cpp">
-      <Filter>Marx</Filter>
+      <Filter>src\Marx</Filter>
     </ClCompile>
     <ClCompile Include="src\Marx\LayerStack.cpp">
-      <Filter>Marx</Filter>
+      <Filter>src\Marx</Filter>
     </ClCompile>
-    <ClCompile Include="src\mxpch.cpp" />
-    <ClCompile Include="src\Marx\Renderer\Buffer.cpp" />
-    <ClCompile Include="src\Marx\Renderer\Renderer.cpp" />
-    <ClCompile Include="src\Marx\Renderer\Shader.cpp" />
-    <ClCompile Include="src\Marx\Platform\XInput\XController.cpp">
-      <Filter>Marx\Input</Filter>
+    <ClCompile Include="src\Marx\Platform\D3D11\D3D11Buffer.cpp">
+      <Filter>src\Marx\Platform\D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="src\Marx\Platform\D3D11\D3D11Buffer.cpp" />
-    <ClCompile Include="src\Marx\Platform\D3D11\D3D11GraphicsContext.cpp" />
+    <ClCompile Include="src\Marx\Platform\D3D11\D3D11GraphicsContext.cpp">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClCompile>
     <ClCompile Include="src\Marx\Platform\D3D11\D3D11InfoManager.cpp">
-      <Filter>Marx\Platform\DX11</Filter>
+      <Filter>src\Marx\Platform\D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="src\Marx\Platform\D3D11\D3D11Shader.cpp" />
-    <ClCompile Include="src\Marx\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="src\Marx\Renderer\VertexArray.cpp" />
-    <ClCompile Include="src\Marx\Platform\D3D11\D3D11VertexArray.cpp" />
-    <ClCompile Include="src\Marx\Renderer\RenderCommand.cpp" />
-    <ClCompile Include="src\Marx\Platform\D3D11\D3D11RendererAPI.cpp" />
+    <ClCompile Include="src\Marx\Platform\D3D11\D3D11RendererAPI.cpp">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Platform\D3D11\D3D11Shader.cpp">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Platform\D3D11\D3D11Texture.cpp">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Platform\D3D11\D3D11VertexArray.cpp">
+      <Filter>src\Marx\Platform\D3D11</Filter>
+    </ClCompile>
     <ClCompile Include="src\Marx\Platform\Win32\Win32Input.cpp">
-      <Filter>Marx\Platform\Windows</Filter>
+      <Filter>src\Marx\Platform\Win32</Filter>
     </ClCompile>
     <ClCompile Include="src\Marx\Platform\Win32\Win32Window.cpp">
-      <Filter>Marx\Platform\Windows</Filter>
+      <Filter>src\Marx\Platform\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\Marx\Renderer\Camera.cpp" />
-    <ClCompile Include="src\Marx\Core\Log.cpp">
-      <Filter>Marx</Filter>
+    <ClCompile Include="src\Marx\Platform\XInput\XController.cpp">
+      <Filter>src\Marx\Platform\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Renderer\Buffer.cpp">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Renderer\Camera.cpp">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Renderer\RenderCommand.cpp">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Renderer\Renderer.cpp">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Renderer\RendererAPI.cpp">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Renderer\Shader.cpp">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Renderer\Texture.cpp">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marx\Renderer\VertexArray.cpp">
+      <Filter>src\Marx\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mxpch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\stb_image\stb_image.cpp">
+      <Filter>vendor\stb_image</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -17,13 +17,12 @@ int main(int argc, char** argv)
 	Marx::Log::init();
 	MX_CORE_INFO("Initialized Log!");
 
-	Marx::Application* app;
+	Marx::Scope<Marx::Application> app;
 
 	try
 	{
-		app = Marx::createApplication();
+		app.reset(Marx::createApplication());
 		app->run();
-		delete app;
 	}
 	catch (const Marx::MarxException& except)     { MX_EXCEPT_BOX(except); }
 	catch (const std::exception& except)          { MX_STD_EXCEPT_BOX(except); }

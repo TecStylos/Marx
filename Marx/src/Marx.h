@@ -27,6 +27,7 @@
 #include "Marx/Renderer/RendererAPI.h"
 #include "Marx/Renderer/Shader.h"
 #include "Marx/Renderer/VertexArray.h"
+#include "Marx/Renderer/Texture.h"
 
 // --- Entry Point ---
 #include "Marx/EntryPoint.h"

@@ -13,8 +13,8 @@ namespace Marx
 		virtual void bind() const override;
 		virtual void setVertexBuffer(const Reference<VertexBuffer>& vertexBuffer) override;
 		virtual void setIndexBuffer(const Reference<IndexBuffer>& indexBuffer) override;
-		virtual VertexBuffer* getVertexBuffer() override;
-		virtual IndexBuffer* getIndexBuffer() override;
+		virtual Reference<VertexBuffer> getVertexBuffer() override;
+		virtual Reference<IndexBuffer> getIndexBuffer() override;
 	private:
 		Reference<VertexBuffer> m_pVertexBuffer;
 		Reference<IndexBuffer> m_pIndexBuffer;

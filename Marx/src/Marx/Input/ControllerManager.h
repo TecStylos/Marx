@@ -19,6 +19,6 @@ namespace Marx
 		DISABLE_DLL_INTERFACE_WARN;
 		static EventCallbackFunc s_eventCallback;
 		REENABLE_DLL_INTERFACE_WARN;
-		static Controller* s_controller[XUSER_MAX_COUNT];
+		static Reference<Controller> s_controller[XUSER_MAX_COUNT];
 	};
 }

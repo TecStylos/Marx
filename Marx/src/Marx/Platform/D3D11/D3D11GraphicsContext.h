@@ -17,7 +17,9 @@ namespace Marx
 		virtual void shutdown() override;
 		virtual void clear(float color[4]) override;
 		virtual void swapBuffers() override;
-		virtual void onResize(unsigned int width, unsigned int height);
+		virtual void onResize(unsigned int width, unsigned int height) override;
+		virtual void enableDepthTest(bool enabled) override { m_depthEnabled = enabled ? 1 : 0; }
+		virtual void enableBlending(bool enabled) override { m_blendEnabled = enabled ? 1 : 0; }
 	public:
 		static GraphicsContext* get(uint32_t index = 0) { return s_contexts[index]; }
 		static uint32_t getCount() { return (uint32_t)s_contexts.size(); }
@@ -27,6 +29,8 @@ namespace Marx
 		void createRenderTargetView();
 		void createDepthStencil();
 		void createDepthStencilView();
+		void createDepthStencilStates();
+		void createBlendStates();
 		void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
 		inline void setViewport() { D3D11Manager::getContext()->RSSetViewports(1, &m_viewport); }
 		inline void unsetRenderTarget() { ID3D11RenderTargetView* nullViews[] = { nullptr }; D3D11Manager::getContext()->OMSetRenderTargets(1, nullViews, NULL); }
@@ -37,6 +41,8 @@ namespace Marx
 		ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 		ComPtr<ID3D11Texture2D> m_pDepthStencil;
 		ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;
+		ComPtr<ID3D11DepthStencilState> m_pDepthStencilStates[2];
+		ComPtr<ID3D11BlendState> m_pBlendStates[2];
 		REENABLE_DLL_INTERFACE_WARN;
 		D3D11_VIEWPORT m_viewport;
 	private:
@@ -44,6 +50,8 @@ namespace Marx
 		unsigned int m_width;
 		unsigned int m_height;
 		bool m_initialized = false;
+		int m_depthEnabled = 0;
+		int m_blendEnabled = 0;
 	private:
 		static std::vector<D3D11GraphicsContext*> s_contexts;
 	public:

@@ -53,17 +53,7 @@ namespace Marx
 		std::vector<Element>::const_iterator begin() const { return m_elements.begin(); }
 		std::vector<Element>::const_iterator end() const { return m_elements.end(); }
 	private:
-		void calculateElementData()
-		{
-			m_stride = 0;
-			uint32_t offset = 0;
-			for (auto& element : m_elements)
-			{
-				element.offset = offset;
-				offset += element.size;
-				m_stride += element.size;
-			}
-		}
+		void calculateElementData();
 	private:
 		std::vector<Element> m_elements;
 		uint32_t m_stride;
@@ -90,7 +80,7 @@ namespace Marx
 		virtual void update(void* vertices) = 0;
 		virtual void updatePartial(void* vertices, uint32_t vertexOffset, uint32_t vertexCount) = 0;
 	public:
-		static VertexBuffer* create(void* vertices, uint32_t size);
+		static Reference<VertexBuffer> create(void* vertices, uint32_t size);
 	};
 
 	///////////////////////////////////////
@@ -115,7 +105,7 @@ namespace Marx
 		virtual void update(uint32_t* vertices) = 0;
 		virtual void updatePartial(uint32_t* indices, uint32_t indexOffset, uint32_t indexCount) = 0;
 	public:
-		static IndexBuffer* create(uint32_t* indices, uint32_t count, PrimitiveType primType);
+		static Reference<IndexBuffer> create(uint32_t* indices, uint32_t count, PrimitiveType primType);
 	};
 
 	//////////////////////////////////////////
@@ -133,10 +123,10 @@ namespace Marx
 
 	namespace VSConstantBuffer
 	{
-		ConstantBuffer* create(uint32_t slot, uint32_t size, const void* data = nullptr);
+		Reference<ConstantBuffer> create(uint32_t slot, uint32_t size, const void* data = nullptr);
 	}
 	namespace PSConstantBuffer
 	{
-		ConstantBuffer* create(uint32_t slot, uint32_t size, const void* data = nullptr);
+		Reference<ConstantBuffer> create(uint32_t slot, uint32_t size, const void* data = nullptr);
 	}
 }

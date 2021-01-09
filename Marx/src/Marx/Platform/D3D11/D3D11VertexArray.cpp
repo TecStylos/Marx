@@ -21,12 +21,14 @@ namespace Marx
 	{
 		m_pIndexBuffer = indexBuffer;
 	}
-	VertexBuffer* D3D11VertexArray::getVertexBuffer()
+
+	Reference<VertexBuffer> D3D11VertexArray::getVertexBuffer()
 	{
-		return m_pVertexBuffer.get();
+		return m_pVertexBuffer;
 	}
-	IndexBuffer* D3D11VertexArray::getIndexBuffer()
+
+	Reference<IndexBuffer> D3D11VertexArray::getIndexBuffer()
 	{
-		return m_pIndexBuffer.get();
+		return m_pIndexBuffer;
 	}
 }

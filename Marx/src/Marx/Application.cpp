@@ -3,6 +3,7 @@
 #include "Application.h"
 
 #include "Marx/Core/Log.h"
+#include "Marx/Renderer/Renderer.h"
 #include "Marx/Input/ControllerManager.h"
 
 #include "Marx/Input.h"
@@ -19,6 +20,8 @@ namespace Marx
 
 		m_pWindow.reset(Window::create());
 		m_pWindow->setEventCallback(MX_BIND_EVENT_METHOD(Application::onEvent));
+
+		Renderer::init();
 
 		m_pImGuiLayer = new ImGuiLayer;
 		pushOverlay(m_pImGuiLayer);

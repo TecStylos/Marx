@@ -13,9 +13,12 @@ namespace Marx
 			None = 0, D3D11 = 1
 		};
 	public:
+		virtual void init() = 0;
 		virtual void clear() = 0;
 		virtual void setClearColor(float r, float g, float b, float a) = 0;
 		virtual void drawIndexed(const Reference<VertexArray>& vertexArray) = 0;
+		virtual void enableDepthTest(bool enabled) = 0;
+		virtual void enableBlending(bool enabled) = 0;
 	public:
 		inline static API getAPI() { return s_API; }
 	private:

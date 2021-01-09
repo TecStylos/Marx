@@ -9,7 +9,21 @@
 
 namespace Marx
 {
-	VertexBuffer* VertexBuffer::create(void* vertices, uint32_t size)
+	void BufferLayout::calculateElementData()
+	{
+		{
+			m_stride = 0;
+			uint32_t offset = 0;
+			for (auto& element : m_elements)
+			{
+				element.offset = offset;
+				offset += element.size;
+				m_stride += element.size;
+			}
+		}
+	}
+
+	Reference<VertexBuffer> VertexBuffer::create(void* vertices, uint32_t size)
 	{
 		switch (Renderer::getAPI())
 		{
@@ -18,7 +32,7 @@ namespace Marx
 			return nullptr;
 		case RendererAPI::API::D3D11:
 		#ifdef MX_PLATFORM_WINDOWS
-			return new D3D11VertexBuffer(vertices, size);
+			return std::make_shared<D3D11VertexBuffer>(vertices, size);
 		#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
@@ -33,7 +47,7 @@ namespace Marx
 	// ---------- IndexBuffer ---------- //
 	///////////////////////////////////////
 
-    IndexBuffer* IndexBuffer::create(uint32_t* indices, uint32_t count, PrimitiveType primType)
+	Reference<IndexBuffer> IndexBuffer::create(uint32_t* indices, uint32_t count, PrimitiveType primType)
     {
 		switch (Renderer::getAPI())
 		{
@@ -42,7 +56,7 @@ namespace Marx
 			return nullptr;
 		case RendererAPI::API::D3D11:
 #ifdef MX_PLATFORM_WINDOWS
-			return new DX11IndexBuffer(indices, count, primType);
+			return std::make_shared<DX11IndexBuffer>(indices, count, primType);
 #else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
@@ -57,7 +71,7 @@ namespace Marx
 	// ---------- ConstantBuffer ---------- //
 	//////////////////////////////////////////
 
-	ConstantBuffer* VSConstantBuffer::create(uint32_t slot, uint32_t size, const void* data)
+	Reference<ConstantBuffer> VSConstantBuffer::create(uint32_t slot, uint32_t size, const void* data)
 	{
 		switch (Renderer::getAPI())
 		{
@@ -66,7 +80,7 @@ namespace Marx
 			return nullptr;
 		case RendererAPI::API::D3D11:
 		#ifdef MX_PLATFORM_WINDOWS
-			return new D3D11VSConstantBuffer(slot, size, data);
+			return std::make_shared<D3D11VSConstantBuffer>(slot, size, data);
 		#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
@@ -77,7 +91,7 @@ namespace Marx
 		return nullptr;
 	}
 
-	ConstantBuffer* PSConstantBuffer::create(uint32_t slot, uint32_t size, const void* data)
+	Reference<ConstantBuffer> PSConstantBuffer::create(uint32_t slot, uint32_t size, const void* data)
 	{
 		switch (Renderer::getAPI())
 		{
@@ -86,7 +100,7 @@ namespace Marx
 			return nullptr;
 		case RendererAPI::API::D3D11:
 		#ifdef MX_PLATFORM_WINDOWS
-			return new D3D11PSConstantBuffer(slot, size, data);
+			return std::make_shared<D3D11PSConstantBuffer>(slot, size, data);
 		#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;

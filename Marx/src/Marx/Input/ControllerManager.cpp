@@ -5,7 +5,7 @@ namespace Marx
 {
 	bool ControllerManager::s_initialized = false;
 	EventCallbackFunc ControllerManager::s_eventCallback;
-	Controller* ControllerManager::s_controller[XUSER_MAX_COUNT];
+	Reference<Controller> ControllerManager::s_controller[XUSER_MAX_COUNT];
 
 	void ControllerManager::init(const EventCallbackFunc& callback)
 	{
@@ -15,7 +15,7 @@ namespace Marx
 
 		for (int i = 0; i < XUSER_MAX_COUNT; ++i)
 		{
-			s_controller[i] = new XController(i, i);
+			s_controller[i] = std::make_shared<XController>(i, i);
 			s_controller[i]->setEventCallback(s_eventCallback);
 		}
 
@@ -25,10 +25,6 @@ namespace Marx
 	void ControllerManager::shutdown()
 	{
 		MX_CORE_ASSERT(s_initialized, "ControllerManager is not initialized!");
-		for (int i = 0; i < XUSER_MAX_COUNT; ++i)
-		{
-			delete s_controller[i];
-		}
 
 		s_initialized = false;
 	}

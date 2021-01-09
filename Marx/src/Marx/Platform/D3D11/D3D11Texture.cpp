@@ -1,0 +1,99 @@
+#include "mxpch.h"
+#include "D3D11Texture.h"
+
+#include "stb_image.h"
+
+#include "Marx/Platform/D3D11/D3D11InfoManager.h"
+#include "Marx/Platform/D3D11/D3D11InfoException.h"
+#include "Marx/Platform/D3D11/D3D11ExceptionMacros.h"
+
+namespace Marx
+{
+	D3D11Texture2D::D3D11Texture2D(const std::string& path)
+		: m_path(path)
+	{
+		MX_DEBUG_HR_DECL;
+
+		int width, height, channels;
+		stbi_set_flip_vertically_on_load(true);
+		stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 4);
+		MX_CORE_ASSERT(data, "Failed to load texture!");
+		m_width = width;
+		m_height = height;
+		
+		DXGI_FORMAT texFormat = (DXGI_FORMAT)0;
+		if (channels == 4)
+			texFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+		MX_CORE_ASSERT(texFormat, "Invalid number of channels!");
+
+		D3D11_TEXTURE2D_DESC texDesc;
+		texDesc.Width = width;
+		texDesc.Height = height;
+		texDesc.MipLevels = texDesc.ArraySize = 1;
+		texDesc.Format = texFormat;
+		texDesc.SampleDesc.Count = 1;
+		texDesc.SampleDesc.Quality = 0;
+		texDesc.Usage = D3D11_USAGE_DYNAMIC;
+		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		texDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA pInitData;
+		pInitData.pSysMem = data;
+		pInitData.SysMemPitch = width * channels * sizeof(char);
+		pInitData.SysMemSlicePitch = 0;
+
+		MX_VERIFY_THROW_HR_INFO(
+			D3D11GraphicsContext::D3D11Manager::getDevice()->CreateTexture2D(
+				&texDesc,
+				&pInitData,
+				m_pTexture.GetAddressOf()
+			)
+		);
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
+		viewDesc.Format = texFormat;
+		viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		viewDesc.Texture2D.MipLevels = 1;
+		viewDesc.Texture2D.MostDetailedMip = 0;
+
+		MX_VERIFY_THROW_HR_INFO(
+			D3D11GraphicsContext::D3D11Manager::getDevice()->CreateShaderResourceView(
+				m_pTexture.Get(),
+				&viewDesc,
+				m_pView.GetAddressOf()
+			)
+		);
+
+		stbi_image_free(data);
+
+		D3D11_SAMPLER_DESC samplerDesc;
+		samplerDesc.Filter = D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.MipLODBias = 0.0f;
+		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		samplerDesc.BorderColor[0] = 0.8f;
+		samplerDesc.BorderColor[1] = 0.0f;
+		samplerDesc.BorderColor[2] = 0.8f;
+		samplerDesc.BorderColor[3] = 1.0f;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		MX_VERIFY_THROW_HR_INFO(
+			D3D11GraphicsContext::D3D11Manager::getDevice()->CreateSamplerState(
+				&samplerDesc,
+				m_pSampler.GetAddressOf()
+			)
+		);
+	}
+
+	void D3D11Texture2D::bind(uint32_t slot) const
+	{
+		D3D11GraphicsContext::D3D11Manager::getContext()->PSSetShaderResources(slot, 1, m_pView.GetAddressOf());
+		D3D11GraphicsContext::D3D11Manager::getContext()->PSSetSamplers(slot, 1, m_pSampler.GetAddressOf());
+	}
+}

@@ -14,6 +14,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include dirs relative to solution folder
 IncludeDir = {}
 IncludeDir["ImGui"] = "Marx/vendor/imgui"
+IncludeDir["stb_image"] = "Marx/vendor/stb_image"
 
 group "Dependencies"
 	include "Marx/vendor/imgui"
@@ -35,13 +36,16 @@ project "Marx"
 
 	files {
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp"
 	}
 
 	includedirs {
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links {
