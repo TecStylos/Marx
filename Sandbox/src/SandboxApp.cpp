@@ -89,11 +89,30 @@ public:
 		Marx::RenderCommand::setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		Marx::RenderCommand::clear();
 
-		Vertex vertex = { m_vertexX, m_vertexY, 0.0f, 0.0f, 0.0f };
-		Vertex* pVertex = &vertex;
-		uint32_t offset = 0;
-		uint32_t count = 1;
-		m_pVertexArray->getVertexBuffer()->updatePartial((void**)&pVertex, &offset, &count, 1);
+		{
+			Vertex vertex1 = { m_vertexX, m_vertexY, 0.0f, 0.0f, 0.0f };
+			Vertex vertex2 = { m_vertexX, -m_vertexY, 0.0f, 0.0f, 1.0f };
+			Vertex* pVertex[] = { &vertex1, &vertex2 };
+			uint32_t offsets[] = { 0, 1 };
+			uint32_t counts[] = { 1, 1 };
+			m_pVertexArray->getVertexBuffer()->updatePartial((void**)pVertex, offsets, counts, 2);
+		}
+
+		{
+			BYTE pixels1[] = {
+				0, 0, 0, 255
+			};
+			BYTE pixels2[] = {
+				255, 0, 0, 255,
+				0, 255, 0, 255
+			};
+			BYTE* pPixels[] = { &pixels1[0], &pixels2[0] };
+			uint32_t offsetsX[] = { 0, 1 };
+			uint32_t offsetsY[] = { 0, 0 };
+			uint32_t widths[] = { 1, 1 };
+			uint32_t heights[] = { 1, 2 };
+			m_pTexture->updatePartial((BYTE**)pPixels, offsetsX, offsetsY, widths, heights, 2);
+		}
 
 		Marx::Renderer::beginScene(m_camera);
 		for (int y = 0; y < 9; ++y)

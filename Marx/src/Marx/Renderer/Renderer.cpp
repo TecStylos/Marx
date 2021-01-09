@@ -21,8 +21,8 @@ namespace Marx
 
 	void Renderer::submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, const DX::XMMATRIX& transform, const Reference<Texture2D> texture)
 	{
-		static Reference<ConstantBuffer> sceneVSConstBuffer = VSConstantBuffer::create(sizeof(DX::XMMATRIX), nullptr);
-		static Reference<ConstantBuffer> modelVSConstBuffer = VSConstantBuffer::create(sizeof(DX::XMMATRIX), nullptr);
+		static Reference<ConstantBuffer> sceneVSConstBuffer = VSConstantBuffer::create(nullptr, sizeof(DX::XMMATRIX));
+		static Reference<ConstantBuffer> modelVSConstBuffer = VSConstantBuffer::create(nullptr, sizeof(DX::XMMATRIX));
 
 		shader->bind();
 		vertexArray->bind();

@@ -54,13 +54,13 @@ namespace Marx
 	class D3D11VertexBuffer : public VertexBuffer
 	{
 	public:
-		D3D11VertexBuffer(void* vertices, uint32_t size);
+		D3D11VertexBuffer(const void* vertices, uint32_t size);
 		virtual ~D3D11VertexBuffer();
 	public:
 		virtual void bind() const override;
 		virtual void setLayout(const BufferLayout& layout) override;
-		virtual void update(void* vertices) override;
-		virtual void updatePartial(void** pVertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) override;
+		virtual void update(const void* vertices) override;
+		virtual void updatePartial(const void* const* pVertices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers) override;
 	public:
 		static std::vector<D3D11_INPUT_ELEMENT_DESC> genElementDesc(const BufferLayout& layout);
 		static ID3DBlob* genDummyShader(const BufferLayout& layout);
@@ -78,15 +78,15 @@ namespace Marx
 	class DX11IndexBuffer : public IndexBuffer
 	{
 	public:
-		DX11IndexBuffer(uint32_t* indices, uint32_t count, PrimitiveType primType);
+		DX11IndexBuffer(const uint32_t* indices, uint32_t count, PrimitiveType primType);
 		virtual ~DX11IndexBuffer();
 	public:
 		virtual void bind() const override;
 		virtual void setCount(uint32_t count) override { m_count = count; }
 		virtual uint32_t getCount() const override { return m_count; }
 		virtual uint32_t getMaxCount() const override { return m_maxCount; }
-		virtual void update(uint32_t* indices) override;
-		virtual void updatePartial(uint32_t** pIndices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) override;
+		virtual void update(const uint32_t* indices) override;
+		virtual void updatePartial(const uint32_t* const* pIndices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers) override;
 	public:
 		uint32_t m_count;
 		uint32_t m_maxCount;
@@ -118,7 +118,7 @@ namespace Marx
 	class D3D11VSConstantBuffer : public ConstantBuffer
 	{
 	public:
-		D3D11VSConstantBuffer(uint32_t size, const void* data);
+		D3D11VSConstantBuffer(const void* data, uint32_t size);
 	public:
 		virtual void bind(uint32_t slot) const override;
 		virtual void update(const void* data) override;
@@ -130,7 +130,7 @@ namespace Marx
 	class D3D11PSConstantBuffer : public ConstantBuffer
 	{
 	public:
-		D3D11PSConstantBuffer(uint32_t size, const void* data);
+		D3D11PSConstantBuffer(const void* data, uint32_t size);
 	public:
 		virtual void bind(uint32_t slot) const override;
 		virtual void update(const void* data) override;

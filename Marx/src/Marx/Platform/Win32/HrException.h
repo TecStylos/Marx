@@ -7,7 +7,9 @@ namespace Marx
 	inline std::string hrToString(HRESULT hr)
 	{
 		_com_error err(hr);
-		return err.ErrorMessage();
+		std::stringstream ss;
+		ss << "[ 0x" << std::hex << hr << " ]: " << err.ErrorMessage();
+		return ss.str();
 	}
 
 	class HrException : public MarxException

@@ -10,7 +10,7 @@
 
 namespace Marx
 {
-	D3D11VertexBuffer::D3D11VertexBuffer(void* vertices, uint32_t size)
+	D3D11VertexBuffer::D3D11VertexBuffer(const void* vertices, uint32_t size)
 		: m_size(size), m_stride(0)
 	{
 		MX_DEBUG_HR_DECL;
@@ -61,25 +61,28 @@ namespace Marx
 		m_stride = layout.getStride();
 	}
 
-	void D3D11VertexBuffer::update(void* vertices)
+	void D3D11VertexBuffer::update(const void* vertices)
 	{
 		uint32_t offset = 0;
 		uint32_t count = m_size / m_stride;
 		updatePartial(&vertices, &offset, &count, 1);
 	}
 
-	void D3D11VertexBuffer::updatePartial(void** pVertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers)
+	void D3D11VertexBuffer::updatePartial(const void* const* pVertices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers)
 	{
+		MX_DEBUG_HR_DECL;
+
 		MX_CORE_ASSERT(m_stride, "Vertex stride not set!");
 
 		auto context = D3D11GraphicsContext::D3D11Manager::getContext();
 		D3D11_MAPPED_SUBRESOURCE resource;
-		context->Map(m_pVertexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &resource);
+
+		MX_VERIFY_THROW_HR(context->Map(m_pVertexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &resource));
 
 		for (uint32_t i = 0; i < nBuffers; ++i)
 		{
 			memcpy(
-				(char*)resource.pData + pOffset[i] * (size_t)m_stride, 
+				(char*)resource.pData + (pOffset[i] * (size_t)m_stride), 
 				pVertices[i],
 				pCount[i] * (size_t)m_stride
 			);
@@ -127,7 +130,7 @@ namespace Marx
 	
 	// [indices]: Array of indices to be copied into GPU mem. If set to nullptr the buffer will be created but not initialized
 	// [count]: Describes the maximum count of indices (if [indices] == nullptr) or the number of indices in [indices] (if [indices] != nullptr)
-	DX11IndexBuffer::DX11IndexBuffer(uint32_t* indices, uint32_t count, PrimitiveType primType)
+	DX11IndexBuffer::DX11IndexBuffer(const uint32_t* indices, uint32_t count, PrimitiveType primType)
 		: m_count(count), m_maxCount(count)
 	{
 		MX_DEBUG_HR_DECL;
@@ -166,18 +169,21 @@ namespace Marx
 		D3D11GraphicsContext::D3D11Manager::getContext()->IASetPrimitiveTopology(m_primitiveTopology);
 	}
 
-	void DX11IndexBuffer::update(uint32_t* indices)
+	void DX11IndexBuffer::update(const uint32_t* indices)
 	{
 		uint32_t offset = 0;
 		uint32_t count = getMaxCount();
 		updatePartial(&indices, &offset, &count, 1);
 	}
 
-	void DX11IndexBuffer::updatePartial(uint32_t** pIndices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers)
+	void DX11IndexBuffer::updatePartial(const uint32_t* const* pIndices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers)
 	{
+		MX_DEBUG_HR_DECL;
+
 		auto context = D3D11GraphicsContext::D3D11Manager::getContext();
 		D3D11_MAPPED_SUBRESOURCE resource;
-		context->Map(m_pIndexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &resource);
+
+		MX_VERIFY_THROW_HR(context->Map(m_pIndexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &resource));
 
 		for (uint32_t i = 0; i < nBuffers; ++i)
 		{
@@ -195,7 +201,7 @@ namespace Marx
 	// ---------- ConstantBuffer ---------- //
 	//////////////////////////////////////////
 
-	D3D11VSConstantBuffer::D3D11VSConstantBuffer(uint32_t size, const void* data)
+	D3D11VSConstantBuffer::D3D11VSConstantBuffer(const void* data, uint32_t size)
 		: m_size(size)
 	{
 		MX_DEBUG_HR_DECL;
@@ -230,7 +236,7 @@ namespace Marx
 		D3D11GraphicsContext::D3D11Manager::getContext()->UpdateSubresource(m_pBuffer.Get(), 0, NULL, data, 0, 0);
 	}
 
-	D3D11PSConstantBuffer::D3D11PSConstantBuffer(uint32_t size, const void* data)
+	D3D11PSConstantBuffer::D3D11PSConstantBuffer(const void* data, uint32_t size)
 		: m_size(size)
 	{
 		MX_DEBUG_HR_DECL;

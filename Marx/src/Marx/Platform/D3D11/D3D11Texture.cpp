@@ -14,15 +14,15 @@ namespace Marx
 	{
 		MX_DEBUG_HR_DECL;
 
-		int width, height, channels;
+		int width, height;
 		stbi_set_flip_vertically_on_load(true);
-		stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 4);
+		stbi_uc* data = stbi_load(path.c_str(), &width, &height, &m_nChannels, 4);
 		MX_CORE_ASSERT(data, "Failed to load texture!");
 		m_width = width;
 		m_height = height;
 		
 		DXGI_FORMAT texFormat = (DXGI_FORMAT)0;
-		if (channels == 4)
+		if (m_nChannels == 4)
 			texFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 		MX_CORE_ASSERT(texFormat, "Invalid number of channels!");
@@ -34,14 +34,14 @@ namespace Marx
 		texDesc.Format = texFormat;
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
-		texDesc.Usage = D3D11_USAGE_DYNAMIC;
+		texDesc.Usage = D3D11_USAGE_DEFAULT;
 		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA pInitData;
 		pInitData.pSysMem = data;
-		pInitData.SysMemPitch = width * channels * sizeof(char);
+		pInitData.SysMemPitch = width * m_nChannels * sizeof(char);
 		pInitData.SysMemSlicePitch = 0;
 
 		MX_VERIFY_THROW_HR_INFO(
@@ -95,5 +95,27 @@ namespace Marx
 	{
 		D3D11GraphicsContext::D3D11Manager::getContext()->PSSetShaderResources(slot, 1, m_pView.GetAddressOf());
 		D3D11GraphicsContext::D3D11Manager::getContext()->PSSetSamplers(slot, 1, m_pSampler.GetAddressOf());
+	}
+
+	void D3D11Texture2D::update(const BYTE* pData)
+	{
+		uint32_t offsetX = 0;
+		uint32_t offsetY = 0;
+		updatePartial(&pData, &offsetX, &offsetY, &m_width, &m_height, 1);
+	}
+
+	void D3D11Texture2D::updatePartial(const BYTE* const* pData, const uint32_t* pOffsetX, const uint32_t* pOffsetY, const uint32_t* pWidth, const uint32_t* pHeight, uint32_t nBuffers)
+	{
+		for (uint32_t i = 0; i < nBuffers; ++i)
+		{
+			D3D11_BOX region;
+			region.left = pOffsetX[i];
+			region.right = pOffsetX[i] + pWidth[i];
+			region.top = pOffsetY[i];
+			region.bottom = pOffsetY[i] + pHeight[i];
+			region.front = 0;
+			region.back = 1;
+			D3D11GraphicsContext::D3D11Manager::getContext()->UpdateSubresource(m_pTexture.Get(), 0, &region, pData[i], pWidth[i] * m_nChannels * sizeof(char), 0);
+		}
 	}
 }

@@ -80,16 +80,16 @@ namespace Marx
 		// Updates the whole vertex buffer
 		//
 		// @param vertices Array of vertices (The size of the buffer must be equal to the size specified on creation)
-		virtual void update(void* vertices) = 0;
+		virtual void update(const void* vertices) = 0;
 		// Updates one or more parts of the underlying vertex buffer
 		//
 		// @param pVertices Array of vertex buffers
 		// @param pOffset Array of offsets in the destination buffer (in vertices not bytes)
 		// @param pCount Array of the number of vertices in each buffer
 		// @param nBuffers The number of buffers in pVertices
-		virtual void updatePartial(void** pVertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) = 0;
+		virtual void updatePartial(const void* const* pVertices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers) = 0;
 	public:
-		static Reference<VertexBuffer> create(void* vertices, uint32_t size);
+		static Reference<VertexBuffer> create(const void* vertices, uint32_t size);
 	};
 
 	///////////////////////////////////////
@@ -114,16 +114,16 @@ namespace Marx
 		// Updates the whole index buffer
 		//
 		// @param indices Array of indices (Number of elements must be equal to getCount())
-		virtual void update(uint32_t* indices) = 0;
+		virtual void update(const uint32_t* indices) = 0;
 		// Updates one or more parts of the underlying index buffer
 		//
 		// @param pIndices Array of index buffers
 		// @param pOffset Array of offsets in the destination buffer (in indices not bytes)
 		// @param pCount Array of the number of indices in each buffer
 		// @param nBuffers The number of buffers in pIndices
-		virtual void updatePartial(uint32_t** pIndices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) = 0;
+		virtual void updatePartial(const uint32_t* const* pIndices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers) = 0;
 	public:
-		static Reference<IndexBuffer> create(uint32_t* indices, uint32_t count, PrimitiveType primType);
+		static Reference<IndexBuffer> create(const uint32_t* indices, uint32_t count, PrimitiveType primType);
 	};
 
 	//////////////////////////////////////////
@@ -144,10 +144,10 @@ namespace Marx
 
 	namespace VSConstantBuffer
 	{
-		Reference<ConstantBuffer> create(uint32_t size, const void* data = nullptr);
+		Reference<ConstantBuffer> create(const void* data, uint32_t size);
 	}
 	namespace PSConstantBuffer
 	{
-		Reference<ConstantBuffer> create(uint32_t size, const void* data = nullptr);
+		Reference<ConstantBuffer> create(const void* data, uint32_t size);
 	}
 }
