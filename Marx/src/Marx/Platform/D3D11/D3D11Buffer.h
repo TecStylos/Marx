@@ -60,7 +60,7 @@ namespace Marx
 		virtual void bind() const override;
 		virtual void setLayout(const BufferLayout& layout) override;
 		virtual void update(void* vertices) override;
-		virtual void updatePartial(void** vertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) override;
+		virtual void updatePartial(void** pVertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) override;
 	public:
 		static std::vector<D3D11_INPUT_ELEMENT_DESC> genElementDesc(const BufferLayout& layout);
 		static ID3DBlob* genDummyShader(const BufferLayout& layout);
@@ -118,12 +118,11 @@ namespace Marx
 	class D3D11VSConstantBuffer : public ConstantBuffer
 	{
 	public:
-		D3D11VSConstantBuffer(uint32_t slot, uint32_t size, const void* data);
+		D3D11VSConstantBuffer(uint32_t size, const void* data);
 	public:
-		virtual void bind() const override;
+		virtual void bind(uint32_t slot) const override;
 		virtual void update(const void* data) override;
 	private:
-		uint32_t m_slot;
 		uint32_t m_size;
 		ComPtr<ID3D11Buffer> m_pBuffer;
 	};
@@ -131,12 +130,11 @@ namespace Marx
 	class D3D11PSConstantBuffer : public ConstantBuffer
 	{
 	public:
-		D3D11PSConstantBuffer(uint32_t slot, uint32_t size, const void* data);
+		D3D11PSConstantBuffer(uint32_t size, const void* data);
 	public:
-		virtual void bind() const override;
+		virtual void bind(uint32_t slot) const override;
 		virtual void update(const void* data) override;
 	private:
-		uint32_t m_slot;
 		uint32_t m_size;
 		ComPtr<ID3D11Buffer> m_pBuffer;
 	};

@@ -21,17 +21,17 @@ namespace Marx
 
 	void Renderer::submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, const DX::XMMATRIX& transform, const Reference<Texture2D> texture)
 	{
-		static Reference<ConstantBuffer> sceneVSConstBuffer = VSConstantBuffer::create(0, sizeof(DX::XMMATRIX), nullptr);
-		static Reference<ConstantBuffer> modelVSConstBuffer = VSConstantBuffer::create(1, sizeof(DX::XMMATRIX), nullptr);
+		static Reference<ConstantBuffer> sceneVSConstBuffer = VSConstantBuffer::create(sizeof(DX::XMMATRIX), nullptr);
+		static Reference<ConstantBuffer> modelVSConstBuffer = VSConstantBuffer::create(sizeof(DX::XMMATRIX), nullptr);
 
 		shader->bind();
 		vertexArray->bind();
 		texture->bind();
 
 		sceneVSConstBuffer->update(&s_sceneData->viewProjectionMatrix);
-		sceneVSConstBuffer->bind();
+		sceneVSConstBuffer->bind(0);
 		modelVSConstBuffer->update(&transform);
-		modelVSConstBuffer->bind();
+		modelVSConstBuffer->bind(1);
 
 		RenderCommand::drawIndexed(vertexArray);
 	}

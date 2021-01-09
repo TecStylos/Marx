@@ -77,8 +77,17 @@ namespace Marx
 		virtual ~VertexBuffer() {}
 		virtual void bind() const = 0;
 		virtual void setLayout(const BufferLayout& layout) = 0;
+		// Updates the whole vertex buffer
+		//
+		// @param vertices Array of vertices (The size of the buffer must be equal to the size specified on creation)
 		virtual void update(void* vertices) = 0;
-		virtual void updatePartial(void** vertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) = 0;
+		// Updates one or more parts of the underlying vertex buffer
+		//
+		// @param pVertices Array of vertex buffers
+		// @param pOffset Array of offsets in the destination buffer (in vertices not bytes)
+		// @param pCount Array of the number of vertices in each buffer
+		// @param nBuffers The number of buffers in pVertices
+		virtual void updatePartial(void** pVertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) = 0;
 	public:
 		static Reference<VertexBuffer> create(void* vertices, uint32_t size);
 	};
@@ -102,7 +111,16 @@ namespace Marx
 		virtual void setCount(uint32_t count) = 0;
 		virtual uint32_t getCount() const = 0;
 		virtual uint32_t getMaxCount() const = 0;
-		virtual void update(uint32_t* vertices) = 0;
+		// Updates the whole index buffer
+		//
+		// @param indices Array of indices (Number of elements must be equal to getCount())
+		virtual void update(uint32_t* indices) = 0;
+		// Updates one or more parts of the underlying index buffer
+		//
+		// @param pIndices Array of index buffers
+		// @param pOffset Array of offsets in the destination buffer (in indices not bytes)
+		// @param pCount Array of the number of indices in each buffer
+		// @param nBuffers The number of buffers in pIndices
 		virtual void updatePartial(uint32_t** pIndices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers) = 0;
 	public:
 		static Reference<IndexBuffer> create(uint32_t* indices, uint32_t count, PrimitiveType primType);
@@ -117,16 +135,19 @@ namespace Marx
 	public:
 		virtual ~ConstantBuffer() {}
 	public:
-		virtual void bind() const = 0;
+		virtual void bind(uint32_t slot = 0) const = 0;
+		// Updates the whole constant buffer
+		//
+		// @param data Buffer of typeless data (The size of the buffer must be equal to the size specified on creation)
 		virtual void update(const void* data) = 0;
 	};
 
 	namespace VSConstantBuffer
 	{
-		Reference<ConstantBuffer> create(uint32_t slot, uint32_t size, const void* data = nullptr);
+		Reference<ConstantBuffer> create(uint32_t size, const void* data = nullptr);
 	}
 	namespace PSConstantBuffer
 	{
-		Reference<ConstantBuffer> create(uint32_t slot, uint32_t size, const void* data = nullptr);
+		Reference<ConstantBuffer> create(uint32_t size, const void* data = nullptr);
 	}
 }

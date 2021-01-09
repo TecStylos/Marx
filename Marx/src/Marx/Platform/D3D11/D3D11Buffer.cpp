@@ -68,7 +68,7 @@ namespace Marx
 		updatePartial(&vertices, &offset, &count, 1);
 	}
 
-	void D3D11VertexBuffer::updatePartial(void** vertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers)
+	void D3D11VertexBuffer::updatePartial(void** pVertices, uint32_t* pOffset, uint32_t* pCount, uint32_t nBuffers)
 	{
 		MX_CORE_ASSERT(m_stride, "Vertex stride not set!");
 
@@ -80,7 +80,7 @@ namespace Marx
 		{
 			memcpy(
 				(char*)resource.pData + pOffset[i] * (size_t)m_stride, 
-				vertices[i],
+				pVertices[i],
 				pCount[i] * (size_t)m_stride
 			);
 		}
@@ -195,8 +195,8 @@ namespace Marx
 	// ---------- ConstantBuffer ---------- //
 	//////////////////////////////////////////
 
-	D3D11VSConstantBuffer::D3D11VSConstantBuffer(uint32_t slot, uint32_t size, const void* data)
-		: m_slot(slot), m_size(size)
+	D3D11VSConstantBuffer::D3D11VSConstantBuffer(uint32_t size, const void* data)
+		: m_size(size)
 	{
 		MX_DEBUG_HR_DECL;
 
@@ -220,9 +220,9 @@ namespace Marx
 		);
 	}
 
-	void D3D11VSConstantBuffer::bind() const
+	void D3D11VSConstantBuffer::bind(uint32_t slot) const
 	{
-		D3D11GraphicsContext::D3D11Manager::getContext()->VSSetConstantBuffers(m_slot, 1, m_pBuffer.GetAddressOf());
+		D3D11GraphicsContext::D3D11Manager::getContext()->VSSetConstantBuffers(slot, 1, m_pBuffer.GetAddressOf());
 	}
 
 	void D3D11VSConstantBuffer::update(const void* data)
@@ -230,8 +230,8 @@ namespace Marx
 		D3D11GraphicsContext::D3D11Manager::getContext()->UpdateSubresource(m_pBuffer.Get(), 0, NULL, data, 0, 0);
 	}
 
-	D3D11PSConstantBuffer::D3D11PSConstantBuffer(uint32_t slot, uint32_t size, const void* data)
-		: m_slot(slot), m_size(size)
+	D3D11PSConstantBuffer::D3D11PSConstantBuffer(uint32_t size, const void* data)
+		: m_size(size)
 	{
 		MX_DEBUG_HR_DECL;
 
@@ -255,9 +255,9 @@ namespace Marx
 		);
 	}
 
-	void D3D11PSConstantBuffer::bind() const
+	void D3D11PSConstantBuffer::bind(uint32_t slot) const
 	{
-		D3D11GraphicsContext::D3D11Manager::getContext()->PSSetConstantBuffers(m_slot, 1, m_pBuffer.GetAddressOf());
+		D3D11GraphicsContext::D3D11Manager::getContext()->PSSetConstantBuffers(slot, 1, m_pBuffer.GetAddressOf());
 	}
 
 	void D3D11PSConstantBuffer::update(const void* data)
