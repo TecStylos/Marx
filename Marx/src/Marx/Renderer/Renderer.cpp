@@ -15,6 +15,11 @@ namespace Marx
 		s_sceneData->viewProjectionMatrix = camera.getViewProjectionTransposed();
 	}
 
+	void Renderer::beginScene(const PerspectiveCamera& camera)
+	{
+		s_sceneData->viewProjectionMatrix = camera.getViewProjectionTransposed();
+	}
+
 	void Renderer::endScene()
 	{
 	}

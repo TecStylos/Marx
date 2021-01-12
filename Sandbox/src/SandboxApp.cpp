@@ -10,7 +10,7 @@ class ExampleLayer : public Marx::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_camera(-1.6f, 1.6f, -0.9f, 0.9f), m_position(0.0f, 0.0f, 0.0f)
+		: Layer("Example"), m_orthographicCam(-1.6f, 1.6f, -0.9f, 0.9f), m_position(0.0f, 0.0f, 0.0f)
 	{
 		// Vertex Buffer
 		Vertex vertices[] =
@@ -39,17 +39,19 @@ public:
 
 		// Shader
 		m_pShader = Marx::Shader::create(
-			Marx::Shader::loadShaderSrcFromFile("C:\\dev\\Marx\\Marx\\src\\shaders\\textureVS.hlsl"),
-			Marx::Shader::loadShaderSrcFromFile("C:\\dev\\Marx\\Marx\\src\\shaders\\texturePS.hlsl")
+			Marx::Shader::readFile("assets\\shaders\\textureVS.hlsl"),
+			Marx::Shader::readFile("assets\\shaders\\texturePS.hlsl")
 		);
+
+		//m_pShader = Marx::Shader::create("assets\\shaders\\Texture.hlsl");
 
 		// Vertex Array
 		m_pVertexArray = Marx::VertexArray::create();
 		m_pVertexArray->setVertexBuffer(pVertexBuffer);
 		m_pVertexArray->setIndexBuffer(pIndexBuffer);
 
-		m_pTexture = Marx::Texture2D::create("C:\\dev\\Marx\\Sandbox\\assets\\textures\\testLow.png");
-		m_pAlphaTexture = Marx::Texture2D::create("C:\\dev\\Marx\\Sandbox\\assets\\textures\\testAlpha.png");
+		m_pTexture = Marx::Texture2D::create("assets\\textures\\testLow.png");
+		m_pAlphaTexture = Marx::Texture2D::create("assets\\textures\\testAlpha.png");
 
 		Marx::RenderCommand::enableBlending(true);
 	}
@@ -83,8 +85,21 @@ public:
 		if (Marx::Input::isKeyPressed(MX_KEY_UP))
 			m_vertexY += 0.001f;
 
+		DX::XMFLOAT3 camPos = m_orthographicCam.getPosition();
+		if (Marx::Input::isKeyPressed(MX_KEY_I))
+			camPos.y += moveSpeed * ts;
+		if (Marx::Input::isKeyPressed(MX_KEY_K))
+			camPos.y -= moveSpeed * ts;
+		if (Marx::Input::isKeyPressed(MX_KEY_J))
+			camPos.x -= moveSpeed * ts;
+		if (Marx::Input::isKeyPressed(MX_KEY_L))
+			camPos.x += moveSpeed * ts;
+		camPos.z = -1.0f;
+		m_orthographicCam.setPosition(camPos);
+		m_perspectiveCam.setPosition(camPos);
+
 		DX::XMMATRIX scaleMat = DX::XMMatrixScaling(0.1f, 0.1f, 0.1f);
-		DX::XMMATRIX rotationMat = DX::XMMatrixRotationZ(rotation);
+		DX::XMMATRIX rotationMat = DX::XMMatrixRotationY(rotation);
 
 		Marx::RenderCommand::setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		Marx::RenderCommand::clear();
@@ -114,7 +129,11 @@ public:
 			m_pTexture->updatePartial((BYTE**)pPixels, offsetsX, offsetsY, widths, heights, 2);
 		}
 
-		Marx::Renderer::beginScene(m_camera);
+		if (m_usePerspective)
+			Marx::Renderer::beginScene(m_perspectiveCam);
+		else
+			Marx::Renderer::beginScene(m_orthographicCam);
+
 		for (int y = 0; y < 9; ++y)
 		{
 			for (int x = 0; x < 9; ++x)
@@ -140,6 +159,7 @@ public:
 		Marx::EventDispatcher dispatcher(event);
 		dispatcher.dispatch<Marx::MouseMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseMove));
 		dispatcher.dispatch<Marx::MouseButtonPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseButtonPress));
+		dispatcher.dispatch<Marx::KeyPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onKeyPress));
 	}
 	bool onMouseMove(Marx::MouseMoveEvent& e)
 	{
@@ -152,17 +172,25 @@ public:
 		MX_TRACE("MouseButtonPress: {0}", e.getButton());
 		return true;
 	}
+	bool onKeyPress(Marx::KeyPressEvent& e)
+	{
+		if (e.getKeyCode() == MX_KEY_T)
+			m_usePerspective = !m_usePerspective;
+		return true;
+	}
 private:
 	Marx::Reference<Marx::Shader> m_pShader;
 	Marx::Reference<Marx::VertexArray> m_pVertexArray;
 	Marx::Reference<Marx::Texture2D> m_pTexture, m_pAlphaTexture;
 	DX::XMFLOAT3 m_position;
-	Marx::OrthographicCamera m_camera;
+	Marx::OrthographicCamera m_orthographicCam;
+	Marx::PerspectiveCamera m_perspectiveCam;
 	float m_mouseX = 0.0f;
 	float m_mouseY = 0.0f;
 	DX::XMFLOAT4 m_color[2] = { {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f} };
 	float m_vertexX = -0.5f;
 	float m_vertexY = -0.5f;
+	bool m_usePerspective;
 };
 
 class Sandbox : public Marx::Application
