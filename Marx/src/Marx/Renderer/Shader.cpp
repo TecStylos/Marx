@@ -6,6 +6,35 @@
 
 namespace Marx
 {
+	ShaderType shaderTypeFromString(const std::string& str)
+	{
+		if (str == "vertex") return ShaderType::Vertex;
+		if (str == "pixel") return ShaderType::Pixel;
+		
+		MX_CORE_ASSERT(false, "Invalid shader type");
+		return (ShaderType)0;
+	}
+
+	Reference<Shader> Shader::create(const std::string& filepath)
+	{
+		switch (Renderer::getAPI())
+		{
+		case RendererAPI::API::None:
+			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
+			return nullptr;
+		case RendererAPI::API::D3D11:
+		#ifdef MX_PLATFORM_WINDOWS
+			return std::make_shared<D3D11Shader>(filepath);
+		#else
+			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
+			return nullptr;
+		#endif
+		}
+
+		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
+	}
+
 	Reference<Shader> Shader::create(const std::string& vertexSrc, const std::string& pixelSrc)
 	{
 		switch (Renderer::getAPI())
@@ -26,7 +55,7 @@ namespace Marx
 		return nullptr;
 	}
 
-	std::string Shader::loadShaderSrcFromFile(const std::string& filename)
+	std::string Shader::readFile(const std::string& filename)
 	{
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -35,11 +64,11 @@ namespace Marx
 			MX_CORE_ERROR("Cannot open file '{0}'", filename);
 			return std::string();
 		}
-		uint32_t fsize = (uint32_t)file.tellg();
-		std::vector<char> buff(fsize);
+		std::string result;
+		result.resize(file.tellg());
 		file.seekg(0);
-		file.read(buff.data(), fsize);
+		file.read(&result[0], result.size());
 		file.close();
-		return std::string(buff.data(), fsize);
+		return result;
 	}
 }

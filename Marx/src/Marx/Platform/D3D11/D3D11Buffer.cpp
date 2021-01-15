@@ -120,7 +120,7 @@ namespace Marx
 		shaderSrc.append("float4 main(VS_INPUT inp) : SV_POSITION { return float4(0.0f, 0.0f, 0.0f, 0.0f); }");
 
 		ID3DBlob* pShader;
-		MX_VERIFY_THROW_HR_INFO(D3D11Shader::compileShaderFromSrc(shaderSrc, "vs_5_0", &pShader));
+		MX_VERIFY_THROW_HR_INFO(D3D11Shader::compileSrc(shaderSrc, "vs_5_0", &pShader));
 		return pShader;
 	}
 

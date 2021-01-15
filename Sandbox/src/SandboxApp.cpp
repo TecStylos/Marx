@@ -38,12 +38,11 @@ public:
 		);
 
 		// Shader
-		m_pShader = Marx::Shader::create(
+		/*m_pShader = Marx::Shader::create(
 			Marx::Shader::readFile("assets\\shaders\\textureVS.hlsl"),
 			Marx::Shader::readFile("assets\\shaders\\texturePS.hlsl")
-		);
-
-		//m_pShader = Marx::Shader::create("assets\\shaders\\Texture.hlsl");
+		);*/
+		m_pShader = Marx::Shader::create("assets\\shaders\\Texture.hlsl");
 
 		// Vertex Array
 		m_pVertexArray = Marx::VertexArray::create();
@@ -190,7 +189,7 @@ private:
 	DX::XMFLOAT4 m_color[2] = { {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f} };
 	float m_vertexX = -0.5f;
 	float m_vertexY = -0.5f;
-	bool m_usePerspective;
+	bool m_usePerspective = false;
 };
 
 class Sandbox : public Marx::Application
