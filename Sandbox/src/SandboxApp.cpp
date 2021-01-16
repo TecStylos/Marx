@@ -38,11 +38,7 @@ public:
 		);
 
 		// Shader
-		/*m_pShader = Marx::Shader::create(
-			Marx::Shader::readFile("assets\\shaders\\textureVS.hlsl"),
-			Marx::Shader::readFile("assets\\shaders\\texturePS.hlsl")
-		);*/
-		m_pShader = Marx::Shader::create("assets\\shaders\\Texture.hlsl");
+		m_shaderLib.load("assets/shaders/Texture.hlsl");
 
 		// Vertex Array
 		m_pVertexArray = Marx::VertexArray::create();
@@ -133,16 +129,18 @@ public:
 		else
 			Marx::Renderer::beginScene(m_orthographicCam);
 
+		auto texShader = m_shaderLib.get("Texture");
+
 		for (int y = 0; y < 9; ++y)
 		{
 			for (int x = 0; x < 9; ++x)
 			{
 				DX::XMMATRIX transformMat = scaleMat * DX::XMMatrixTranslation(x * 0.11f, y * 0.11f, 0.0f) * rotationMat * DX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
-				Marx::Renderer::submit(m_pShader, m_pVertexArray, DX::XMMatrixTranspose(transformMat), m_pTexture);
+				Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(transformMat), m_pTexture);
 			}
 		}
-		Marx::Renderer::submit(m_pShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pTexture);
-		Marx::Renderer::submit(m_pShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pAlphaTexture);
+		Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pTexture);
+		Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pAlphaTexture);
 
 		Marx::Renderer::endScene();
 	}
@@ -178,7 +176,7 @@ public:
 		return true;
 	}
 private:
-	Marx::Reference<Marx::Shader> m_pShader;
+	Marx::ShaderLib m_shaderLib;
 	Marx::Reference<Marx::VertexArray> m_pVertexArray;
 	Marx::Reference<Marx::Texture2D> m_pTexture, m_pAlphaTexture;
 	DX::XMFLOAT3 m_position;

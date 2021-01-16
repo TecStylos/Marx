@@ -10,14 +10,16 @@
 
 namespace Marx
 {
-	D3D11Shader::D3D11Shader(const std::string& filepath)
+	D3D11Shader::D3D11Shader(const std::string& filepath, const std::string& name)
+		: m_name(name)
 	{
 		auto shaderSrc = readFile(filepath);
 		auto sources = preprocess(shaderSrc);
 		compile(sources);
 	}
 
-	D3D11Shader::D3D11Shader(const std::string& vertexSrc, const std::string& pixelSrc)
+	D3D11Shader::D3D11Shader(const std::string& name, const std::string& vertexSrc, const std::string& pixelSrc)
+		: m_name(name)
 	{
 		MX_DEBUG_HR_DECL;
 
