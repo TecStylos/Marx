@@ -16,5 +16,6 @@ namespace Marx
 		virtual Reference<IndexBuffer> getIndexBuffer() = 0;
 	public:
 		static Reference<VertexArray> create();
+		static Reference<VertexArray> create(const Reference<VertexBuffer>& vertexBuffer, const Reference<IndexBuffer>& indexBuffer);
 	};
 }

@@ -21,6 +21,7 @@ public:
 			{  0.5f, -0.5f, 0.0f, 1.0f, 0.0f }
 		};
 		Marx::Reference<Marx::VertexBuffer> pVertexBuffer(Marx::VertexBuffer::create(vertices, sizeof(vertices)));
+
 		// Vertex Layout
 		pVertexBuffer->setLayout({
 			{ Marx::ShaderDataType::Float3, "A_POSITION" },
@@ -37,18 +38,90 @@ public:
 			)
 		);
 
-		// Shader
-		m_shaderLib.load("assets/shaders/Texture.hlsl");
+
+
+
+
+		Vertex cubeVertices[] =
+		{
+			// Front
+			{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
+			{ -0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
+			{  0.5f,  0.5f, -0.5f, 1.0f, 1.0f },
+			{  0.5f, -0.5f, -0.5f, 1.0f, 0.0f },
+
+			// Back
+			{  0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
+			{  0.5f,  0.5f,  0.5f, 0.0f, 1.0f },
+			{ -0.5f,  0.5f,  0.5f, 1.0f, 1.0f },
+			{ -0.5f, -0.5f,  0.5f, 1.0f, 0.0f },
+
+			// Top
+			{ -0.5f,  0.5f, -0.5f, 0.0f, 0.0f },
+			{ -0.5f,  0.5f,  0.5f, 0.0f, 1.0f },
+			{  0.5f,  0.5f,  0.5f, 1.0f, 1.0f },
+			{  0.5f,  0.5f, -0.5f, 1.0f, 0.0f },
+
+			// Bottom
+			{ -0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
+			{ -0.5f, -0.5f, -0.5f, 0.0f, 1.0f },
+			{  0.5f, -0.5f, -0.5f, 1.0f, 1.0f },
+			{  0.5f, -0.5f,  0.5f, 1.0f, 0.0f },
+
+			// Left
+			{ -0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
+			{ -0.5f,  0.5f,  0.5f, 0.0f, 1.0f },
+			{ -0.5f,  0.5f, -0.5f, 1.0f, 1.0f },
+			{ -0.5f, -0.5f, -0.5f, 1.0f, 0.0f },
+
+			// Right
+			{  0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
+			{  0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
+			{  0.5f,  0.5f,  0.5f, 1.0f, 1.0f },
+			{  0.5f, -0.5f,  0.5f, 1.0f, 0.0f },
+		};
+		Marx::Reference<Marx::VertexBuffer> pCubeVertexBuffer(Marx::VertexBuffer::create(cubeVertices, sizeof(cubeVertices)));
+
+		pCubeVertexBuffer->setLayout({
+			{ Marx::ShaderDataType::Float3, "A_POSITION" },
+			{ Marx::ShaderDataType::Float2, "A_TEXCOORD" }
+		});
+
+		uint32_t cubeIndices[] = {
+			4 * 0 + 0, 4 * 0 + 1, 4 * 0 + 2, 4 * 0 + 2, 4 * 0 + 3, 4 * 0 + 0,
+			4 * 1 + 0, 4 * 1 + 1, 4 * 1 + 2, 4 * 1 + 2, 4 * 1 + 3, 4 * 1 + 0,
+			4 * 2 + 0, 4 * 2 + 1, 4 * 2 + 2, 4 * 2 + 2, 4 * 2 + 3, 4 * 2 + 0,
+			4 * 3 + 0, 4 * 3 + 1, 4 * 3 + 2, 4 * 3 + 2, 4 * 3 + 3, 4 * 3 + 0,
+			4 * 4 + 0, 4 * 4 + 1, 4 * 4 + 2, 4 * 4 + 2, 4 * 4 + 3, 4 * 4 + 0,
+			4 * 5 + 0, 4 * 5 + 1, 4 * 5 + 2, 4 * 5 + 2, 4 * 5 + 3, 4 * 5 + 0,
+		};
+		Marx::Reference<Marx::IndexBuffer> pCubeIndexBuffer(
+			Marx::IndexBuffer::create(
+				cubeIndices,
+				sizeof(cubeIndices) / sizeof(uint32_t),
+				Marx::IndexBuffer::PrimitiveType::TriangleList
+			)
+		);
+
+		m_pCubeVertexArray = Marx::VertexArray::create(pCubeVertexBuffer, pCubeIndexBuffer);
+
+
+
+
 
 		// Vertex Array
-		m_pVertexArray = Marx::VertexArray::create();
-		m_pVertexArray->setVertexBuffer(pVertexBuffer);
-		m_pVertexArray->setIndexBuffer(pIndexBuffer);
+		m_pVertexArray = Marx::VertexArray::create(pVertexBuffer, pIndexBuffer);
+
+		// Shader
+		m_shaderLib.load("assets/shaders/Texture.hlsl");
 
 		m_pTexture = Marx::Texture2D::create("assets\\textures\\testLow.png");
 		m_pAlphaTexture = Marx::Texture2D::create("assets\\textures\\testAlpha.png");
 
 		Marx::RenderCommand::enableBlending(true);
+		Marx::RenderCommand::enableDepthTest(true);
+
+		m_perspectiveCam.setProperties(90.0f, 16.0f / 9.0f, 0.001f, 1000.0f);
 	}
 public:
 	virtual void onUpdate(Marx::Timestep ts) override
@@ -93,7 +166,7 @@ public:
 		m_orthographicCam.setPosition(camPos);
 		m_perspectiveCam.setPosition(camPos);
 
-		DX::XMMATRIX scaleMat = DX::XMMatrixScaling(0.1f, 0.1f, 0.1f);
+		DX::XMMATRIX scaleMat = DX::XMMatrixScaling(0.5f, 0.5f, 0.5f);
 		DX::XMMATRIX rotationMat = DX::XMMatrixRotationY(rotation);
 
 		Marx::RenderCommand::setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -131,16 +204,19 @@ public:
 
 		auto texShader = m_shaderLib.get("Texture");
 
-		for (int y = 0; y < 9; ++y)
+		/*for (int y = 0; y < 9; ++y)
 		{
 			for (int x = 0; x < 9; ++x)
 			{
 				DX::XMMATRIX transformMat = scaleMat * DX::XMMatrixTranslation(x * 0.11f, y * 0.11f, 0.0f) * rotationMat * DX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
 				Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(transformMat), m_pTexture);
 			}
-		}
-		Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pTexture);
+		}*/
+		//Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pTexture);
 		Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pAlphaTexture);
+
+		DX::XMMATRIX transformMat = scaleMat * rotationMat * DX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
+		Marx::Renderer::submit(texShader, m_pCubeVertexArray, DX::XMMatrixTranspose(transformMat), m_pTexture);
 
 		Marx::Renderer::endScene();
 	}
@@ -178,6 +254,7 @@ public:
 private:
 	Marx::ShaderLib m_shaderLib;
 	Marx::Reference<Marx::VertexArray> m_pVertexArray;
+	Marx::Reference<Marx::VertexArray> m_pCubeVertexArray;
 	Marx::Reference<Marx::Texture2D> m_pTexture, m_pAlphaTexture;
 	DX::XMFLOAT3 m_position;
 	Marx::OrthographicCamera m_orthographicCam;

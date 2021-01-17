@@ -8,6 +8,7 @@ namespace Marx
 	{
 	public:
 		D3D11VertexArray();
+		D3D11VertexArray(const Reference<VertexBuffer>& pVertexBuffer, const Reference<IndexBuffer>& pIndexBuffer);
 		virtual ~D3D11VertexArray() {}
 	public:
 		virtual void bind() const override;
