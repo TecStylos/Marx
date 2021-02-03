@@ -13,8 +13,8 @@ namespace Marx
 		virtual ~Win32Window();
 	public:
 		virtual void onUpdate() override;
-		inline unsigned int getWidth() const override { return m_width; }
-		inline unsigned int getHeight() const override { return m_height; }
+		inline uint32_t getWidth() const override { return m_width; }
+		inline uint32_t getHeight() const override { return m_height; }
 		virtual uint32_t getWndCount() const override { return (uint32_t)Win32Manager::getWndCount(); }
 		static Win32Window* getWnd(unsigned int index = 0) { return Win32Manager::getWnd(index); }
 		virtual void* getNativeWindow() const override { return m_hWnd; }
@@ -27,8 +27,10 @@ namespace Marx
 	protected:
 		LRESULT CALLBACK wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	protected:
-		unsigned int m_width;
-		unsigned int m_height;
+		uint32_t m_width;
+		uint32_t m_height;
+		uint32_t m_minWidth = 200;
+		uint32_t m_minHeight = 150;
 		HWND m_hWnd;
 		bool m_initialized = false;
 		DISABLE_DLL_INTERFACE_WARN;

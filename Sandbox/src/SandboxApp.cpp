@@ -119,7 +119,6 @@ public:
 		m_pAlphaTexture = Marx::Texture2D::create("assets\\textures\\testAlpha.png");
 
 		Marx::RenderCommand::enableBlending(true);
-		Marx::RenderCommand::enableDepthTest(true);
 
 		m_perspectiveCam.setProperties(90.0f, 16.0f / 9.0f, 0.001f, 1000.0f);
 	}
@@ -201,6 +200,7 @@ public:
 			Marx::Renderer::beginScene(m_perspectiveCam);
 		else
 			Marx::Renderer::beginScene(m_orthographicCam);
+		Marx::RenderCommand::enableDepthTest(m_usePerspective);
 
 		auto texShader = m_shaderLib.get("Texture");
 
@@ -213,10 +213,10 @@ public:
 			}
 		}*/
 		//Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pTexture);
-		Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pAlphaTexture);
 
 		DX::XMMATRIX transformMat = scaleMat * rotationMat * DX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
 		Marx::Renderer::submit(texShader, m_pCubeVertexArray, DX::XMMatrixTranspose(transformMat), m_pTexture);
+		Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pAlphaTexture);
 
 		Marx::Renderer::endScene();
 	}

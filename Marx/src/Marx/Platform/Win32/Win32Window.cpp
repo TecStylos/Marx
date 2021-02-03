@@ -116,6 +116,13 @@ namespace Marx
 		switch (uMsg)
 		{
 			// ---------- WINDOW MESSAGES ----------
+		case WM_GETMINMAXINFO:
+		{
+			LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
+			lpMMI->ptMinTrackSize.x = m_minWidth;
+			lpMMI->ptMinTrackSize.y = m_minHeight;
+			return 0;
+		}
 		case WM_CLOSE:
 		{
 			WindowCloseEvent event(this);

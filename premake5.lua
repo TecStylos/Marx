@@ -137,3 +137,56 @@ project "Sandbox"
 		defines "MX_DIST"
 		runtime "Release"
 		optimize "on"
+
+project "DonHugo"
+	location "DonHugo"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+	characterset "MBCS"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files {
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs {
+		"Marx/vendor/spdlog/include",
+		"Marx/src",
+		"Marx/vendor"
+	}
+
+	links {
+		"Marx"
+	}
+
+	filter "system:windows"
+		cppdialect "C++17"
+		systemversion "latest"
+
+		defines {
+			"MX_PLATFORM_WINDOWS"
+		}
+
+	filter "configurations:Debug"
+		defines {
+		    "MX_DEBUG",
+			"MX_ENABLE_ASSERTS",
+			"MX_USE_CONDITIONAL_EXCEPT"
+		}
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "MX_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "MX_DIST"
+		runtime "Release"
+		optimize "on"
