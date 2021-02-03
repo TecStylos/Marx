@@ -4,3 +4,4 @@
 [submodule "Marx/vendor/imgui"]
 	path = Marx/vendor/imgui
 	url = https://github.com/TecStylos/imgui.git
+	branch = docking
