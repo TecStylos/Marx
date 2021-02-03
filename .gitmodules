@@ -1,5 +1,5 @@
-[submodule "Marx\\vendor\\spdlog"]
-	path = Marx\\vendor\\spdlog
+[submodule "Marx/vendor/spdlog"]
+	path = Marx/vendor/spdlog
 	url = https://github.com/TecStylos/spdlog.git
 [submodule "Marx/vendor/imgui"]
 	path = Marx/vendor/imgui
