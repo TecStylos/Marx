@@ -141,16 +141,16 @@
     <ClInclude Include="src\Effects\Flanger.h" />
     <ClInclude Include="src\Effects\Gargle.h" />
     <ClInclude Include="src\Effects\Reverb.h" />
+    <ClInclude Include="src\MicPlayback.h" />
+    <ClInclude Include="src\MicPlayback2.h" />
+    <ClInclude Include="src\Sound.h" />
+    <ClInclude Include="src\Sound2.h" />
     <ClInclude Include="src\future\CaptureBuffer.h" />
     <ClInclude Include="src\future\CaptureDevice.h" />
     <ClInclude Include="src\future\DirectSoundIncludes.h" />
-    <ClInclude Include="src\MicPlayback2.h" />
-    <ClInclude Include="src\MicPlayback.h" />
     <ClInclude Include="src\future\SoundBuffer.h" />
     <ClInclude Include="src\future\SoundDevice.h" />
     <ClInclude Include="src\future\Tools.h" />
-    <ClInclude Include="src\Sound.h" />
-    <ClInclude Include="src\Sound2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
@@ -163,15 +163,15 @@
     <ClCompile Include="src\Effects\Flanger.cpp" />
     <ClCompile Include="src\Effects\Gargle.cpp" />
     <ClCompile Include="src\Effects\Reverb.cpp" />
-    <ClCompile Include="src\future\CaptureBuffer.cpp" />
-    <ClCompile Include="src\future\CaptureDevice.cpp" />
     <ClCompile Include="src\MicPlayback.cpp" />
-    <ClCompile Include="src\future\SoundBuffer.cpp" />
-    <ClCompile Include="src\future\SoundDevice.cpp" />
-    <ClCompile Include="src\future\Tools.cpp" />
     <ClCompile Include="src\MicPlayback2.cpp" />
     <ClCompile Include="src\Sound.cpp" />
     <ClCompile Include="src\Sound2.cpp" />
+    <ClCompile Include="src\future\CaptureBuffer.cpp" />
+    <ClCompile Include="src\future\CaptureDevice.cpp" />
+    <ClCompile Include="src\future\SoundBuffer.cpp" />
+    <ClCompile Include="src\future\SoundDevice.cpp" />
+    <ClCompile Include="src\future\Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Marx\Marx.vcxproj">

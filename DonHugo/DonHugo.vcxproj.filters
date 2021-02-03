@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Effects">
+      <UniqueIdentifier>{C5078FB8-31E7-0D54-3AFF-982AA65D74B5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="future">
+      <UniqueIdentifier>{A00454FE-8CA6-7ED4-7561-922861A20525}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Effects\Chorus.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effects\Compressor.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effects\Distortion.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effects\Echo.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effects\Effect.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effects\EffectList.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effects\Equalizer.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effects\Flanger.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effects\Gargle.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effects\Reverb.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MicPlayback.h" />
+    <ClInclude Include="src\MicPlayback2.h" />
+    <ClInclude Include="src\Sound.h" />
+    <ClInclude Include="src\Sound2.h" />
+    <ClInclude Include="src\future\CaptureBuffer.h">
+      <Filter>future</Filter>
+    </ClInclude>
+    <ClInclude Include="src\future\CaptureDevice.h">
+      <Filter>future</Filter>
+    </ClInclude>
+    <ClInclude Include="src\future\DirectSoundIncludes.h">
+      <Filter>future</Filter>
+    </ClInclude>
+    <ClInclude Include="src\future\SoundBuffer.h">
+      <Filter>future</Filter>
+    </ClInclude>
+    <ClInclude Include="src\future\SoundDevice.h">
+      <Filter>future</Filter>
+    </ClInclude>
+    <ClInclude Include="src\future\Tools.h">
+      <Filter>future</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Effects\Chorus.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Effects\Compressor.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Effects\Distortion.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Effects\Echo.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Effects\EffectList.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Effects\Equalizer.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Effects\Flanger.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Effects\Gargle.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Effects\Reverb.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MicPlayback.cpp" />
+    <ClCompile Include="src\MicPlayback2.cpp" />
+    <ClCompile Include="src\Sound.cpp" />
+    <ClCompile Include="src\Sound2.cpp" />
+    <ClCompile Include="src\future\CaptureBuffer.cpp">
+      <Filter>future</Filter>
+    </ClCompile>
+    <ClCompile Include="src\future\CaptureDevice.cpp">
+      <Filter>future</Filter>
+    </ClCompile>
+    <ClCompile Include="src\future\SoundBuffer.cpp">
+      <Filter>future</Filter>
+    </ClCompile>
+    <ClCompile Include="src\future\SoundDevice.cpp">
+      <Filter>future</Filter>
+    </ClCompile>
+    <ClCompile Include="src\future\Tools.cpp">
+      <Filter>future</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
