@@ -1,11 +1,27 @@
-# Directories
-.vs/
+### General Dirs ###
 bin/
 bin-int/
 
-# Files
+### General Files ###
+
+####################
+####################
+
+### Win Dirs ###
+.vs/
+
+### Win Files ###
 *.user
 
-# CodeLite files
+####################
+####################
+
+### CodeLite files ###
 *.project
 *.workspace
+compile_flags.*
+*.mk
+Makefile
+
+### CodeLite dirs ###
+.codelite/

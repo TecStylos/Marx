@@ -1,3 +1,3 @@
 #!/bin/bash
-./vendor/bin/premake/premake5
+./vendor/bin/premake/premake5 codelite
 
