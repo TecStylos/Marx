@@ -5,3 +5,7 @@ bin-int/
 
 # Files
 *.user
+
+# CodeLite files
+*.project
+*.workspace
