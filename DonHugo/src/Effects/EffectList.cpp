@@ -38,9 +38,6 @@ void EffectList::applyEffects(SoundBuffer* pBuffer, bool clearEffects)
 
 	DWORD effectCount = (DWORD)m_effects.size();
 
-	std::vector<DWORD> resultCodes;
-	resultCodes.resize(effectCount);
-
 	std::vector<DSEFFECTDESC> effectDescs;
 	effectDescs.resize(effectCount);
 
@@ -55,6 +52,9 @@ void EffectList::applyEffects(SoundBuffer* pBuffer, bool clearEffects)
 		desc->guidDSFXClass = elem->second->getGUID();
 		++i;
 	}
+
+	std::vector<DWORD> resultCodes;
+	resultCodes.resize(effectCount);
 
 	DH_ASSERT_HR(
 		pBuffer->getBuffer()->SetFX(

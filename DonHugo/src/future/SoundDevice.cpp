@@ -2,13 +2,13 @@
 
 #include "Tools.h"
 
-SoundDevice::SoundDevice(HWND hWnd, LPGUID lpGuid, const std::string& description)
-	: m_lpGuid(lpGuid), m_description(description)
+SoundDevice::SoundDevice(HWND hWnd, GUID guid, const std::string& description)
+	: m_guid(guid), m_description(description)
 {
 	DH_DEBUG_HR_DECL;
 	DH_ASSERT_HR(
 		DirectSoundCreate8(
-			lpGuid,
+			&m_guid,
 			m_pDevice.GetAddressOf(),
 			0
 		)
@@ -71,13 +71,16 @@ std::vector<SoundDeviceEnum> SoundDevice::getAvailDevices()
 
 	auto callback = [](LPGUID lpGuid, LPCSTR lpcstrDescription, LPCSTR lpcstrModule, LPVOID lpContext) -> BOOL
 	{
-		auto devices = (std::vector<SoundDeviceEnum>*)lpContext;
-		SoundDeviceEnum deviceEnum;
-		deviceEnum.lpGuid = lpGuid;
-		deviceEnum.strDescription = lpcstrDescription;
-		deviceEnum.strModule = lpcstrModule;
+		if (lpGuid != NULL)
+		{
+			auto devices = (std::vector<SoundDeviceEnum>*)lpContext;
+			SoundDeviceEnum deviceEnum;
+			memcpy(&deviceEnum.guid, lpGuid, sizeof(GUID));
+			deviceEnum.strDescription = lpcstrDescription;
+			deviceEnum.strModule = lpcstrModule;
 
-		devices->push_back(deviceEnum);
+			devices->push_back(deviceEnum);
+		}
 
 		return true;
 	};
@@ -87,18 +90,18 @@ std::vector<SoundDeviceEnum> SoundDevice::getAvailDevices()
 	return devices;
 }
 
-LPGUID SoundDevice::getGuidFromDescription(const std::string strDescription)
+GUID SoundDevice::getGuidFromDescription(const std::string strDescription)
 {
 	for (auto& device : getAvailDevices())
 		if (device.strDescription == strDescription)
-			return device.lpGuid;
-	return 0;
+			return device.guid;
+	return GUID();
 }
 
-LPGUID SoundDevice::getGuidFromModule(const std::string strModule)
+GUID SoundDevice::getGuidFromModule(const std::string strModule)
 {
 	for (auto& device : getAvailDevices())
 		if (device.strModule == strModule)
-			return device.lpGuid;
-	return 0;
+			return device.guid;
+	return GUID();
 }

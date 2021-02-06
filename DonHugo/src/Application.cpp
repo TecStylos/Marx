@@ -22,10 +22,20 @@
 
 #include <ShObjIdl.h>
 
+struct KeyCombo
+{
+	static constexpr uint32_t nMaxKeys = 4;
+
+	uint32_t nKeys = 0;
+	int keys[nMaxKeys];
+};
+
 struct LoadedSound
 {
 	std::string name;
 	Marx::Reference<Sound2> pSound;
+	KeyCombo keyCombo;
+	bool keyComboIsPressed = false;
 };
 
 namespace MyImGui
@@ -46,6 +56,34 @@ namespace MyImGui
 		};
 		return ImGui::InputText(label, (char*)pStr->c_str(), pStr->size() + 1, ImGuiInputTextFlags_CallbackResize, callback, (void*)pStr);
 	}
+}
+
+std::string virtualKeyToString(int virtualKey)
+{
+	UINT scanCode = MapVirtualKey(virtualKey, MAPVK_VK_TO_VSC);
+
+	CHAR szName[128];
+	int result = 0;
+	/*switch (virtualKey)
+	{
+	case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN:
+	case VK_RCONTROL: case VK_RMENU:
+	case VK_LWIN: case VK_RWIN: case VK_APPS:
+	case VK_PRIOR: case VK_NEXT:
+	case VK_END: case VK_HOME:
+	case VK_INSERT: case VK_DELETE:
+	case VK_DIVIDE:
+	case VK_NUMLOCK:
+		scanCode |= KF_EXTENDED;
+	default:
+		result = GetKeyNameTextA(scanCode << 16, szName, 128);
+	}*/
+
+	result = GetKeyNameTextA(scanCode << 16, szName, 128);
+
+	DH_ASSERT(result != 0);
+
+	return szName;
 }
 
 std::string openFileDialog()
@@ -122,6 +160,33 @@ public:
 	virtual void onUpdate(Marx::Timestep ts) override
 	{
 		Marx::RenderCommand::clear();
+
+		if (!m_editingKeyCombo)
+		{
+			for (auto pSound : m_sounds)
+			{
+				auto& keyCombo = pSound->keyCombo;
+				bool comboIsPressed = keyCombo.nKeys != 0;
+				for (uint32_t i = 0; i < keyCombo.nKeys; ++i)
+				{
+					if (!Marx::Input::isKeyPressed(keyCombo.keys[i]))
+					{
+						comboIsPressed = false;
+						break;
+					}
+				}
+
+				if (comboIsPressed && !pSound->keyComboIsPressed)
+				{
+					if (!pSound->pSound->isPlaying())
+						pSound->pSound->start();
+					else
+						pSound->pSound->stop();
+				}
+
+				pSound->keyComboIsPressed = comboIsPressed;
+			}
+		}
 	}
 	virtual void onEvent(Marx::Event& event) override
 	{
@@ -140,6 +205,29 @@ public:
 	}
 	bool onKeyPress(Marx::KeyPressEvent& e)
 	{
+		if (m_editingKeyCombo && m_pSelectedSound)
+		{
+			auto& keyCombo = m_pSelectedSound->keyCombo;
+			bool foundKey = false;
+			for (uint32_t i = 0; i < keyCombo.nKeys; ++i)
+			{
+				if (keyCombo.keys[i] == e.getKeyCode())
+					foundKey = true;
+				if (foundKey && i < keyCombo.nKeys - 1)
+					keyCombo.keys[i] = keyCombo.keys[i + 1];
+			}
+
+			if (foundKey)
+			{
+				--keyCombo.nKeys;
+			}
+			else if (keyCombo.nKeys < keyCombo.nMaxKeys)
+			{
+				keyCombo.keys[keyCombo.nKeys] = e.getKeyCode();
+				++keyCombo.nKeys;
+			}
+		}
+
 		return true;
 	}
 private:
@@ -155,8 +243,11 @@ private:
 		desc.nBytesPerSample = 2;
 		desc.enableEffects = false;
 
-		desc.enableEffects = true;
-		desc.nBlocksPerUpdate = 6615;
+		if (m_useMicEffects)
+		{
+			desc.enableEffects = true;
+			desc.nBlocksPerUpdate = 6615;
+		}
 		return &desc;
 	}
 	void reinitMicPlayback(bool loadVolumesAndReset)
@@ -177,7 +268,7 @@ private:
 		{
 			if (m_pCaptureDevice && m_pMainSoundDevice && m_pEchoSoundDevice)
 			{
-				LPGUID guid = m_pCaptureDevice->getGuid();
+				GUID guid = *m_pCaptureDevice->getLPGuid();
 				std::string description = m_pCaptureDevice->getDescription();
 				m_pCaptureDevice.reset();
 				m_pCaptureDevice = std::make_shared<CaptureDevice>(guid, description);
@@ -255,10 +346,10 @@ private:
 
 					for (uint32_t i = 0; i < availDevices.size(); ++i)
 					{
-						bool isSelected = (availDevices[i].lpGuid == (m_pCaptureDevice ? m_pCaptureDevice->getGuid() : 0));
+						bool isSelected = (availDevices[i].guid == (m_pCaptureDevice ? *m_pCaptureDevice->getLPGuid() : GUID()));
 						if (ImGui::Selectable(availDevices[i].strDescription.c_str(), isSelected))
 						{
-							setNewCaptureDevice(std::make_shared<CaptureDevice>(availDevices[i].lpGuid, availDevices[i].strDescription));
+							setNewCaptureDevice(std::make_shared<CaptureDevice>(availDevices[i].guid, availDevices[i].strDescription));
 						}
 						if (isSelected)
 							ImGui::SetItemDefaultFocus();
@@ -282,13 +373,13 @@ private:
 
 					for (uint32_t i = 0; i < availDevices.size(); ++i)
 					{
-						bool isSelected = (availDevices[i].lpGuid == (m_pMainSoundDevice ? m_pMainSoundDevice->getGuid() : 0));
+						bool isSelected = (availDevices[i].guid == (m_pMainSoundDevice ? *m_pMainSoundDevice->getLPGuid() : GUID()));
 						if (ImGui::Selectable(availDevices[i].strDescription.c_str(), isSelected))
 						{
 							setNewMainSoundDevice(
 								std::make_shared<SoundDevice>(
 									(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
-									availDevices[i].lpGuid,
+									availDevices[i].guid,
 									availDevices[i].strDescription
 								)
 							);
@@ -315,13 +406,13 @@ private:
 
 					for (uint32_t i = 0; i < availDevices.size(); ++i)
 					{
-						bool isSelected = (availDevices[i].lpGuid == (m_pEchoSoundDevice ? m_pEchoSoundDevice->getGuid() : 0));
+						bool isSelected = (availDevices[i].guid == (m_pEchoSoundDevice ? *m_pEchoSoundDevice->getLPGuid() : GUID()));
 						if (ImGui::Selectable(availDevices[i].strDescription.c_str(), isSelected))
 						{
 							setNewEchoSoundDevice(
 								std::make_shared<SoundDevice>(
 									(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
-									availDevices[i].lpGuid,
+									availDevices[i].guid,
 									availDevices[i].strDescription
 									)
 							);
@@ -411,8 +502,7 @@ private:
 		{
 			{
 				ImGui::BeginMenuBar();
-				bool isSelected;
-				if (ImGui::Selectable("Load", &isSelected, 0, { 40.0f, 0.0f }))
+				if (ImGui::MenuItem("Load"))
 				{
 					std::string filepath = openFileDialog();
 					if (!filepath.empty())
@@ -422,6 +512,10 @@ private:
 						newSound->pSound = std::make_shared<Sound2>(m_pMainSoundDevice.get(), m_pEchoSoundDevice.get(), filepath);
 						m_sounds.push_back(newSound);
 					}
+				}
+				if (m_pSelectedSound && ImGui::MenuItem("Deselect"))
+				{
+					m_pSelectedSound = nullptr;
 				}
 				ImGui::EndMenuBar();
 			}
@@ -473,194 +567,219 @@ private:
 		{
 			if (m_pSelectedSound)
 			{
-				if (!m_pSelectedSound->pSound->effectsEnabled())
-				{
-					ImGui::Text("Effects are disabled");
-					ImGui::Text("for the selected sound.");
-				}
-				else
-				{
-					EffectList* pEl = m_pSelectedSound->pSound->getEffectList();
-					uint32_t effectID = 0;
-					for (EffectType effectType : *pEl)
-					{
-						bool effectChanged = true;
-						Effect* pEffect = pEl->getEffect(effectType);
-
-						bool effectRemoved = false;
-						{
-							ImGui::PushID(pEffect);
-							if (ImGui::Button("X"))
-							{
-								m_pSelectedSound->pSound->removeEffect(effectType);
-								effectRemoved = true;
-							}
-							ImGui::PopID();
-						}
-
-						if (effectRemoved)
-							break;
-
-						bool effectsRearranged = false;
-						{
-							ImGui::PushID(pEffect);
-							ImGui::SameLine();
-							if (ImGui::ArrowButton("##arrUp", ImGuiDir_Up) && effectID > 0)
-							{
-								m_pSelectedSound->pSound->swapEffects(effectID, effectID - 1);
-								effectsRearranged = true;
-							}
-							ImGui::SameLine();
-							if (ImGui::ArrowButton("##arrDown", ImGuiDir_Down) && effectID < pEl->size() - 1)
-							{
-								m_pSelectedSound->pSound->swapEffects(effectID, effectID + 1);
-								effectsRearranged = true;
-							}
-							ImGui::PopID();
-						}
-
-						if (effectsRearranged)
-							break;
-
-						ImGui::SameLine();
-						if (ImGui::TreeNodeEx(EffectTypeString(effectType), ImGuiTreeNodeFlags_DefaultOpen))
-						{
-							uint32_t i = 0;
-							EffectParamDesc desc;
-
-							while (pEffect->getNextParam(i++, &desc))
-							{
-								switch (desc.type)
-								{
-								case EffectParamType::FLOAT:
-									if (ImGui::SliderFloat(desc.name, (float*)desc.pValue, *(float*)&desc.minVal, *(float*)&desc.maxVal, "%.3f", 1.0f))
-										effectChanged = true;
-									break;
-								case EffectParamType::LONG:
-									if (ImGui::SliderInt(desc.name, (int*)desc.pValue, *(int*)&desc.minVal, *(int*)&desc.maxVal))
-										effectChanged = true;
-									break;
-								case EffectParamType::DWORD:
-								{
-									int value = *(DWORD*)desc.pValue;
-									if (ImGui::SliderInt(desc.name, &value, *(DWORD*)&desc.minVal, *(DWORD*)&desc.maxVal))
-									{
-										*(DWORD*)desc.pValue = value;
-										effectChanged = true;
-									}
-									break;
-								}
-								}
-							}
-
-							ImGui::TreePop();
-						}
-
-						if (effectChanged)
-							m_pSelectedSound->pSound->updateEffect(effectType);
-
-						++effectID;
-					}
-				}
+				renderEffectListForSound();
 			}
 			else if (m_pMicPlayback)
 			{
-				if (!m_pMicPlayback->effectsEnabled())
-				{
-					ImGui::Text("Effects are disabled");
-					ImGui::Text("for the microphone.");
-				}
-				else
-				{
-					EffectList* pEl = m_pMicPlayback->getEffectList();
-					uint32_t effectID = 0;
-					for (EffectType effectType : *pEl)
-					{
-						bool effectChanged = true;
-						Effect* pEffect = pEl->getEffect(effectType);
-
-						bool effectRemoved = false;
-						{
-							ImGui::PushID(pEffect);
-							if (ImGui::Button("X"))
-							{
-								m_pMicPlayback->removeEffect(effectType);
-								effectRemoved = true;
-							}
-							ImGui::PopID();
-						}
-
-						if (effectRemoved)
-							break;
-
-						bool effectsRearranged = false;
-						{
-							ImGui::PushID(pEffect);
-							ImGui::SameLine();
-							if (ImGui::ArrowButton("##arrUp", ImGuiDir_Up) && effectID > 0)
-							{
-								m_pMicPlayback->swapEffects(effectID, effectID - 1);
-								effectsRearranged = true;
-							}
-							ImGui::SameLine();
-							if (ImGui::ArrowButton("##arrDown", ImGuiDir_Down) && effectID < pEl->size() - 1)
-							{
-								m_pMicPlayback->swapEffects(effectID, effectID + 1);
-								effectsRearranged = true;
-							}
-							ImGui::PopID();
-						}
-
-						if (effectsRearranged)
-							break;
-
-						ImGui::SameLine();
-						if (ImGui::TreeNodeEx(EffectTypeString(effectType), ImGuiTreeNodeFlags_DefaultOpen))
-						{
-							uint32_t i = 0;
-							EffectParamDesc desc;
-
-							while (pEffect->getNextParam(i++, &desc))
-							{
-								switch (desc.type)
-								{
-								case EffectParamType::FLOAT:
-									if (ImGui::SliderFloat(desc.name, (float*)desc.pValue, *(float*)&desc.minVal, *(float*)&desc.maxVal, "%.3f", 1.0f))
-										effectChanged = true;
-									break;
-								case EffectParamType::LONG:
-									if (ImGui::SliderInt(desc.name, (int*)desc.pValue, *(int*)&desc.minVal, *(int*)&desc.maxVal))
-										effectChanged = true;
-									break;
-								case EffectParamType::DWORD:
-								{
-									int value = *(DWORD*)desc.pValue;
-									if (ImGui::SliderInt(desc.name, &value, *(DWORD*)&desc.minVal, *(DWORD*)&desc.maxVal))
-									{
-										*(DWORD*)desc.pValue = value;
-										effectChanged = true;
-									}
-									break;
-								}
-								}
-							}
-
-							ImGui::TreePop();
-						}
-
-						if (effectChanged)
-							m_pMicPlayback->updateEffect(effectType);
-
-						++effectID;
-					}
-				}
+				renderEffectListForMic();
 			}
 			else
 			{
-				
 				ImGui::Text("No sound selected.");
 			}
 		}
+
+		renderAddEffectPopup();
+
+		ImGui::End();
+	}
+	void renderEffectListForSound()
+	{
+		ImGui::Text("Effects for sound '%s'", m_pSelectedSound->name.c_str());
+
+		if (!m_pSelectedSound->pSound->effectsEnabled())
+		{
+			ImGui::Text("Effects are disabled");
+			ImGui::Text("for the selected sound.");
+		}
+		else
+		{
+			if (ImGui::Checkbox("Use Effects", &m_pSelectedSound->pSound->useEffects()))
+				m_pSelectedSound->pSound->applyEffects();
+
+			if (m_pSelectedSound->pSound->useEffects())
+			{
+				EffectList* pEl = m_pSelectedSound->pSound->getEffectList();
+				uint32_t effectID = 0;
+				for (EffectType effectType : *pEl)
+				{
+					bool effectChanged = true;
+					Effect* pEffect = pEl->getEffect(effectType);
+
+					bool effectRemoved = false;
+					{
+						ImGui::PushID(pEffect);
+						if (ImGui::Button("X"))
+						{
+							m_pSelectedSound->pSound->removeEffect(effectType);
+							effectRemoved = true;
+						}
+						ImGui::PopID();
+					}
+
+					if (effectRemoved)
+						break;
+
+					bool effectsRearranged = false;
+					{
+						ImGui::PushID(pEffect);
+						ImGui::SameLine();
+						if (ImGui::ArrowButton("##arrUp", ImGuiDir_Up) && effectID > 0)
+						{
+							m_pSelectedSound->pSound->swapEffects(effectID, effectID - 1);
+							effectsRearranged = true;
+						}
+						ImGui::SameLine();
+						if (ImGui::ArrowButton("##arrDown", ImGuiDir_Down) && effectID < pEl->size() - 1)
+						{
+							m_pSelectedSound->pSound->swapEffects(effectID, effectID + 1);
+							effectsRearranged = true;
+						}
+						ImGui::PopID();
+					}
+
+					if (effectsRearranged)
+						break;
+
+					ImGui::SameLine();
+					if (ImGui::TreeNodeEx(EffectTypeString(effectType), ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						uint32_t i = 0;
+						EffectParamDesc desc;
+
+						while (pEffect->getNextParam(i++, &desc))
+						{
+							switch (desc.type)
+							{
+							case EffectParamType::FLOAT:
+								if (ImGui::SliderFloat(desc.name, (float*)desc.pValue, *(float*)&desc.minVal, *(float*)&desc.maxVal, "%.3f", 1.0f))
+									effectChanged = true;
+								break;
+							case EffectParamType::LONG:
+								if (ImGui::SliderInt(desc.name, (int*)desc.pValue, *(int*)&desc.minVal, *(int*)&desc.maxVal))
+									effectChanged = true;
+								break;
+							case EffectParamType::DWORD:
+							{
+								int value = *(DWORD*)desc.pValue;
+								if (ImGui::SliderInt(desc.name, &value, *(DWORD*)&desc.minVal, *(DWORD*)&desc.maxVal))
+								{
+									*(DWORD*)desc.pValue = value;
+									effectChanged = true;
+								}
+								break;
+							}
+							}
+						}
+
+						ImGui::TreePop();
+					}
+
+					if (effectChanged)
+						m_pSelectedSound->pSound->updateEffect(effectType);
+
+					++effectID;
+				}
+			}
+		}
+	}
+	void renderEffectListForMic()
+	{
+		ImGui::Text("Effects for device 'microphone'.");
+
+		if (ImGui::Checkbox("Use Effects", &m_useMicEffects))
+		{
+			reinitMicPlayback(true);
+			reinitMicPlayback(false);
+		}
+
+		if (m_pMicPlayback->effectsEnabled())
+		{
+			EffectList* pEl = m_pMicPlayback->getEffectList();
+			uint32_t effectID = 0;
+			for (EffectType effectType : *pEl)
+			{
+				bool effectChanged = true;
+				Effect* pEffect = pEl->getEffect(effectType);
+
+				bool effectRemoved = false;
+				{
+					ImGui::PushID(pEffect);
+					if (ImGui::Button("X"))
+					{
+						m_pMicPlayback->removeEffect(effectType);
+						effectRemoved = true;
+					}
+					ImGui::PopID();
+				}
+
+				if (effectRemoved)
+					break;
+
+				bool effectsRearranged = false;
+				{
+					ImGui::PushID(pEffect);
+					ImGui::SameLine();
+					if (ImGui::ArrowButton("##arrUp", ImGuiDir_Up) && effectID > 0)
+					{
+						m_pMicPlayback->swapEffects(effectID, effectID - 1);
+						effectsRearranged = true;
+					}
+					ImGui::SameLine();
+					if (ImGui::ArrowButton("##arrDown", ImGuiDir_Down) && effectID < pEl->size() - 1)
+					{
+						m_pMicPlayback->swapEffects(effectID, effectID + 1);
+						effectsRearranged = true;
+					}
+					ImGui::PopID();
+				}
+
+				if (effectsRearranged)
+					break;
+
+				ImGui::SameLine();
+				if (ImGui::TreeNodeEx(EffectTypeString(effectType), ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					uint32_t i = 0;
+					EffectParamDesc desc;
+
+					while (pEffect->getNextParam(i++, &desc))
+					{
+						switch (desc.type)
+						{
+						case EffectParamType::FLOAT:
+							if (ImGui::SliderFloat(desc.name, (float*)desc.pValue, *(float*)&desc.minVal, *(float*)&desc.maxVal, "%.3f", 1.0f))
+								effectChanged = true;
+							break;
+						case EffectParamType::LONG:
+							if (ImGui::SliderInt(desc.name, (int*)desc.pValue, *(int*)&desc.minVal, *(int*)&desc.maxVal))
+								effectChanged = true;
+							break;
+						case EffectParamType::DWORD:
+						{
+							int value = *(DWORD*)desc.pValue;
+							if (ImGui::SliderInt(desc.name, &value, *(DWORD*)&desc.minVal, *(DWORD*)&desc.maxVal))
+							{
+								*(DWORD*)desc.pValue = value;
+								effectChanged = true;
+							}
+							break;
+						}
+						}
+					}
+
+					ImGui::TreePop();
+				}
+
+				if (effectChanged)
+					m_pMicPlayback->updateEffect(effectType);
+
+				++effectID;
+			}
+		}
+	}
+	void renderAddEffectPopup()
+	{
 		if (m_pSelectedSound)
 		{
 			if (m_pSelectedSound->pSound->effectsEnabled() && ImGui::BeginPopupContextWindow())
@@ -723,8 +842,6 @@ private:
 				ImGui::EndPopup();
 			}
 		}
-
-		ImGui::End();
 	}
 	void renderSoundPropertyConfigurator()
 	{
@@ -765,6 +882,21 @@ private:
 
 					ImGui::ProgressBar((float)m_pSelectedSound->pSound->getCurrBlock() / (float)m_pSelectedSound->pSound->getBlockCount());
 				}
+
+				{
+					ImGui::Checkbox("Edit key combo", &m_editingKeyCombo);
+
+					std::string keyComboString;
+					for (uint32_t i = 0; i < m_pSelectedSound->keyCombo.nKeys; ++i)
+					{
+						
+						keyComboString.append(virtualKeyToString(m_pSelectedSound->keyCombo.keys[i]));
+
+						if (i < m_pSelectedSound->keyCombo.nKeys - 1)
+							keyComboString.append(" + ");
+					}
+					ImGui::Text("Key combo: %s", keyComboString.c_str());
+				}
 			}
 			else
 			{
@@ -785,6 +917,8 @@ private:
 		float mainMultiplier = 1.0f;
 		float echoMultiplier = 1.0f;
 	} m_soundVolumes;
+	bool m_useMicEffects = false;
+	bool m_editingKeyCombo = false;
 private:
 	std::vector<Marx::Reference<LoadedSound>> m_sounds;
 	LoadedSound* m_pSelectedSound = 0;
@@ -795,6 +929,7 @@ class Application : public Marx::Application
 public:
 	Application()
 	{
+		getWindow()->enableImGuiFallthrough(true);
 		HRESULT hr = CoInitialize(nullptr);
 		pushLayer(new MainLayer());
 	}

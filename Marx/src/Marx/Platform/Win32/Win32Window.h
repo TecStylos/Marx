@@ -19,6 +19,7 @@ namespace Marx
 		static Win32Window* getWnd(unsigned int index = 0) { return Win32Manager::getWnd(index); }
 		virtual void* getNativeWindow() const override { return m_hWnd; }
 		virtual GraphicsContext& getGfxContext() const override { return *m_pContext; }
+		virtual void enableImGuiFallthrough(bool enable) override { m_imGuiFallthroughEnabled = enable; }
 	public:
 		inline void setEventCallback(const EventCallbackFunc& callback) override { m_eventCallback = callback; }
 	protected:
@@ -33,6 +34,7 @@ namespace Marx
 		uint32_t m_minHeight = 150;
 		HWND m_hWnd;
 		bool m_initialized = false;
+		bool m_imGuiFallthroughEnabled = false;
 		DISABLE_DLL_INTERFACE_WARN;
 		std::string m_title;
 		EventCallbackFunc m_eventCallback = [](Event&) {};

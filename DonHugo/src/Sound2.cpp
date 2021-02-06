@@ -98,6 +98,11 @@ void Sound2::setNewDevice2(SoundDevice* pDev2)
 		resume();
 }
 
+bool& Sound2::useEffects()
+{
+	return m_useEffects;
+}
+
 void Sound2::addEffect(std::shared_ptr<Effect> pEffect)
 {
 	m_effects.addEffect(pEffect);
@@ -110,22 +115,14 @@ void Sound2::removeEffect(EffectType type)
 	applyEffects();
 }
 
-void Sound2::applyEffects(bool clearEffects)
+void Sound2::applyEffects()
 {
 	bool wasPlaying = isPlaying();
 	if (wasPlaying)
 		stop();
 
-	if (m_pBuf1)
-	{
-		//m_effects.applyEffects(m_pBuf1.get(), true);
-		m_effects.applyEffects(m_pBuf1.get(), clearEffects);
-	}
-	if (m_pBuf2)
-	{
-		//m_effects.applyEffects(m_pBuf2.get(), true);
-		m_effects.applyEffects(m_pBuf2.get(), clearEffects);
-	}
+	if (m_pBuf1) m_effects.applyEffects(m_pBuf1.get(), !m_useEffects);
+	if (m_pBuf2) m_effects.applyEffects(m_pBuf2.get(), !m_useEffects);
 
 	if (wasPlaying)
 		resume();

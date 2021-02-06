@@ -21,9 +21,10 @@ public:
 	void setNewDevice1(SoundDevice* pDev1);
 	void setNewDevice2(SoundDevice* pDev2);
 public:
+	bool& useEffects();
 	void addEffect(std::shared_ptr<Effect> pEffect);
 	void removeEffect(EffectType type);
-	void applyEffects(bool clearEffects = false);
+	void applyEffects();
 	void updateEffect(EffectType type);
 	void swapEffects(uint32_t index1, uint32_t index2);
 	bool hasEffect(EffectType type);
@@ -43,6 +44,7 @@ public:
 	bool getLoopingEnabled() const { return m_loopingEnabled; }
 private:
 	std::string m_filepath;
+	bool m_useEffects = true;
 	float m_volume;
 	bool m_loopingEnabled;
 private:

@@ -29,6 +29,7 @@ namespace Marx
 		virtual void* getNativeWindow() const = 0;
 		virtual class GraphicsContext& getGfxContext() const = 0;
 		virtual uint32_t getWndCount() const = 0;
+		virtual void enableImGuiFallthrough(bool enable) = 0;
 	public:
 		virtual void shutdown() = 0;
 	public:

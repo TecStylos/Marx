@@ -7,7 +7,7 @@
 
 struct SoundDeviceEnum
 {
-	LPGUID lpGuid;
+	GUID guid;
 	std::string strDescription;
 	std::string strModule;
 };
@@ -15,21 +15,21 @@ struct SoundDeviceEnum
 class SoundDevice
 {
 public:
-	SoundDevice(HWND hWnd, LPGUID lpGuid = NULL, const std::string& description = "Default Output Device");
+	SoundDevice(HWND hWnd, GUID lpGuid, const std::string& description);
 	~SoundDevice() = default;
 public:
 	void setVolume(float volume);
 public:
 	IDirectSound8* getDev() { return m_pDevice.Get(); }
 public:
-	LPGUID getGuid() const { return m_lpGuid; }
+	LPGUID getLPGuid() { return &m_guid; }
 	const std::string& getDescription() const { return m_description; }
 public:
 	static std::vector<SoundDeviceEnum> getAvailDevices();
-	static LPGUID getGuidFromDescription(const std::string strDescription);
-	static LPGUID getGuidFromModule(const std::string strModule);
+	static GUID getGuidFromDescription(const std::string strDescription);
+	static GUID getGuidFromModule(const std::string strModule);
 private:
-	LPGUID m_lpGuid;
+	GUID m_guid;
 	std::string m_description;
 private:
 	ComPtr<IDirectSound8> m_pDevice;

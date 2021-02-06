@@ -168,7 +168,7 @@ namespace Marx
 		}
 		}
 
-		if (!pIO || !pIO->WantCaptureKeyboard)
+		if ((!pIO || !pIO->WantCaptureKeyboard) || m_imGuiFallthroughEnabled)
 		{
 			switch (uMsg)
 			{
@@ -197,7 +197,7 @@ namespace Marx
 			}
 		}
 
-		if (!pIO || !pIO->WantCaptureMouse)
+		if ((!pIO || !pIO->WantCaptureMouse) || m_imGuiFallthroughEnabled)
 		{
 			switch (uMsg)
 			{
@@ -386,12 +386,15 @@ namespace Marx
 
 	LRESULT CALLBACK Win32Window::Win32Manager::wndProcForward(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		auto it = m_mapWindows.find(hWnd);
+		bool fallthroughEnabled = (it != m_mapWindows.end()) ? it->second->m_imGuiFallthroughEnabled : false;
+
+		if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam) && !fallthroughEnabled)
 			return true;
 
-		auto it = m_mapWindows.find(hWnd);
 		if (it != m_mapWindows.end())
 			return it->second->wndProc(hWnd, uMsg, wParam, lParam);
+
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 }
