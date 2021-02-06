@@ -104,13 +104,11 @@ void MicPlayback2::applyEffects()
 	if (m_pSoundBuffer[0])
 	{
 		std::lock_guard<std::mutex> guard(m_lockBufferMutex[0]);
-		//m_effects.applyEffects(m_pSoundBuffer[0].get(), true);
 		m_effects.applyEffects(m_pSoundBuffer[0].get(), !m_desc.enableEffects);
 	}
 	if (m_pSoundBuffer[1])
 	{
 		std::lock_guard<std::mutex> guard(m_lockBufferMutex[1]);
-		//m_effects.applyEffects(m_pSoundBuffer[1].get(), true);
 		m_effects.applyEffects(m_pSoundBuffer[1].get(), !m_desc.enableEffects);
 	}
 

@@ -177,6 +177,11 @@ private:
 		{
 			if (m_pCaptureDevice && m_pMainSoundDevice && m_pEchoSoundDevice)
 			{
+				LPGUID guid = m_pCaptureDevice->getGuid();
+				std::string description = m_pCaptureDevice->getDescription();
+				m_pCaptureDevice.reset();
+				m_pCaptureDevice = std::make_shared<CaptureDevice>(guid, description);
+
 				m_pMicPlayback = std::make_shared<MicPlayback2>(getMicPlaybackDesc());
 				m_pMicPlayback->setVolume(volume);
 				m_pMicPlayback->setVolumeMultiplier1(volumeMultiplier1);
