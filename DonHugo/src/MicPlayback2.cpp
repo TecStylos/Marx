@@ -24,10 +24,14 @@ MicPlayback2::MicPlayback2(const MicPlayback2Desc* desc)
 	createDataBuffers();
 
 	start();
+
+	startThreads();
 }
 
 MicPlayback2::~MicPlayback2()
 {
+	stopThreads();
+
 	stop();
 
 	clearCaptureNotifications();
@@ -73,6 +77,69 @@ void MicPlayback2::setNewCaptureDevice(CaptureDevice* pDevice)
 		start();
 }
 
+bool MicPlayback2::effectsEnabled() const
+{
+	return m_desc.enableEffects;
+}
+
+void MicPlayback2::addEffect(std::shared_ptr<Effect> pEffect)
+{
+	m_effects.addEffect(pEffect);
+	applyEffects();
+}
+
+void MicPlayback2::removeEffect(EffectType type)
+{
+	m_effects.removeEffect(type);
+	applyEffects();
+}
+
+void MicPlayback2::applyEffects()
+{
+	bool wasPlaying = isPlaying();
+	if (wasPlaying)
+		stop();
+
+
+	if (m_pSoundBuffer[0])
+	{
+		std::lock_guard<std::mutex> guard(m_lockBufferMutex[0]);
+		//m_effects.applyEffects(m_pSoundBuffer[0].get(), true);
+		m_effects.applyEffects(m_pSoundBuffer[0].get(), !m_desc.enableEffects);
+	}
+	if (m_pSoundBuffer[1])
+	{
+		std::lock_guard<std::mutex> guard(m_lockBufferMutex[1]);
+		//m_effects.applyEffects(m_pSoundBuffer[1].get(), true);
+		m_effects.applyEffects(m_pSoundBuffer[1].get(), !m_desc.enableEffects);
+	}
+
+	if (wasPlaying)
+		start();
+}
+
+void MicPlayback2::updateEffect(EffectType type)
+{
+	if (m_pSoundBuffer[0]) m_effects.updateEffect(m_pSoundBuffer[0].get(), type);
+	if (m_pSoundBuffer[1]) m_effects.updateEffect(m_pSoundBuffer[1].get(), type);
+}
+
+void MicPlayback2::swapEffects(uint32_t index1, uint32_t index2)
+{
+	m_effects.swapEffects(index1, index2);
+	applyEffects();
+}
+
+bool MicPlayback2::hasEffect(EffectType type)
+{
+	return m_effects.hasEffect(type);
+}
+
+EffectList* MicPlayback2::getEffectList()
+{
+	return &m_effects;
+}
+
 bool MicPlayback2::isCapturing() const
 {
 	return m_pCaptureBuffer ? m_pCaptureBuffer->isCapturing() : false;
@@ -90,7 +157,10 @@ void MicPlayback2::start()
 	m_pCaptureBuffer->start();
 	m_pSoundBuffer[0]->start(0, true);
 	m_pSoundBuffer[1]->start(0, true);
+}
 
+void MicPlayback2::startThreads()
+{
 	m_isRunning = true;
 	m_readCaptureThread = std::thread(&MicPlayback2::captureThreadFunc, this);
 	m_writeSoundThread[0] = std::thread(&MicPlayback2::soundThreadFunc, this, 0);
@@ -102,7 +172,10 @@ void MicPlayback2::stop()
 	m_pCaptureBuffer->stop();
 	m_pSoundBuffer[0]->stop();
 	m_pSoundBuffer[1]->stop();
+}
 
+void MicPlayback2::stopThreads()
+{
 	autoJoinThreads();
 }
 
@@ -255,32 +328,44 @@ void MicPlayback2::autoJoinThreads()
 
 void MicPlayback2::captureThreadFunc()
 {
-	do
+	try
 	{
-		DWORD dwResult = WaitForMultipleObjects(nCaptureEvents, m_captureEvents.data(), false, 10) - WAIT_OBJECT_0;
-		if (dwResult == nCaptureEvents - 1)
+		do
 		{
-			m_isRunning = false;
-		}
-		else if (dwResult < nCaptureEvents)
-		{
-			readCaptureBuffer(dwResult);
-			ResetEvent(m_captureEvents[dwResult]);
-		}
-	} while (m_isRunning);
+			DWORD dwResult = WaitForMultipleObjects(nCaptureEvents, m_captureEvents.data(), false, 10) - WAIT_OBJECT_0;
+			if (dwResult < nCaptureEvents)
+			{
+				readCaptureBuffer(dwResult);
+				ResetEvent(m_captureEvents[dwResult]);
+			}
+		} while (m_isRunning);
+	}
+	catch (std::exception& e)
+	{
+		std::string what = e.what();
+		__debugbreak();
+	}
 }
 
 void MicPlayback2::soundThreadFunc(uint32_t index)
 {
-	do
+	try
 	{
-		DWORD dwResult = WaitForMultipleObjects(nSoundEvents, m_soundEvents[index].data(), false, 10) - WAIT_OBJECT_0;
-		if (dwResult < nSoundEvents)
+		do
 		{
-			writeSoundBuffer(dwResult, index);
-			ResetEvent(m_soundEvents[index][dwResult]);
-		}
-	} while (m_isRunning);
+			DWORD dwResult = WaitForMultipleObjects(nSoundEvents, m_soundEvents[index].data(), false, 10) - WAIT_OBJECT_0;
+			if (dwResult < nSoundEvents)
+			{
+				writeSoundBuffer(dwResult, index);
+				ResetEvent(m_soundEvents[index][dwResult]);
+			}
+		} while (m_isRunning);
+	}
+	catch (std::exception& e)
+	{
+		std::string what = e.what();
+		__debugbreak();
+	}
 }
 
 void MicPlayback2::readCaptureBuffer(DWORD block)
@@ -362,6 +447,8 @@ void MicPlayback2::writeSoundBuffer(DWORD block, uint32_t index)
 	{
 		LPVOID pSoundData;
 		DWORD soundLen;
+
+		std::lock_guard<std::mutex> guard(m_lockBufferMutex[index]);
 
 		if (SUCCEEDED(
 			m_pSoundBuffer[index]->getBuffer()->Lock(

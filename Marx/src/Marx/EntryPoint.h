@@ -14,18 +14,20 @@ extern Marx::Application* Marx::createApplication();
 
 int main(int argc, char** argv)
 {
-	Marx::Log::init();
-	MX_CORE_INFO("Initialized Log!");
-
-	Marx::Scope<Marx::Application> app;
-
-	try
 	{
-		app.reset(Marx::createApplication());
-		app->run();
+		Marx::Log::init();
+		MX_CORE_INFO("Initialized Log!");
+
+		Marx::Scope<Marx::Application> app;
+
+		try
+		{
+			app.reset(Marx::createApplication());
+			app->run();
+		}
+		catch (const Marx::MarxException& except) { MX_EXCEPT_BOX(except); }
+		catch (const std::exception& except) { MX_STD_EXCEPT_BOX(except); }
 	}
-	catch (const Marx::MarxException& except)     { MX_EXCEPT_BOX(except); }
-	catch (const std::exception& except)          { MX_STD_EXCEPT_BOX(except); }
 }
 
 #undef MX_EXCEPT_BOX

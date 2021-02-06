@@ -85,9 +85,7 @@ void EffectList::updateEffect(SoundBuffer* pBuffer, EffectType type)
 
 void EffectList::swapEffects(uint32_t index1, uint32_t index2)
 {
-	EffectType temp = m_effectTypes[index1];
-	m_effectTypes[index1] = m_effectTypes[index2];
-	m_effectTypes[index2] = temp;
+	std::swap(m_effectTypes[index1], m_effectTypes[index2]);
 }
 
 Effect* EffectList::getEffect(EffectType type)

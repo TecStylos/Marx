@@ -68,6 +68,7 @@ project "Marx"
 
 	filter "configurations:Debug"
 		defines {
+			"_DEBUG",
 		    "MX_DEBUG",
 			"MX_ENABLE_ASSERTS",
 			"MX_USE_CONDITIONAL_EXCEPT"
@@ -121,6 +122,7 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines {
+			"_DEBUG",
 		    "MX_DEBUG",
 			"MX_ENABLE_ASSERTS",
 			"MX_USE_CONDITIONAL_EXCEPT"
@@ -174,6 +176,7 @@ project "DonHugo"
 
 	filter "configurations:Debug"
 		defines {
+			"_DEBUG",
 		    "MX_DEBUG",
 			"MX_ENABLE_ASSERTS",
 			"MX_USE_CONDITIONAL_EXCEPT"

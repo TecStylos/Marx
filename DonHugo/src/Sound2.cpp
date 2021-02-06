@@ -112,14 +112,20 @@ void Sound2::removeEffect(EffectType type)
 
 void Sound2::applyEffects(bool clearEffects)
 {
-	DH_ASSERT(effectsEnabled());
-
 	bool wasPlaying = isPlaying();
 	if (wasPlaying)
 		stop();
 
-	if (m_pBuf1) m_effects.applyEffects(m_pBuf1.get(), clearEffects);
-	if (m_pBuf2) m_effects.applyEffects(m_pBuf2.get(), clearEffects);
+	if (m_pBuf1)
+	{
+		//m_effects.applyEffects(m_pBuf1.get(), true);
+		m_effects.applyEffects(m_pBuf1.get(), clearEffects);
+	}
+	if (m_pBuf2)
+	{
+		//m_effects.applyEffects(m_pBuf2.get(), true);
+		m_effects.applyEffects(m_pBuf2.get(), clearEffects);
+	}
 
 	if (wasPlaying)
 		resume();
@@ -127,8 +133,6 @@ void Sound2::applyEffects(bool clearEffects)
 
 void Sound2::updateEffect(EffectType type)
 {
-	DH_ASSERT(effectsEnabled());
-
 	if (m_pBuf1) m_effects.updateEffect(m_pBuf1.get(), type);
 	if (m_pBuf2) m_effects.updateEffect(m_pBuf2.get(), type);
 }

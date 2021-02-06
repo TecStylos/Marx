@@ -2,8 +2,6 @@
 
 CaptureBuffer::CaptureBuffer(CaptureDevice* pDevice, uint32_t size, uint32_t nChannels, uint32_t nSamplesPerSec, uint32_t nBitsPerSample)
 {
-	DH_DEBUG_HR_DECL;
-
 	m_format.wFormatTag = WAVE_FORMAT_PCM;
 	m_format.nChannels = nChannels;
 	m_format.nSamplesPerSec = nSamplesPerSec;
@@ -20,13 +18,7 @@ CaptureBuffer::CaptureBuffer(CaptureDevice* pDevice, uint32_t size, uint32_t nCh
 	m_desc.dwFXCount = 0;
 	m_desc.lpDSCFXDesc = 0;
 
-	DH_ASSERT_HR(
-		pDevice->getDev()->CreateCaptureBuffer(
-			&m_desc,
-			m_pBuffer.GetAddressOf(),
-			0
-		)
-	);
+	setNewDevice(pDevice);
 }
 
 void CaptureBuffer::setNewDevice(CaptureDevice* pDevice)

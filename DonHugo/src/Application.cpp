@@ -115,10 +115,9 @@ public:
 	MainLayer()
 		: Layer("MainLayer")
 	{
-		HRESULT hr = CoInitialize(nullptr);
 		Marx::RenderCommand::setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	}
-	~MainLayer() { CoUninitialize(); }
+	~MainLayer() = default;
 public:
 	virtual void onUpdate(Marx::Timestep ts) override
 	{
@@ -156,8 +155,8 @@ private:
 		desc.nBytesPerSample = 2;
 		desc.enableEffects = false;
 
-		//desc.enableEffects = true;
-		//desc.nBlocksPerUpdate = 6615;
+		desc.enableEffects = true;
+		desc.nBlocksPerUpdate = 6615;
 		return &desc;
 	}
 	void reinitMicPlayback(bool loadVolumesAndReset)
@@ -559,38 +558,165 @@ private:
 					}
 				}
 			}
+			else if (m_pMicPlayback)
+			{
+				if (!m_pMicPlayback->effectsEnabled())
+				{
+					ImGui::Text("Effects are disabled");
+					ImGui::Text("for the microphone.");
+				}
+				else
+				{
+					EffectList* pEl = m_pMicPlayback->getEffectList();
+					uint32_t effectID = 0;
+					for (EffectType effectType : *pEl)
+					{
+						bool effectChanged = true;
+						Effect* pEffect = pEl->getEffect(effectType);
+
+						bool effectRemoved = false;
+						{
+							ImGui::PushID(pEffect);
+							if (ImGui::Button("X"))
+							{
+								m_pMicPlayback->removeEffect(effectType);
+								effectRemoved = true;
+							}
+							ImGui::PopID();
+						}
+
+						if (effectRemoved)
+							break;
+
+						bool effectsRearranged = false;
+						{
+							ImGui::PushID(pEffect);
+							ImGui::SameLine();
+							if (ImGui::ArrowButton("##arrUp", ImGuiDir_Up) && effectID > 0)
+							{
+								m_pMicPlayback->swapEffects(effectID, effectID - 1);
+								effectsRearranged = true;
+							}
+							ImGui::SameLine();
+							if (ImGui::ArrowButton("##arrDown", ImGuiDir_Down) && effectID < pEl->size() - 1)
+							{
+								m_pMicPlayback->swapEffects(effectID, effectID + 1);
+								effectsRearranged = true;
+							}
+							ImGui::PopID();
+						}
+
+						if (effectsRearranged)
+							break;
+
+						ImGui::SameLine();
+						if (ImGui::TreeNodeEx(EffectTypeString(effectType), ImGuiTreeNodeFlags_DefaultOpen))
+						{
+							uint32_t i = 0;
+							EffectParamDesc desc;
+
+							while (pEffect->getNextParam(i++, &desc))
+							{
+								switch (desc.type)
+								{
+								case EffectParamType::FLOAT:
+									if (ImGui::SliderFloat(desc.name, (float*)desc.pValue, *(float*)&desc.minVal, *(float*)&desc.maxVal, "%.3f", 1.0f))
+										effectChanged = true;
+									break;
+								case EffectParamType::LONG:
+									if (ImGui::SliderInt(desc.name, (int*)desc.pValue, *(int*)&desc.minVal, *(int*)&desc.maxVal))
+										effectChanged = true;
+									break;
+								case EffectParamType::DWORD:
+								{
+									int value = *(DWORD*)desc.pValue;
+									if (ImGui::SliderInt(desc.name, &value, *(DWORD*)&desc.minVal, *(DWORD*)&desc.maxVal))
+									{
+										*(DWORD*)desc.pValue = value;
+										effectChanged = true;
+									}
+									break;
+								}
+								}
+							}
+
+							ImGui::TreePop();
+						}
+
+						if (effectChanged)
+							m_pMicPlayback->updateEffect(effectType);
+
+						++effectID;
+					}
+				}
+			}
 			else
 			{
+				
 				ImGui::Text("No sound selected.");
 			}
 		}
-		if (m_pSelectedSound && m_pSelectedSound->pSound->effectsEnabled() && ImGui::BeginPopupContextWindow())
+		if (m_pSelectedSound)
 		{
-			if (!m_pSelectedSound->pSound->hasEffect(EffectType_Chorus) && ImGui::Button("Add Chorus"))
-				m_pSelectedSound->pSound->addEffect(std::make_shared<EffectChorus>());
+			if (m_pSelectedSound->pSound->effectsEnabled() && ImGui::BeginPopupContextWindow())
+			{
+				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Chorus) && ImGui::Button("Add Chorus"))
+					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectChorus>());
 
-			if (!m_pSelectedSound->pSound->hasEffect(EffectType_Compressor) && ImGui::Button("Add Compressor"))
-				m_pSelectedSound->pSound->addEffect(std::make_shared<EffectCompressor>());
+				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Compressor) && ImGui::Button("Add Compressor"))
+					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectCompressor>());
 
-			if (!m_pSelectedSound->pSound->hasEffect(EffectType_Distortion) && ImGui::Button("Add Distortion"))
-				m_pSelectedSound->pSound->addEffect(std::make_shared<EffectDistortion>());
+				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Distortion) && ImGui::Button("Add Distortion"))
+					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectDistortion>());
 
-			if (!m_pSelectedSound->pSound->hasEffect(EffectType_Echo) && ImGui::Button("Add Echo"))
-				m_pSelectedSound->pSound->addEffect(std::make_shared<EffectEcho>());
+				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Echo) && ImGui::Button("Add Echo"))
+					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectEcho>());
 
-			if (!m_pSelectedSound->pSound->hasEffect(EffectType_Flanger) && ImGui::Button("Add Flanger"))
-				m_pSelectedSound->pSound->addEffect(std::make_shared<EffectFlanger>());
+				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Flanger) && ImGui::Button("Add Flanger"))
+					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectFlanger>());
 
-			if (!m_pSelectedSound->pSound->hasEffect(EffectType_Gargle) && ImGui::Button("Add Gargle"))
-				m_pSelectedSound->pSound->addEffect(std::make_shared<EffectGargle>());
+				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Gargle) && ImGui::Button("Add Gargle"))
+					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectGargle>());
 
-			if (!m_pSelectedSound->pSound->hasEffect(EffectType_Equalizer) && ImGui::Button("Add Equalizer"))
-				m_pSelectedSound->pSound->addEffect(std::make_shared<EffectEqualizer>());
+				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Equalizer) && ImGui::Button("Add Equalizer"))
+					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectEqualizer>());
 
-			if (!m_pSelectedSound->pSound->hasEffect(EffectType_Reverb) && ImGui::Button("Add Reverb"))
-				m_pSelectedSound->pSound->addEffect(std::make_shared<EffectReverb>());
+				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Reverb) && ImGui::Button("Add Reverb"))
+					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectReverb>());
 
-			ImGui::EndPopup();
+				ImGui::EndPopup();
+			}
+		}
+		else if (m_pMicPlayback)
+		{
+			if (m_pMicPlayback->effectsEnabled() && ImGui::BeginPopupContextWindow())
+			{
+				if (!m_pMicPlayback->hasEffect(EffectType_Chorus) && ImGui::Button("Add Chorus"))
+					m_pMicPlayback->addEffect(std::make_shared<EffectChorus>());
+
+				if (!m_pMicPlayback->hasEffect(EffectType_Compressor) && ImGui::Button("Add Compressor"))
+					m_pMicPlayback->addEffect(std::make_shared<EffectCompressor>());
+
+				if (!m_pMicPlayback->hasEffect(EffectType_Distortion) && ImGui::Button("Add Distortion"))
+					m_pMicPlayback->addEffect(std::make_shared<EffectDistortion>());
+
+				if (!m_pMicPlayback->hasEffect(EffectType_Echo) && ImGui::Button("Add Echo"))
+					m_pMicPlayback->addEffect(std::make_shared<EffectEcho>());
+
+				if (!m_pMicPlayback->hasEffect(EffectType_Flanger) && ImGui::Button("Add Flanger"))
+					m_pMicPlayback->addEffect(std::make_shared<EffectFlanger>());
+
+				if (!m_pMicPlayback->hasEffect(EffectType_Gargle) && ImGui::Button("Add Gargle"))
+					m_pMicPlayback->addEffect(std::make_shared<EffectGargle>());
+
+				if (!m_pMicPlayback->hasEffect(EffectType_Equalizer) && ImGui::Button("Add Equalizer"))
+					m_pMicPlayback->addEffect(std::make_shared<EffectEqualizer>());
+
+				if (!m_pMicPlayback->hasEffect(EffectType_Reverb) && ImGui::Button("Add Reverb"))
+					m_pMicPlayback->addEffect(std::make_shared<EffectReverb>());
+
+				ImGui::EndPopup();
+			}
 		}
 
 		ImGui::End();
@@ -664,9 +790,13 @@ class Application : public Marx::Application
 public:
 	Application()
 	{
+		HRESULT hr = CoInitialize(nullptr);
 		pushLayer(new MainLayer());
 	}
-	~Application() = default;
+	~Application()
+	{
+		CoUninitialize();
+	}
 };
 
 Marx::Application* Marx::createApplication()

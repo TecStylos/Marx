@@ -76,7 +76,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>mxpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>MX_PLATFORM_WINDOWS;MX_BUILD_DLL;MX_DEBUG;MX_ENABLE_ASSERTS;MX_USE_CONDITIONAL_EXCEPT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MX_PLATFORM_WINDOWS;MX_BUILD_DLL;_DEBUG;MX_DEBUG;MX_ENABLE_ASSERTS;MX_USE_CONDITIONAL_EXCEPT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>

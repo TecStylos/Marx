@@ -2,6 +2,7 @@
 
 #include "future/CaptureBuffer.h"
 #include "future/SoundBuffer.h"
+#include "Effects/EffectList.h"
 
 #include <memory>
 #include <array>
@@ -31,6 +32,15 @@ public:
 	void setVolumeMultiplier2(float m);
 	void setNewCaptureDevice(CaptureDevice* pDevice);
 public:
+	bool effectsEnabled() const;
+	void addEffect(std::shared_ptr<Effect> pEffect);
+	void removeEffect(EffectType type);
+	void applyEffects();
+	void updateEffect(EffectType type);
+	void swapEffects(uint32_t index1, uint32_t index2);
+	bool hasEffect(EffectType type);
+	EffectList* getEffectList();
+public:
 	bool isCapturing() const;
 	bool isPlaying() const;
 	float getVolume() const { return m_volume; }
@@ -38,7 +48,9 @@ public:
 	float getVolumeMultiplier2() const { return m_volumeMultiplier[1]; }
 private:
 	void start();
+	void startThreads();
 	void stop();
+	void stopThreads();
 private:
 	void setCaptureNotifications();
 	void setSoundNotifications();
@@ -68,6 +80,7 @@ private:
 private:
 	std::unique_ptr<CaptureBuffer> m_pCaptureBuffer;
 	std::unique_ptr<SoundBuffer> m_pSoundBuffer[2];
+	EffectList m_effects;
 private:
 	std::array<HANDLE, nCaptureEvents> m_captureEvents;
 	std::array<HANDLE, nSoundEvents> m_soundEvents[2];
@@ -76,6 +89,7 @@ private:
 private:
 	std::mutex m_fullDataBuffersMutex[2];
 	std::mutex m_freeDataBuffersMutex[2];
+	std::mutex m_lockBufferMutex[2];
 	std::queue<char*> m_fullDataBuffers[2];
 	std::queue<char*> m_freeDataBuffers[2];
 };
