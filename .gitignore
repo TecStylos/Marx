@@ -1,6 +1,6 @@
 ### General Dirs ###
-bin/
-bin-int/
+/bin/
+/bin-int/
 
 ### General Files ###
 
