@@ -8,6 +8,7 @@
 #include "MicPlayback2.h"
 
 #include "future/Tools.h"
+#include "future/SaveFile.h"
 
 #include "Effects/Chorus.h"
 #include "Effects/Compressor.h"
@@ -64,20 +65,6 @@ std::string virtualKeyToString(int virtualKey)
 
 	CHAR szName[128];
 	int result = 0;
-	/*switch (virtualKey)
-	{
-	case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN:
-	case VK_RCONTROL: case VK_RMENU:
-	case VK_LWIN: case VK_RWIN: case VK_APPS:
-	case VK_PRIOR: case VK_NEXT:
-	case VK_END: case VK_HOME:
-	case VK_INSERT: case VK_DELETE:
-	case VK_DIVIDE:
-	case VK_NUMLOCK:
-		scanCode |= KF_EXTENDED;
-	default:
-		result = GetKeyNameTextA(scanCode << 16, szName, 128);
-	}*/
 
 	result = GetKeyNameTextA(scanCode << 16, szName, 128);
 
@@ -154,8 +141,22 @@ public:
 		: Layer("MainLayer")
 	{
 		Marx::RenderCommand::setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+		SaveFile sf;
+		sf.addBlock("root.devices.microphone");
+		sf.addBlock("root.devices.main-out");
+		sf.addBlock("root.devices.echo-out");
+		sf.addBlock("root.settings.microphone.effects");
+		sf.addBlock("root.settings.sound");
+		sf.addBlock("root.sounds.abcdef.properties");
+		sf.addBlock("root.sounds.abcdef.effects.echo");
+		sf.saveToFile("save.dhsf");
+
+		auto sf2 = SaveFile::loadFromFile("save.dhsf");
 	}
-	~MainLayer() = default;
+	~MainLayer()
+	{
+	}
 public:
 	virtual void onUpdate(Marx::Timestep ts) override
 	{

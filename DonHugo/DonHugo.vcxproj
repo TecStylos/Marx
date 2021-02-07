@@ -141,6 +141,7 @@
     <ClInclude Include="src\Effects\Flanger.h" />
     <ClInclude Include="src\Effects\Gargle.h" />
     <ClInclude Include="src\Effects\Reverb.h" />
+    <ClInclude Include="src\future\SaveFile.h" />
     <ClInclude Include="src\MicPlayback.h" />
     <ClInclude Include="src\MicPlayback2.h" />
     <ClInclude Include="src\Sound.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="src\Effects\Flanger.cpp" />
     <ClCompile Include="src\Effects\Gargle.cpp" />
     <ClCompile Include="src\Effects\Reverb.cpp" />
+    <ClCompile Include="src\future\SaveFile.cpp" />
     <ClCompile Include="src\MicPlayback.cpp" />
     <ClCompile Include="src\MicPlayback2.cpp" />
     <ClCompile Include="src\Sound.cpp" />

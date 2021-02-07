@@ -61,6 +61,7 @@
     <ClInclude Include="src\future\Tools.h">
       <Filter>future</Filter>
     </ClInclude>
+    <ClInclude Include="src\future\SaveFile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
@@ -110,5 +111,6 @@
     <ClCompile Include="src\future\Tools.cpp">
       <Filter>future</Filter>
     </ClCompile>
+    <ClCompile Include="src\future\SaveFile.cpp" />
   </ItemGroup>
 </Project>
