@@ -22,7 +22,7 @@ namespace Marx
 		m_height = height;
 		
 		DXGI_FORMAT texFormat = (DXGI_FORMAT)0;
-		if (m_nChannels == 4)
+		m_nChannels = 4; //if (m_nChannels == 4)
 			texFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 		MX_CORE_ASSERT(texFormat, "Invalid number of channels!");
