@@ -143,13 +143,23 @@ public:
 		Marx::RenderCommand::setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		SaveFile sf;
-		sf.addBlock("root.devices.microphone");
-		sf.addBlock("root.devices.main-out");
-		sf.addBlock("root.devices.echo-out");
-		sf.addBlock("root.settings.microphone.effects");
-		sf.addBlock("root.settings.sound");
-		sf.addBlock("root.sounds.abcdef.properties");
-		sf.addBlock("root.sounds.abcdef.effects.echo");
+		sf.setVar<int>("root.devices.microphone", "guid", 1);
+		sf.setVar<int>("root.devices.main-out", "guid", 2);
+		sf.setVar<int>("root.devices.echo-out", "guid", 3);
+
+		sf.setVar<float>("root.settings.microphone", "master", 0.25f);
+		sf.setVar<float>("root.settings.microphone", "main", 0.75f);
+		sf.setVar<float>("root.settings.microphone", "echo", 0.50f);
+		sf.setVar<bool>("root.settings.microphone", "useEffects", true);
+
+		sf.setVar<float>("root.settings.sound", "master", 0.25f);
+		sf.setVar<float>("root.settings.sound", "main", 0.75f);
+		sf.setVar<float>("root.settings.sound", "echo", 0.50f);
+
+		sf.setVar<float>("root.sounds.abcdef.properties", "volume", 1.0f);
+		sf.setVar<int[4]>("root.sounds.abcdef.properties", "keyCombo", { 1, 2, 3, 4 });
+		sf.setVar<std::string>("root.sounds.abcdef.properties", "filepath", "C:\\Users\\User\\Downloads\\sound.wav");
+
 		sf.saveToFile("save.dhsf");
 
 		auto sf2 = SaveFile::loadFromFile("save.dhsf");

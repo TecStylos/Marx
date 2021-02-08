@@ -1,36 +1,65 @@
 #include "SaveFile.h"
 
-BlockData::BlockData(uint32_t size)
-	: m_size(size)
+BlockVar::BlockVar(const std::string& name, uint32_t size)
+	: m_name(name), m_size(size)
 {
 	m_pData = malloc(size);
 }
 
-BlockData::BlockData(uint32_t size, void* pData)
-	: BlockData(size)
+BlockVar::BlockVar(const std::string& name, uint32_t size, const void* pData)
+	: BlockVar(name, size)
 {
 	memcpy(m_pData, pData, size);
 }
 
-BlockData::BlockData(uint32_t size, std::istream& is)
-	: BlockData(size)
-{
-	is.read((char*)m_pData, size);
-}
-
-BlockData::~BlockData()
+BlockVar::~BlockVar()
 {
 	free(m_pData);
 }
 
-uint32_t BlockData::getSize() const
+const std::string& BlockVar::getName() const
+{
+	return m_name;
+}
+
+uint32_t BlockVar::getSize() const
+{
+	return sizeof(BlockVarHeader) + getDataSize();
+}
+
+uint32_t BlockVar::getDataSize() const
 {
 	return m_size;
 }
 
-void* BlockData::getData()
+void* BlockVar::getData()
 {
 	return m_pData;
+}
+
+void BlockVar::saveToFile(std::ofstream& file, uint32_t currOffset)
+{
+	BlockVarHeader bvh;
+
+	memcpy(bvh.varName, m_name.c_str(), m_name.size() + 1);
+
+	bvh.varSize = m_size;
+
+	file.write((const char*)&bvh, sizeof(BlockVarHeader));
+
+	file.write((const char*)getData(), m_size);
+}
+
+BlockVarRef BlockVar::loadFromFile(std::ifstream& file, uint32_t currOffset)
+{
+	BlockVarHeader bvh;
+	file.read((char*)&bvh, sizeof(BlockVarHeader));
+
+	BlockVarRef pVar = std::make_shared<BlockVar>(bvh.varName, bvh.varSize);
+	
+	file.read((char*)pVar->getData(), bvh.varSize);
+
+	return pVar;
 }
 
 BlockChain::BlockChain(const char* chainStr)
@@ -94,7 +123,7 @@ bool SaveFile::hasBlockChain(const BlockChain& blockChain) const
 	return !!getBlock(blockChain);
 }
 
-std::vector<std::string> SaveFile::getSubBlockNames(const BlockChain& blockChain)
+std::vector<std::string> SaveFile::getSubBlockNames(const BlockChain& blockChain) const
 {
 	auto pBlock = getBlock(blockChain);
 	if (!pBlock)
@@ -104,6 +133,16 @@ std::vector<std::string> SaveFile::getSubBlockNames(const BlockChain& blockChain
 	for (auto& elem : pBlock->subBlocks)
 		names.push_back(elem.first);
 	return names;
+}
+
+std::vector<std::string> SaveFile::getVarNames(const BlockChain& blockChain) const
+{
+	auto pBlock = getBlock(blockChain);
+
+	if (pBlock)
+		return pBlock->getVarNames();
+
+	return std::vector<std::string>();
 }
 
 BlockRef SaveFile::addBlock(const BlockChain& blockChain)
@@ -123,7 +162,8 @@ BlockRef SaveFile::addBlock(const BlockChain& blockChain)
 
 BlockRef SaveFile::getBlock(const BlockChain& blockChain)
 {
-	auto pBlock = m_pRootBlock;
+	return addBlock(blockChain);
+	/*auto pBlock = m_pRootBlock;
 	for (uint32_t i = 1; i < blockChain.getDepth(); ++i)
 	{
 		auto& res = pBlock->subBlocks.find(blockChain[i]);
@@ -131,7 +171,7 @@ BlockRef SaveFile::getBlock(const BlockChain& blockChain)
 			return nullptr;
 		pBlock = res->second;
 	}
-	return pBlock;
+	return pBlock;*/
 }
 
 const BlockRef SaveFile::getBlock(const BlockChain& blockChain) const
@@ -145,14 +185,6 @@ const BlockRef SaveFile::getBlock(const BlockChain& blockChain) const
 		pBlock = res->second;
 	}
 	return pBlock;
-}
-
-std::shared_ptr<BlockData> SaveFile::getBlockData(const BlockChain& blockChain)
-{
-	auto pBlock = getBlock(blockChain);
-	if (!pBlock)
-		return nullptr;
-	return pBlock->pBlockData;
 }
 
 void SaveFile::saveToFile(const std::string& filepath) const
@@ -190,15 +222,27 @@ Block::Block(const std::string& name)
 	: name(name)
 {}
 
+std::vector<std::string> Block::getVarNames() const
+{
+	std::vector<std::string> names;
+
+	for (auto elem : vars)
+		names.push_back(elem.second->getName());
+
+	return names;
+}
+
 uint32_t Block::getSize() const
 {
 	uint32_t headerSize = sizeof(BlockHeader);
-	uint32_t dataSize = pBlockData ? pBlockData->getSize() : 0;
 	uint32_t subSize = 0;
 	for (auto elem : subBlocks)
 		subSize += elem.second->getSize();
+	uint32_t varSize = 0;
+	for (auto elem : vars)
+		varSize += elem.second->getSize();
 
-	return headerSize + dataSize + subSize;
+	return headerSize + subSize + varSize;
 }
 
 void Block::saveToFile(std::ofstream& file, uint32_t currOffset)
@@ -213,7 +257,7 @@ void Block::saveToFile(std::ofstream& file, uint32_t currOffset)
 
 	bh.nSubBlocks = (uint32_t)subBlocks.size();
 	bh.blockOffset = currOffset + sizeof(BlockHeader) + subSize;
-	bh.blockSize = pBlockData ? pBlockData->getSize() : 0;
+	bh.nVars = (uint32_t)vars.size();
 
 	file.write((const char*)&bh, sizeof(BlockHeader));
 
@@ -224,8 +268,11 @@ void Block::saveToFile(std::ofstream& file, uint32_t currOffset)
 		subOffset += elem.second->getSize();
 	}
 
-	if (pBlockData)
-		file.write((const char*)pBlockData->getData(), pBlockData->getSize());
+	for (auto elem : vars)
+	{
+		elem.second->saveToFile(file, subOffset);
+		subOffset += elem.second->getSize();
+	}
 }
 
 BlockRef Block::loadFromFile(std::ifstream& file, uint32_t currOffset)
@@ -246,8 +293,12 @@ BlockRef Block::loadFromFile(std::ifstream& file, uint32_t currOffset)
 		subOffset += pSubBlock->getSize();
 	}
 
-	if (bh.blockSize > 0)
-		pBlock->pBlockData = std::make_shared<BlockData>(bh.blockSize, file);
+	for (uint32_t i = 0; i < bh.nVars; ++i)
+	{
+		BlockVarRef pVar = BlockVar::loadFromFile(file, subOffset);
+		pBlock->vars.insert(std::make_pair(pVar->getName(), pVar));
+		subOffset += pVar->getSize();
+	}
 
 	return pBlock;
 }
