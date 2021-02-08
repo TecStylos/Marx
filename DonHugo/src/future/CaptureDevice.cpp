@@ -5,12 +5,13 @@ CaptureDevice::CaptureDevice(GUID guid, const std::string& description)
 {
 	DH_DEBUG_HR_DECL;
 
-	DH_ASSERT_HR(
+	DH_THROW_HR_MSG(
 		DirectSoundCaptureCreate(
 			&m_guid,
 			m_pDevice.GetAddressOf(),
 			0
-		)
+		),
+		"Unable to create capture device!"
 	);
 }
 

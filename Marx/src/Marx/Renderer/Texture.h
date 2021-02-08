@@ -4,6 +4,14 @@
 
 namespace Marx
 {
+	class TextureLoadException : public std::exception
+	{
+	public:
+		TextureLoadException(const char* msg)
+			: std::exception(msg)
+		{}
+	};
+
 	class Texture
 	{
 	public:

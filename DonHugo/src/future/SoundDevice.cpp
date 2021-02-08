@@ -6,12 +6,14 @@ SoundDevice::SoundDevice(HWND hWnd, GUID guid, const std::string& description)
 	: m_guid(guid), m_description(description)
 {
 	DH_DEBUG_HR_DECL;
-	DH_ASSERT_HR(
+
+	DH_THROW_HR_MSG(
 		DirectSoundCreate8(
 			&m_guid,
 			m_pDevice.GetAddressOf(),
 			0
-		)
+		),
+		"Unable to create sound device!"
 	);
 	DH_ASSERT_HR(
 		m_pDevice->SetCooperativeLevel(

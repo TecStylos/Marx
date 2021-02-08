@@ -17,15 +17,17 @@ namespace Marx
 		int width, height;
 		stbi_set_flip_vertically_on_load(true);
 		stbi_uc* data = stbi_load(path.c_str(), &width, &height, &m_nChannels, 4);
-		MX_CORE_ASSERT(data, "Failed to load texture!");
+		if (!data)
+			throw TextureLoadException("Cannot load image file!");
 		m_width = width;
 		m_height = height;
 		
 		DXGI_FORMAT texFormat = (DXGI_FORMAT)0;
 		m_nChannels = 4; //if (m_nChannels == 4)
-			texFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		texFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-		MX_CORE_ASSERT(texFormat, "Invalid number of channels!");
+		if (!texFormat)
+			TextureLoadException("Invalid image format!");
 
 		D3D11_TEXTURE2D_DESC texDesc;
 		texDesc.Width = width;

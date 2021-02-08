@@ -4,6 +4,8 @@
 
 #include "Tools.h"
 
+#include <exception>
+
 SoundBuffer::SoundBuffer(SoundDevice* pDevice, uint32_t size, uint32_t nChannels, uint32_t nSamplesPerSec, uint32_t nBitsPerSample, bool enableEffects)
 {
 	DH_DEBUG_HR_DECL;
@@ -34,7 +36,7 @@ SoundBuffer::SoundBuffer(SoundDevice* pDevice, uint32_t size, uint32_t nChannels
 
 	ComPtr<IDirectSoundBuffer> pBuffer;
 
-	DH_ASSERT_HR(
+	DH_THROW_HR(
 		pDevice->getDev()->CreateSoundBuffer(
 		&m_desc,
 		pBuffer.GetAddressOf(),
@@ -136,10 +138,11 @@ bool SoundBuffer::isPlaying() const
 	
 	DWORD dwStatus;
 
-	DH_ASSERT_HR(
+	DH_THROW_HR_MSG(
 		m_pBuffer->GetStatus(
 			&dwStatus
-		)
+		),
+		"Unable to check buffer status"
 	);
 
 	return (dwStatus & DSBSTATUS_PLAYING);
@@ -161,21 +164,26 @@ uint32_t SoundBuffer::getCurrBlock() const
 	return pos / m_blockSize;
 }
 
-SoundBuffer* SoundBuffer::loadFromFile(SoundDevice* pDevice, const std::string& filepath)
+std::shared_ptr<SoundBuffer> SoundBuffer::loadFromFile(SoundDevice* pDevice, const std::string& filepath)
 {
 	std::ifstream file(filepath, std::ios::in | std::ios::binary);
 
-	DH_ASSERT(file.good());
+	if (!file.good())
+		throw std::exception("Cannot open sound file!");
 
 	WaveFileHeader header;
 	file.read((char*)&header, sizeof(WaveFileHeader));
-	DH_ASSERT(eqArray(header.chunkId, "RIFF", 4));
-	DH_ASSERT(eqArray(header.format, "WAVE", 4));
-	DH_ASSERT(eqArray(header.subChunkId, "fmt ", 4)); // ' ' is no typo
+	if (!eqArray(header.chunkId, "RIFF", 4) || !eqArray(header.format, "WAVE", 4))
+		throw std::exception("Invalid file format!");
+	if (!eqArray(header.subChunkId, "fmt ", 4))
+		throw std::exception("Invalid chunk format!");
 	DH_ASSERT(header.audioFormat == WAVE_FORMAT_PCM);
+	if (header.audioFormat != WAVE_FORMAT_PCM)
+		throw std::exception("Invalid wave format!");
+
 	DH_ASSERT(eqArray(header.dataChunkId, "data", 4));
 
-	SoundBuffer* pSoundBuff = new SoundBuffer(pDevice, header.dataSize, header.numChannels, header.sampleRate, header.bitsPerSample, true);
+	std::shared_ptr<SoundBuffer> pSoundBuff = std::make_shared<SoundBuffer>(pDevice, header.dataSize, header.numChannels, header.sampleRate, header.bitsPerSample, true);
 
 	file.seekg(sizeof(WaveFileHeader));
 	auto waveData = new char[header.dataSize];

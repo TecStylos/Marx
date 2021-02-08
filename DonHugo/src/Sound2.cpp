@@ -57,18 +57,18 @@ void Sound2::setNewDevice1(SoundDevice* pDev1)
 		stop();
 
 	uint32_t currBlock = getCurrBlock();
+	
+	m_pBuf1.reset();
 
-	if (!pDev1)
-		m_pBuf1.reset();
-	else
+	if (pDev1)
 	{
-		m_pBuf1.reset(SoundBuffer::loadFromFile(pDev1, m_filepath));
+		m_pBuf1 = SoundBuffer::loadFromFile(pDev1, m_filepath);
 		m_pBuf1->setVolume(m_volume);
 		m_pBuf1->setCurrBlock(currBlock);
 		applyEffects();
 		for (auto e : m_effects)
 			updateEffect(e);
-	}		
+	}
 
 	if (wasPlaying)
 		resume();
@@ -82,13 +82,16 @@ void Sound2::setNewDevice2(SoundDevice* pDev2)
 
 	uint32_t currBlock = getCurrBlock();
 
-	if (!pDev2)
-		m_pBuf2.reset();
-	else
+	m_pBuf2.reset();
+
+	if (pDev2)
 	{
-		m_pBuf2.reset(SoundBuffer::loadFromFile(pDev2, m_filepath));
-		m_pBuf2->setVolume(m_volume);
-		m_pBuf2->setCurrBlock(currBlock);
+		m_pBuf2 = SoundBuffer::loadFromFile(pDev2, m_filepath);
+		if (m_pBuf2)
+		{
+			m_pBuf2->setVolume(m_volume);
+			m_pBuf2->setCurrBlock(currBlock);
+		}
 		applyEffects();
 		for (auto e : m_effects)
 			updateEffect(e);

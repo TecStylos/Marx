@@ -75,7 +75,15 @@ public:
 		ps->keyCombo = sf.getVar<KeyCombo>(prop, "keyCombo", KeyCombo());
 		ps->internalID = (uint32_t)std::stoull(internalIDStr);
 
-		ps->pSound = std::make_shared<Sound2>(pDev1, pDev2, sf.getVar<std::string>(prop, "filepath", "Unknown"));
+		try
+		{
+			ps->pSound = std::make_shared<Sound2>(pDev1, pDev2, sf.getVar<std::string>(prop, "filepath", "Unknown"));
+		}
+		catch (std::exception& e)
+		{
+			MX_ERROR("{0}", e.what());
+			return nullptr;
+		}
 		ps->pSound->setVolume(sf.getVar<float>(prop, "volume", 1.0f));
 		ps->pSound->enableLooping(sf.getVar<bool>(prop, "looping", false));
 		ps->pSound->useEffects() = sf.getVar<bool>(prop, "useEffects", false);
@@ -293,28 +301,55 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 		if (psf)
 		{
 			if (psf->hasVar("root.devices.microphone", "guid"))
-				setNewCaptureDevice(
-					std::make_shared<CaptureDevice>(
-						psf->getVar<GUID>("root.devices.microphone", "guid", GUID()),
-						psf->getVar<std::string>("root.devices.microphone", "description", "Last Microphone")
-						)
-				);
+			{
+				try
+				{
+					setNewCaptureDevice(
+						std::make_shared<CaptureDevice>(
+							psf->getVar<GUID>("root.devices.microphone", "guid", GUID()),
+							psf->getVar<std::string>("root.devices.microphone", "description", "Last Microphone")
+							)
+					);
+				}
+				catch (std::exception& e)
+				{
+					MX_ERROR("{0}", e.what());
+				}
+			}
 			if (psf->hasVar("root.devices.main-out", "guid"))
-				setNewMainSoundDevice(
-					std::make_shared<SoundDevice>(
-						(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
-						psf->getVar<GUID>("root.devices.main-out", "guid", GUID()),
-						psf->getVar<std::string>("root.devices.main-out", "description", "Last Main Output")
-						)
-				);
+			{
+				try
+				{
+					setNewMainSoundDevice(
+						std::make_shared<SoundDevice>(
+							(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
+							psf->getVar<GUID>("root.devices.main-out", "guid", GUID()),
+							psf->getVar<std::string>("root.devices.main-out", "description", "Last Main Output")
+							)
+					);
+				}
+				catch (std::exception& e)
+				{
+					MX_ERROR("{0}", e.what());
+				}
+			}
 			if (psf->hasVar("root.devices.echo-out", "guid"))
-				setNewEchoSoundDevice(
-					std::make_shared<SoundDevice>(
-						(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
-						psf->getVar<GUID>("root.devices.echo-out", "guid", GUID()),
-						psf->getVar<std::string>("root.devices.echo-out", "description", "Last Echo Output")
-						)
-				);
+			{
+				try
+				{
+					setNewEchoSoundDevice(
+						std::make_shared<SoundDevice>(
+							(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
+							psf->getVar<GUID>("root.devices.echo-out", "guid", GUID()),
+							psf->getVar<std::string>("root.devices.echo-out", "description", "Last Echo Output")
+							)
+					);
+				}
+				catch (std::exception& e)
+				{
+					MX_ERROR("{0}", e.what());
+				}
+			}
 
 			if (m_pMicPlayback)
 			{
@@ -331,14 +366,15 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 			m_background.color[1] = psf->getVar<float>("root.settings.background.color", "green", 0.05f);
 			m_background.color[2] = psf->getVar<float>("root.settings.background.color", "blue", 0.05f);
 			updateBackgroundColor();
-			m_background.useImage = psf->getVar<bool>("root.settings.background", "useImage", false);
 			updateBackgroundBrightness(psf->getVar<float>("root.settings.background", "brightness", 0.5f));
 			m_background.imagePath = psf->getVar<std::string>("root.settings.background", "imagePath", "");
 			if (!m_background.imagePath.empty())
 			{
 				m_background.pImage = Marx::Texture2D::create(m_background.imagePath);
-				m_background.imageAspectRatio = (float)m_background.pImage->getWidth() / (float)m_background.pImage->getHeight();
+				if (m_background.pImage)
+					m_background.imageAspectRatio = (float)m_background.pImage->getWidth() / (float)m_background.pImage->getHeight();
 			}
+			m_background.useImage = m_background.pImage ? psf->getVar<bool>("root.settings.background", "useImage", false) : false;
 
 			for (auto& internalIDStr : psf->getSubBlockNames("root.sounds"))
 			{
@@ -386,10 +422,12 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 		sf.setVar<float>("root.settings.background.color", "red", m_background.color[0]);
 		sf.setVar<float>("root.settings.background.color", "green", m_background.color[1]);
 		sf.setVar<float>("root.settings.background.color", "blue", m_background.color[2]);
-		sf.setVar<bool>("root.settings.background", "useImage", m_background.useImage);
 		sf.setVar<float>("root.settings.background", "brightness", m_background.brightness[0]);
-		if (!m_background.imagePath.empty())
+		if (!m_background.imagePath.empty() && m_background.pImage)
 			sf.setVar<std::string>("root.settings.background", "imagePath", m_background.imagePath);
+		else
+			m_background.useImage = false;
+		sf.setVar<bool>("root.settings.background", "useImage", m_background.useImage);
 
 		if (m_pMicPlayback)
 		{
@@ -575,20 +613,41 @@ private:
 	void setNewMainSoundDevice(Marx::Reference<SoundDevice> pNewDevice)
 	{
 		reinitMicPlayback(true);
+		auto pOldDev = m_pMainSoundDevice;
 		m_pMainSoundDevice = pNewDevice;
 		reinitMicPlayback(false);
 
-		for (auto& sound : m_sounds)
-			sound->pSound->setNewDevice1(pNewDevice.get());
+		for (auto pSound : m_sounds)
+		{
+			try
+			{
+				pSound->pSound->setNewDevice1(pNewDevice.get());
+			}
+			catch (std::exception& e)
+			{
+				MX_ERROR("{0}", e.what());
+			}
+		}
 	}
 	void setNewEchoSoundDevice(Marx::Reference<SoundDevice> pNewDevice)
 	{
 		reinitMicPlayback(true);
+		auto pOldDev = m_pMainSoundDevice;
 		m_pEchoSoundDevice = pNewDevice;
 		reinitMicPlayback(false);
 
-		for (auto& sound : m_sounds)
-			sound->pSound->setNewDevice2(pNewDevice.get());
+		for (auto pSound : m_sounds)
+		{
+			try
+			{
+				for (auto& sound : m_sounds)
+					sound->pSound->setNewDevice2(pNewDevice.get());
+			}
+			catch (std::exception& e)
+			{
+				MX_ERROR("{0}", e.what());
+			}
+		}
 	}
 	void setupDockspace()
 	{
@@ -786,9 +845,12 @@ private:
 							if (!filepath.empty())
 							{
 								m_background.pImage = Marx::Texture2D::create(filepath);
-								m_background.imageAspectRatio = (float)m_background.pImage->getWidth() / (float)m_background.pImage->getHeight();
-								m_background.imagePath = filepath;
-								updateCamera((float)Marx::Application::get()->getWindow()->getWidth() / (float)Marx::Application::get()->getWindow()->getHeight());
+								if (m_background.pImage)
+								{
+									m_background.imageAspectRatio = (float)m_background.pImage->getWidth() / (float)m_background.pImage->getHeight();
+									m_background.imagePath = filepath;
+									updateCamera((float)Marx::Application::get()->getWindow()->getWidth() / (float)Marx::Application::get()->getWindow()->getHeight());
+								}
 							}
 						}
 						if (ImGui::SliderFloat("Brightness", &m_background.brightness[0], 0.0f, 1.0f, "%.2f", 1.0f))

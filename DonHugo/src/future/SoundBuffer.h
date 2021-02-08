@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "DirectSoundIncludes.h"
 
 #include "SoundDevice.h"
@@ -45,7 +47,7 @@ public:
 public:
 	IDirectSoundBuffer8* getBuffer() { return m_pBuffer.Get(); }
 public:
-	static SoundBuffer* loadFromFile(SoundDevice* pDevice, const std::string& filepath);
+	static std::shared_ptr<SoundBuffer> loadFromFile(SoundDevice* pDevice, const std::string& filepath);
 private:
 	uint32_t m_blockSize;
 	uint32_t m_blockCount;
