@@ -211,8 +211,6 @@ public:
 
 		auto psf = SaveFile::loadFromFile("save.dhsf");
 
-		updateCamera((float)Marx::Application::get()->getWindow()->getWidth() / (float)Marx::Application::get()->getWindow()->getHeight());
-
 		{
 			std::string vertexSrc = R"(
 cbuffer sceneData : register(b0)
@@ -352,6 +350,8 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 			}
 			++m_soundIDCounter;
 		}
+
+		updateCamera((float)Marx::Application::get()->getWindow()->getWidth() / (float)Marx::Application::get()->getWindow()->getHeight());
 	}
 	~MainLayer()
 	{
@@ -498,10 +498,11 @@ public:
 	}
 	void updateCamera(float aspectRatio)
 	{
-		if (aspectRatio > m_background.imageAspectRatio)
-			m_background.camera = Marx::OrthographicCamera(-1.0f, 1.0f, -1.0f / aspectRatio, 1.0f / aspectRatio);
+		float ratio = aspectRatio / m_background.imageAspectRatio;
+		if (aspectRatio < m_background.imageAspectRatio)
+			m_background.camera = Marx::OrthographicCamera(-1.0f * ratio, 1.0f * ratio, -1.0f, 1.0f);
 		else
-			m_background.camera = Marx::OrthographicCamera(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f);
+			m_background.camera = Marx::OrthographicCamera(-1.0f, 1.0f, -1.0f / ratio, 1.0f / ratio);
 	}
 	void updateBackgroundBrightness(float brightness)
 	{
@@ -787,6 +788,7 @@ private:
 								m_background.pImage = Marx::Texture2D::create(filepath);
 								m_background.imageAspectRatio = (float)m_background.pImage->getWidth() / (float)m_background.pImage->getHeight();
 								m_background.imagePath = filepath;
+								updateCamera((float)Marx::Application::get()->getWindow()->getWidth() / (float)Marx::Application::get()->getWindow()->getHeight());
 							}
 						}
 						if (ImGui::SliderFloat("Brightness", &m_background.brightness[0], 0.0f, 1.0f, "%.2f", 1.0f))
