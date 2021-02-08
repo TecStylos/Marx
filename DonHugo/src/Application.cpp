@@ -99,6 +99,8 @@ public:
 			ps->pSound->addEffect(pEff);
 		}
 
+		ps->pSound->applyEffects();
+
 		return ps;
 	}
 };
@@ -213,13 +215,13 @@ public:
 			m_soundVolumes.master = psf->getVar<float>("root.settings.sound.volumes", "master", 1.0f);
 			m_soundVolumes.mainMultiplier = psf->getVar<float>("root.settings.sound.volumes", "main", 1.0f);
 			m_soundVolumes.echoMultiplier = psf->getVar<float>("root.settings.sound.volumes", "echo", 1.0f);
-		}
 
-		for (auto& internalName : psf->getSubBlockNames("root.sounds"))
-		{
-			auto pSound = LoadedSound::loadFromSaveFile(*psf, internalName, m_pMainSoundDevice.get(), m_pEchoSoundDevice.get());
-			if (pSound)
-				m_sounds.push_back(pSound);
+			for (auto& internalName : psf->getSubBlockNames("root.sounds"))
+			{
+				auto pSound = LoadedSound::loadFromSaveFile(*psf, internalName, m_pMainSoundDevice.get(), m_pEchoSoundDevice.get());
+				if (pSound)
+					m_sounds.push_back(pSound);
+			}
 		}
 	}
 	~MainLayer()
