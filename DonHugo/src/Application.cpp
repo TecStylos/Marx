@@ -876,9 +876,9 @@ private:
 	{
 		if (m_pSelectedSound)
 		{
-			if (m_pSelectedSound->pSound->effectsEnabled() && ImGui::BeginPopupContextWindow())
+			if (m_pSelectedSound->pSound->effectsEnabled() && m_pSelectedSound->pSound->useEffects() && ImGui::BeginPopupContextWindow())
 			{
-				for (uint32_t t = 0; t < EffectType_Count; ++t)
+				for (uint32_t t = EffectType_Chorus; t < EffectType_Count; ++t)
 				{
 					std::string label = "Add " + effectTypeToString((EffectType)t);
 					if (!m_pSelectedSound->pSound->hasEffect((EffectType)t) && ImGui::Button(label.c_str()))
