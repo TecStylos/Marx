@@ -204,7 +204,8 @@ std::shared_ptr<SaveFile> SaveFile::loadFromFile(const std::string& filepath)
 {
 	SaveFileHeader sfh;
 	std::ifstream file(filepath, std::ios::in | std::ios::binary);
-	DH_ASSERT(file.good());
+	if (!file.good())
+		return nullptr;
 
 	uint32_t firstBlockOffset = sizeof(SaveFileHeader);
 

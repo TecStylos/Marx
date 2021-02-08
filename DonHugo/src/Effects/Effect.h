@@ -16,8 +16,43 @@ enum EffectType
 	EffectType_Flanger,
 	EffectType_Gargle,
 	EffectType_Equalizer,
-	EffectType_Reverb
+	EffectType_Reverb,
+	EffectType_Count
 };
+
+inline std::string effectTypeToString(EffectType type)
+{
+#define EFF_TYPE(t) case EffectType_##t: return #t
+	switch (type)
+	{
+		EFF_TYPE(None);
+		EFF_TYPE(Chorus);
+		EFF_TYPE(Compressor);
+		EFF_TYPE(Distortion);
+		EFF_TYPE(Echo);
+		EFF_TYPE(Flanger);
+		EFF_TYPE(Gargle);
+		EFF_TYPE(Equalizer);
+		EFF_TYPE(Reverb);
+	}
+	return "Unknown";
+#undef EFF_TYPE
+}
+
+inline EffectType effectStringToType(const std::string& str)
+{
+#define EFF_TYPE(t) if (str == #t) return EffectType_##t
+	EFF_TYPE(None);
+	EFF_TYPE(Chorus);
+	EFF_TYPE(Compressor);
+	EFF_TYPE(Distortion);
+	EFF_TYPE(Echo);
+	EFF_TYPE(Flanger);
+	EFF_TYPE(Gargle);
+	EFF_TYPE(Equalizer);
+	EFF_TYPE(Reverb);
+#undef EFF_TYPE
+}
 
 enum class EffectParamType
 {
@@ -36,6 +71,7 @@ struct EffectParamDesc
 	EffectParam_t maxVal;
 	EffectParam_t* pValue;
 	const char* name;
+	const char* internalName;
 };
 
 inline const char* EffectTypeString(EffectType type)
@@ -65,6 +101,8 @@ public:
 	virtual GUID getGUID() const = 0;
 	virtual void updateOnBuffer(SoundBuffer* pBuffer, uint32_t index) = 0;
 	virtual bool getNextParam(uint32_t paramIndex, EffectParamDesc* desc) = 0;
+public:
+	static std::shared_ptr<Effect> create(EffectType type);
 protected:
 	void* getFX(SoundBuffer* pBuffer, DWORD index, REFGUID iid)
 	{

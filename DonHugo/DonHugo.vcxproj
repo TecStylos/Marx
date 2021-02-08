@@ -159,6 +159,7 @@
     <ClCompile Include="src\Effects\Compressor.cpp" />
     <ClCompile Include="src\Effects\Distortion.cpp" />
     <ClCompile Include="src\Effects\Echo.cpp" />
+    <ClCompile Include="src\Effects\Effect.cpp" />
     <ClCompile Include="src\Effects\EffectList.cpp" />
     <ClCompile Include="src\Effects\Equalizer.cpp" />
     <ClCompile Include="src\Effects\Flanger.cpp" />

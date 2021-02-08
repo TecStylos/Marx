@@ -31,6 +31,7 @@ bool EffectCompressor::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCOMPRESSOR_GAIN_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fGain;
 		desc->name = "Gain";
+		desc->internalName = "gain";
 		break;
 	case 1:
 		desc->type = EffectParamType::FLOAT;
@@ -38,6 +39,7 @@ bool EffectCompressor::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCOMPRESSOR_ATTACK_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fAttack;
 		desc->name = "Attack";
+		desc->internalName = "attack";
 		break;
 	case 2:
 		desc->type = EffectParamType::FLOAT;
@@ -45,6 +47,7 @@ bool EffectCompressor::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCOMPRESSOR_RELEASE_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fRelease;
 		desc->name = "Release";
+		desc->internalName = "release";
 		break;
 	case 3:
 		desc->type = EffectParamType::FLOAT;
@@ -52,6 +55,7 @@ bool EffectCompressor::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCOMPRESSOR_THRESHOLD_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fThreshold;
 		desc->name = "Threshold";
+		desc->internalName = "threshold";
 		break;
 	case 4:
 		desc->type = EffectParamType::FLOAT;
@@ -59,6 +63,7 @@ bool EffectCompressor::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCOMPRESSOR_RATIO_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fRatio;
 		desc->name = "Ratio";
+		desc->internalName = "ratio";
 		break;
 	case 5:
 		desc->type = EffectParamType::FLOAT;
@@ -66,6 +71,7 @@ bool EffectCompressor::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCOMPRESSOR_PREDELAY_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fPredelay;
 		desc->name = "Predelay";
+		desc->internalName = "predelay";
 		break;
 	default:
 		return false;

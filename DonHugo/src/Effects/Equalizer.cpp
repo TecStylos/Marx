@@ -28,6 +28,7 @@ bool EffectEqualizer::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXPARAMEQ_CENTER_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fCenter;
 		desc->name = "Center";
+		desc->internalName = "center";
 		break;
 	case 1:
 		desc->type = EffectParamType::FLOAT;
@@ -35,6 +36,7 @@ bool EffectEqualizer::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXPARAMEQ_BANDWIDTH_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fBandwidth;
 		desc->name = "Bandwidth";
+		desc->internalName = "bandwidth";
 		break;
 	case 2:
 		desc->type = EffectParamType::FLOAT;
@@ -42,6 +44,7 @@ bool EffectEqualizer::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXPARAMEQ_GAIN_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fGain;
 		desc->name = "Gain";
+		desc->internalName = "gain";
 		break;
 	default:
 		return false;

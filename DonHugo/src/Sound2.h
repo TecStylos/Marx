@@ -44,7 +44,7 @@ public:
 	bool getLoopingEnabled() const { return m_loopingEnabled; }
 private:
 	std::string m_filepath;
-	bool m_useEffects = true;
+	bool m_useEffects = false;
 	float m_volume;
 	bool m_loopingEnabled;
 private:

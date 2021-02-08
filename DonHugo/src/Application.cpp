@@ -10,15 +10,6 @@
 #include "future/Tools.h"
 #include "future/SaveFile.h"
 
-#include "Effects/Chorus.h"
-#include "Effects/Compressor.h"
-#include "Effects/Distortion.h"
-#include "Effects/Echo.h"
-#include "Effects/Flanger.h"
-#include "Effects/Gargle.h"
-#include "Effects/Equalizer.h"
-#include "Effects/Reverb.h"
-
 #include <Marx.h>
 
 #include <ShObjIdl.h>
@@ -37,6 +28,79 @@ struct LoadedSound
 	Marx::Reference<Sound2> pSound;
 	KeyCombo keyCombo;
 	bool keyComboIsPressed = false;
+public:
+	void saveToSaveFile(SaveFile& sf, const std::string& internalName)
+	{
+		auto main = BlockChain("root.sounds") + internalName;
+		auto prop = main + "properties";
+		auto effects = main + "effects";
+
+		sf.setVar<std::string>(prop, "name", name);
+		sf.setVar<KeyCombo>(prop, "keyCombo", keyCombo);
+		sf.setVar<std::string>(prop, "filepath", pSound->getFilepath());
+		sf.setVar<float>(prop, "volume", pSound->getVolume());
+		sf.setVar<bool>(prop, "looping", pSound->getLoopingEnabled());
+		sf.setVar<bool>(prop, "useEffects", pSound->useEffects());
+
+		auto pEl = pSound->getEffectList();
+		for (auto type : *pEl)
+		{
+			auto pEff = pEl->getEffect(type);
+			auto effChain = effects + effectTypeToString(pEff->getType());
+			uint32_t i = 0;
+			EffectParamDesc desc;
+			while (pEff->getNextParam(i++, &desc))
+			{
+				switch (desc.type)
+				{
+				case EffectParamType::DWORD:
+					sf.setVar<DWORD>(effChain, desc.internalName, *(DWORD*)desc.pValue); break;
+				case EffectParamType::FLOAT:
+					sf.setVar<FLOAT>(effChain, desc.internalName, *(FLOAT*)desc.pValue); break;
+				case EffectParamType::LONG:
+					sf.setVar<LONG>(effChain, desc.internalName, *(LONG*)desc.pValue); break;
+				}
+			}
+		}
+	}
+	static Marx::Reference<LoadedSound> loadFromSaveFile(SaveFile& sf, const std::string& internalName, SoundDevice* pDev1, SoundDevice* pDev2)
+	{
+		auto main = BlockChain("root.sounds") + internalName;
+		auto prop = main + "properties";
+		auto effects = main + "effects";
+
+		auto ps = std::make_shared<LoadedSound>();
+		ps->name = sf.getVar<std::string>(prop, "name", "None");
+		ps->keyCombo = sf.getVar<KeyCombo>(prop, "keyCombo", KeyCombo());
+
+		ps->pSound = std::make_shared<Sound2>(pDev1, pDev2, sf.getVar<std::string>(prop, "filepath", "Unknown"));
+		ps->pSound->setVolume(sf.getVar<float>(prop, "volume", 1.0f));
+		ps->pSound->enableLooping(sf.getVar<bool>(prop, "looping", false));
+		ps->pSound->useEffects() = sf.getVar<bool>(prop, "useEffects", false);
+
+		for (auto& eff : sf.getSubBlockNames(effects))
+		{
+			auto pEff = Effect::create(effectStringToType(eff));
+			auto effChain = effects + eff;
+			uint32_t i = 0;
+			EffectParamDesc desc;
+			while (pEff->getNextParam(i++, &desc))
+			{
+				switch (desc.type)
+				{
+				case EffectParamType::DWORD:
+					*(DWORD*)desc.pValue = sf.getVar<DWORD>(effChain, desc.internalName, *(DWORD*)desc.pValue); break;
+				case EffectParamType::FLOAT:
+					*(FLOAT*)desc.pValue = sf.getVar<FLOAT>(effChain, desc.internalName, *(FLOAT*)desc.pValue); break;
+				case EffectParamType::LONG:
+					*(LONG*)desc.pValue = sf.getVar<LONG>(effChain, desc.internalName, *(LONG*)desc.pValue); break;
+				}
+			}
+			ps->pSound->addEffect(pEff);
+		}
+
+		return ps;
+	}
 };
 
 namespace MyImGui
@@ -142,30 +206,50 @@ public:
 	{
 		Marx::RenderCommand::setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		SaveFile sf;
-		sf.setVar<int>("root.devices.microphone", "guid", 1);
-		sf.setVar<int>("root.devices.main-out", "guid", 2);
-		sf.setVar<int>("root.devices.echo-out", "guid", 3);
+		auto psf = SaveFile::loadFromFile("save.dhsf");
 
-		sf.setVar<float>("root.settings.microphone", "master", 0.25f);
-		sf.setVar<float>("root.settings.microphone", "main", 0.75f);
-		sf.setVar<float>("root.settings.microphone", "echo", 0.50f);
-		sf.setVar<bool>("root.settings.microphone", "useEffects", true);
+		if (psf)
+		{
+			m_soundVolumes.master = psf->getVar<float>("root.settings.sound.volumes", "master", 1.0f);
+			m_soundVolumes.mainMultiplier = psf->getVar<float>("root.settings.sound.volumes", "main", 1.0f);
+			m_soundVolumes.echoMultiplier = psf->getVar<float>("root.settings.sound.volumes", "echo", 1.0f);
+		}
 
-		sf.setVar<float>("root.settings.sound", "master", 0.25f);
-		sf.setVar<float>("root.settings.sound", "main", 0.75f);
-		sf.setVar<float>("root.settings.sound", "echo", 0.50f);
-
-		sf.setVar<float>("root.sounds.abcdef.properties", "volume", 1.0f);
-		sf.setVar<int[4]>("root.sounds.abcdef.properties", "keyCombo", { 1, 2, 3, 4 });
-		sf.setVar<std::string>("root.sounds.abcdef.properties", "filepath", "C:\\Users\\User\\Downloads\\sound.wav");
-
-		sf.saveToFile("save.dhsf");
-
-		auto sf2 = SaveFile::loadFromFile("save.dhsf");
+		for (auto& internalName : psf->getSubBlockNames("root.sounds"))
+		{
+			auto pSound = LoadedSound::loadFromSaveFile(*psf, internalName, m_pMainSoundDevice.get(), m_pEchoSoundDevice.get());
+			if (pSound)
+				m_sounds.push_back(pSound);
+		}
 	}
 	~MainLayer()
 	{
+		SaveFile sf;
+		if (m_pCaptureDevice)
+			sf.setVar<GUID>("root.devices.microphone", "guid", *m_pCaptureDevice->getLPGuid());
+		if (m_pMainSoundDevice)
+			sf.setVar<GUID>("root.devices.main-out", "guid", *m_pMainSoundDevice->getLPGuid());
+		if (m_pEchoSoundDevice)
+			sf.setVar<GUID>("root.devices.echo-out", "guid", *m_pEchoSoundDevice->getLPGuid());
+
+		sf.setVar<float>("root.settings.sound.volumes", "master", m_soundVolumes.master);
+		sf.setVar<float>("root.settings.sound.volumes", "main", m_soundVolumes.mainMultiplier);
+		sf.setVar<float>("root.settings.sound.volumes", "echo", m_soundVolumes.echoMultiplier);
+
+		if (m_pMicPlayback)
+		{
+			sf.setVar<float>("root.settings.microphone.volumes", "master", m_pMicPlayback->getVolume());
+			sf.setVar<float>("root.settings.microphone.volumes", "main", m_pMicPlayback->getVolumeMultiplier1());
+			sf.setVar<float>("root.settings.microphone.volumes", "echo", m_pMicPlayback->getVolumeMultiplier2());
+		}
+
+		uint32_t i = 0;
+		for (auto pSound : m_sounds)
+		{
+			pSound->saveToSaveFile(sf, std::to_string(i));
+		}
+
+		sf.saveToFile("save.dhsf");
 	}
 public:
 	virtual void onUpdate(Marx::Timestep ts) override
@@ -795,29 +879,12 @@ private:
 		{
 			if (m_pSelectedSound->pSound->effectsEnabled() && ImGui::BeginPopupContextWindow())
 			{
-				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Chorus) && ImGui::Button("Add Chorus"))
-					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectChorus>());
-
-				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Compressor) && ImGui::Button("Add Compressor"))
-					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectCompressor>());
-
-				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Distortion) && ImGui::Button("Add Distortion"))
-					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectDistortion>());
-
-				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Echo) && ImGui::Button("Add Echo"))
-					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectEcho>());
-
-				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Flanger) && ImGui::Button("Add Flanger"))
-					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectFlanger>());
-
-				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Gargle) && ImGui::Button("Add Gargle"))
-					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectGargle>());
-
-				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Equalizer) && ImGui::Button("Add Equalizer"))
-					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectEqualizer>());
-
-				if (!m_pSelectedSound->pSound->hasEffect(EffectType_Reverb) && ImGui::Button("Add Reverb"))
-					m_pSelectedSound->pSound->addEffect(std::make_shared<EffectReverb>());
+				for (uint32_t t = 0; t < EffectType_Count; ++t)
+				{
+					std::string label = "Add " + effectTypeToString((EffectType)t);
+					if (!m_pSelectedSound->pSound->hasEffect((EffectType)t) && ImGui::Button(label.c_str()))
+						m_pSelectedSound->pSound->addEffect(Effect::create((EffectType)t));
+				}
 
 				ImGui::EndPopup();
 			}
@@ -826,29 +893,12 @@ private:
 		{
 			if (m_pMicPlayback->effectsEnabled() && ImGui::BeginPopupContextWindow())
 			{
-				if (!m_pMicPlayback->hasEffect(EffectType_Chorus) && ImGui::Button("Add Chorus"))
-					m_pMicPlayback->addEffect(std::make_shared<EffectChorus>());
-
-				if (!m_pMicPlayback->hasEffect(EffectType_Compressor) && ImGui::Button("Add Compressor"))
-					m_pMicPlayback->addEffect(std::make_shared<EffectCompressor>());
-
-				if (!m_pMicPlayback->hasEffect(EffectType_Distortion) && ImGui::Button("Add Distortion"))
-					m_pMicPlayback->addEffect(std::make_shared<EffectDistortion>());
-
-				if (!m_pMicPlayback->hasEffect(EffectType_Echo) && ImGui::Button("Add Echo"))
-					m_pMicPlayback->addEffect(std::make_shared<EffectEcho>());
-
-				if (!m_pMicPlayback->hasEffect(EffectType_Flanger) && ImGui::Button("Add Flanger"))
-					m_pMicPlayback->addEffect(std::make_shared<EffectFlanger>());
-
-				if (!m_pMicPlayback->hasEffect(EffectType_Gargle) && ImGui::Button("Add Gargle"))
-					m_pMicPlayback->addEffect(std::make_shared<EffectGargle>());
-
-				if (!m_pMicPlayback->hasEffect(EffectType_Equalizer) && ImGui::Button("Add Equalizer"))
-					m_pMicPlayback->addEffect(std::make_shared<EffectEqualizer>());
-
-				if (!m_pMicPlayback->hasEffect(EffectType_Reverb) && ImGui::Button("Add Reverb"))
-					m_pMicPlayback->addEffect(std::make_shared<EffectReverb>());
+				for (uint32_t t = EffectType_Chorus; t < EffectType_Count; ++t)
+				{
+					std::string label = "Add " + effectTypeToString((EffectType)t);
+					if (!m_pMicPlayback->hasEffect((EffectType)t) && ImGui::Button(label.c_str()))
+						m_pMicPlayback->addEffect(Effect::create((EffectType)t));
+				}
 
 				ImGui::EndPopup();
 			}

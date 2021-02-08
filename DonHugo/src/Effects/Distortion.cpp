@@ -30,6 +30,7 @@ bool EffectDistortion::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXDISTORTION_GAIN_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fGain;
 		desc->name = "Gain";
+		desc->internalName = "gain";
 		break;
 	case 1:
 		desc->type = EffectParamType::FLOAT;
@@ -37,6 +38,7 @@ bool EffectDistortion::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXDISTORTION_EDGE_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fEdge;
 		desc->name = "Edge";
+		desc->internalName = "edge";
 		break;
 	case 2:
 		desc->type = EffectParamType::FLOAT;
@@ -44,6 +46,7 @@ bool EffectDistortion::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXDISTORTION_POSTEQCENTERFREQUENCY_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fPostEQCenterFrequency;
 		desc->name = "Post EQ Center Frequency";
+		desc->internalName = "frequency";
 		break;
 	case 3:
 		desc->type = EffectParamType::FLOAT;
@@ -51,6 +54,7 @@ bool EffectDistortion::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXDISTORTION_POSTEQBANDWIDTH_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fPostEQBandwidth;
 		desc->name = "Post EQ Bandwidth";
+		desc->internalName = "bandwidth";
 		break;
 	case 4:
 		desc->type = EffectParamType::FLOAT;
@@ -58,6 +62,7 @@ bool EffectDistortion::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXDISTORTION_PRELOWPASSCUTOFF_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fPreLowpassCutoff;
 		desc->name = "Pre Lowpass Cutoff";
+		desc->internalName = "cutoff";
 		break;
 	default:
 		return false;

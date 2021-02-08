@@ -29,6 +29,7 @@ bool EffectReverb::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFX_WAVESREVERB_INGAIN_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fInGain;
 		desc->name = "In Gain";
+		desc->internalName = "gain";
 		break;
 	case 1:
 		desc->type = EffectParamType::FLOAT;
@@ -36,6 +37,7 @@ bool EffectReverb::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFX_WAVESREVERB_REVERBMIX_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fReverbMix;
 		desc->name = "Reverb Mix";
+		desc->internalName = "mix";
 		break;
 	case 2:
 		desc->type = EffectParamType::FLOAT;
@@ -43,6 +45,7 @@ bool EffectReverb::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFX_WAVESREVERB_REVERBTIME_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fReverbTime;
 		desc->name = "Reverb Time";
+		desc->internalName = "time";
 		break;
 	case 3:
 		desc->type = EffectParamType::FLOAT;
@@ -50,6 +53,7 @@ bool EffectReverb::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFX_WAVESREVERB_HIGHFREQRTRATIO_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fHighFreqRTRatio;
 		desc->name = "High Frequency reverb time ratio";
+		desc->internalName = "ratio";
 		break;
 	default:
 		return false;

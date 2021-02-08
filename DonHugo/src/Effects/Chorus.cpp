@@ -32,6 +32,7 @@ bool EffectChorus::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCHORUS_WETDRYMIX_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fWetDryMix;
 		desc->name = "Wet Dry Mix";
+		desc->internalName = "mix";
 		break;
 	case 1:
 		desc->type = EffectParamType::FLOAT;
@@ -39,6 +40,7 @@ bool EffectChorus::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCHORUS_DEPTH_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fDepth;
 		desc->name = "Depth";
+		desc->internalName = "depth";
 		break;
 	case 2:
 		desc->type = EffectParamType::FLOAT;
@@ -46,6 +48,7 @@ bool EffectChorus::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCHORUS_FEEDBACK_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fFeedback;
 		desc->name = "Feedback";
+		desc->internalName = "feedback";
 		break;
 	case 3:
 		desc->type = EffectParamType::FLOAT;
@@ -53,6 +56,7 @@ bool EffectChorus::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCHORUS_FREQUENCY_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fFrequency;
 		desc->name = "Frequency";
+		desc->internalName = "frequency";
 		break;
 	case 4:
 		desc->type = EffectParamType::LONG;
@@ -60,6 +64,7 @@ bool EffectChorus::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(LONG*)&desc->maxVal = DSFXCHORUS_WAVE_SIN;
 		desc->pValue = (EffectParam_t*)&m_desc.lWaveform;
 		desc->name = "Waveform";
+		desc->internalName = "waveform";
 		break;
 	case 5:
 		desc->type = EffectParamType::FLOAT;
@@ -67,6 +72,7 @@ bool EffectChorus::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXCHORUS_DELAY_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fDelay;
 		desc->name = "Delay";
+		desc->internalName = "delay";
 		break;
 	case 6:
 		desc->type = EffectParamType::LONG;
@@ -74,6 +80,7 @@ bool EffectChorus::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(LONG*)&desc->maxVal = DSFXCHORUS_PHASE_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.lPhase;
 		desc->name = "Phase";
+		desc->internalName = "phase";
 		break;
 	default:
 		return false;

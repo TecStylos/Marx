@@ -30,6 +30,7 @@ bool EffectEcho::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXECHO_WETDRYMIX_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fWetDryMix;
 		desc->name = "Wet Dry Mix";
+		desc->internalName = "mix";
 		break;
 	case 1:
 		desc->type = EffectParamType::FLOAT;
@@ -37,6 +38,7 @@ bool EffectEcho::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXECHO_FEEDBACK_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fFeedback;
 		desc->name = "Feedback";
+		desc->internalName = "feedback";
 		break;
 	case 2:
 		desc->type = EffectParamType::FLOAT;
@@ -44,6 +46,7 @@ bool EffectEcho::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXECHO_LEFTDELAY_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fLeftDelay;
 		desc->name = "Left Delay";
+		desc->internalName = "leftDelay";
 		break;
 	case 3:
 		desc->type = EffectParamType::FLOAT;
@@ -51,6 +54,7 @@ bool EffectEcho::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(FLOAT*)&desc->maxVal = DSFXECHO_RIGHTDELAY_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.fRightDelay;
 		desc->name = "Right Delay";
+		desc->internalName = "rightDelay";
 		break;
 	case 4:
 		desc->type = EffectParamType::LONG;
@@ -58,6 +62,7 @@ bool EffectEcho::getNextParam(uint32_t paramIndex, EffectParamDesc* desc)
 		*(LONG*)&desc->maxVal = DSFXECHO_PANDELAY_MAX;
 		desc->pValue = (EffectParam_t*)&m_desc.lPanDelay;
 		desc->name = "Pan Delay";
+		desc->internalName = "panDelay";
 		break;
 	default:
 		return false;

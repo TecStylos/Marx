@@ -130,6 +130,9 @@ void Sound2::applyEffects()
 
 void Sound2::updateEffect(EffectType type)
 {
+	if (!m_useEffects)
+		return;
+
 	if (m_pBuf1) m_effects.updateEffect(m_pBuf1.get(), type);
 	if (m_pBuf2) m_effects.updateEffect(m_pBuf2.get(), type);
 }

@@ -112,5 +112,6 @@
       <Filter>future</Filter>
     </ClCompile>
     <ClCompile Include="src\future\SaveFile.cpp" />
+    <ClCompile Include="src\Effects\Effect.cpp" />
   </ItemGroup>
 </Project>

@@ -121,7 +121,7 @@ inline void Block::setVar(const std::string& varName, const T& value)
 	auto it = vars.find(varName);
 	if (it == vars.end())
 	{
-		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, sizeof(T), &value)));
+		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, (uint32_t)sizeof(T), &value)));
 	}
 	else
 	{
@@ -131,7 +131,7 @@ inline void Block::setVar(const std::string& varName, const T& value)
 		}
 		else
 		{
-			it->second = std::make_shared<BlockVar>(varName, sizeof(T), &value);
+			it->second = std::make_shared<BlockVar>(varName, (uint32_t)sizeof(T), &value);
 		}
 	}
 }
@@ -142,7 +142,7 @@ inline void Block::setVar<std::string>(const std::string& varName, const std::st
 	auto it = vars.find(varName);
 	if (it == vars.end())
 	{
-		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, value.size() + 1, value.c_str())));
+		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, (uint32_t)value.size() + 1, value.c_str())));
 	}
 	else
 	{
@@ -152,7 +152,7 @@ inline void Block::setVar<std::string>(const std::string& varName, const std::st
 		}
 		else
 		{
-			it->second = std::make_shared<BlockVar>(varName, value.size() + 1, value.c_str());
+			it->second = std::make_shared<BlockVar>(varName, (uint32_t)value.size() + 1, value.c_str());
 		}
 	}
 }
@@ -163,7 +163,7 @@ inline T Block::getVar(const std::string& varName, const T& defaultValue)
 	auto it = vars.find(varName);
 	if (it == vars.end())
 	{
-		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, sizeof(T), &defaultValue)));
+		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, (uint32_t)sizeof(T), &defaultValue)));
 		return defaultValue;
 	}
 	else
@@ -174,7 +174,7 @@ inline T Block::getVar(const std::string& varName, const T& defaultValue)
 		}
 		else
 		{
-			it->second = std::make_shared<BlockVar>(varName, sizeof(T), &defaultValue);
+			it->second = std::make_shared<BlockVar>(varName, (uint32_t)sizeof(T), &defaultValue);
 			return *(T*)it->second->getData();
 		}
 	}
@@ -186,7 +186,7 @@ inline std::string Block::getVar<std::string>(const std::string& varName, const 
 	auto it = vars.find(varName);
 	if (it == vars.end())
 	{
-		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, defaultValue.size() + 1, &defaultValue)));
+		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, (uint32_t)defaultValue.size() + 1, &defaultValue)));
 		return defaultValue;
 	}
 	else

@@ -11,14 +11,16 @@ settings
 			[effect-name]
 				{ [effect-specific-data] }
 			...
-		{ float : master }
-		{ float : main }
-		{ float : echo }
+		volumes
+			{ float : master }
+			{ float : main }
+			{ float : echo }
 		{ bool : useEffects }
 	sound
-		{ float : master }
-		{ float : main }
-		{ float : echo }
+		volumes
+			{ float : master }
+			{ float : main }
+			{ float : echo }
 sounds
 	[internal-name]
 		properties
