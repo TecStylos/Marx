@@ -245,11 +245,8 @@ public:
 			sf.setVar<float>("root.settings.microphone.volumes", "echo", m_pMicPlayback->getVolumeMultiplier2());
 		}
 
-		uint32_t i = 0;
-		for (auto pSound : m_sounds)
-		{
-			pSound->saveToSaveFile(sf, std::to_string(i++));
-		}
+		for (uint32_t i = 0; i < m_sounds.size(); ++i)
+			m_sounds[i]->saveToSaveFile(sf, std::to_string(i));
 
 		sf.saveToFile("save.dhsf");
 	}
