@@ -206,7 +206,7 @@ public:
 	MainLayer()
 		: Layer("MainLayer")
 	{
-		Marx::RenderCommand::setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		Marx::RenderCommand::setClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
 		auto psf = SaveFile::loadFromFile("save.dhsf");
 
@@ -248,7 +248,7 @@ public:
 		uint32_t i = 0;
 		for (auto pSound : m_sounds)
 		{
-			pSound->saveToSaveFile(sf, std::to_string(i));
+			pSound->saveToSaveFile(sf, std::to_string(i++));
 		}
 
 		sf.saveToFile("save.dhsf");
@@ -405,7 +405,7 @@ private:
 	{
 		static ImGuiID dockspaceID = 0;
 
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground;
 		ImGuiDockNodeFlags dockspaceFlags = 0;
 
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
