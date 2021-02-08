@@ -25,13 +25,14 @@ struct KeyCombo
 struct LoadedSound
 {
 	std::string name;
+	uint32_t internalID;
 	Marx::Reference<Sound2> pSound;
 	KeyCombo keyCombo;
 	bool keyComboIsPressed = false;
 public:
-	void saveToSaveFile(SaveFile& sf, const std::string& internalName)
+	void saveToSaveFile(SaveFile& sf)
 	{
-		auto main = BlockChain("root.sounds") + internalName;
+		auto main = BlockChain("root.sounds") + std::to_string(internalID);
 		auto prop = main + "properties";
 		auto effects = main + "effects";
 
@@ -63,21 +64,21 @@ public:
 			}
 		}
 	}
-	static Marx::Reference<LoadedSound> loadFromSaveFile(SaveFile& sf, const std::string& internalName, SoundDevice* pDev1, SoundDevice* pDev2)
+	static Marx::Reference<LoadedSound> loadFromSaveFile(SaveFile& sf, const std::string& internalIDStr, SoundDevice* pDev1, SoundDevice* pDev2)
 	{
-		auto main = BlockChain("root.sounds") + internalName;
+		auto main = BlockChain("root.sounds") + internalIDStr;
 		auto prop = main + "properties";
 		auto effects = main + "effects";
 
 		auto ps = std::make_shared<LoadedSound>();
 		ps->name = sf.getVar<std::string>(prop, "name", "None");
 		ps->keyCombo = sf.getVar<KeyCombo>(prop, "keyCombo", KeyCombo());
+		ps->internalID = (uint32_t)std::stoull(internalIDStr);
 
 		ps->pSound = std::make_shared<Sound2>(pDev1, pDev2, sf.getVar<std::string>(prop, "filepath", "Unknown"));
 		ps->pSound->setVolume(sf.getVar<float>(prop, "volume", 1.0f));
 		ps->pSound->enableLooping(sf.getVar<bool>(prop, "looping", false));
 		ps->pSound->useEffects() = sf.getVar<bool>(prop, "useEffects", false);
-
 		for (auto& eff : sf.getSubBlockNames(effects))
 		{
 			auto pEff = Effect::create(effectStringToType(eff));
@@ -212,31 +213,90 @@ public:
 
 		if (psf)
 		{
+			if (psf->hasVar("root.devices.microphone", "guid"))
+				setNewCaptureDevice(
+					std::make_shared<CaptureDevice>(
+						psf->getVar<GUID>("root.devices.microphone", "guid", GUID()),
+						psf->getVar<std::string>("root.devices.microphone", "description", "Last Microphone")
+						)
+				);
+			if (psf->hasVar("root.devices.main-out", "guid"))
+				setNewMainSoundDevice(
+					std::make_shared<SoundDevice>(
+						(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
+						psf->getVar<GUID>("root.devices.main-out", "guid", GUID()),
+						psf->getVar<std::string>("root.devices.main-out", "description", "Last Main Output")
+						)
+				);
+			if (psf->hasVar("root.devices.echo-out", "guid"))
+				setNewEchoSoundDevice(
+					std::make_shared<SoundDevice>(
+						(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
+						psf->getVar<GUID>("root.devices.echo-out", "guid", GUID()),
+						psf->getVar<std::string>("root.devices.echo-out", "description", "Last Echo Output")
+						)
+				);
+
+			if (m_pMicPlayback)
+			{
+				m_pMicPlayback->setVolume(psf->getVar<float>("root.settings.microphone.volumes", "master", 1.0f));
+				m_pMicPlayback->setVolumeMultiplier1(psf->getVar<float>("root.settings.microphone.volumes", "main", 1.0f));
+				m_pMicPlayback->setVolumeMultiplier2(psf->getVar<float>("root.settings.microphone.volumes", "echo", 1.0f));
+			}
+
 			m_soundVolumes.master = psf->getVar<float>("root.settings.sound.volumes", "master", 1.0f);
 			m_soundVolumes.mainMultiplier = psf->getVar<float>("root.settings.sound.volumes", "main", 1.0f);
 			m_soundVolumes.echoMultiplier = psf->getVar<float>("root.settings.sound.volumes", "echo", 1.0f);
 
-			for (auto& internalName : psf->getSubBlockNames("root.sounds"))
+			m_backgroundColor[0] = psf->getVar<float>("root.settings.background.color", "red", 0.05f);
+			m_backgroundColor[1] = psf->getVar<float>("root.settings.background.color", "green", 0.05f);
+			m_backgroundColor[2] = psf->getVar<float>("root.settings.background.color", "blue", 0.05f);
+			updateBackgroundColor();
+
+			for (auto& internalIDStr : psf->getSubBlockNames("root.sounds"))
 			{
-				auto pSound = LoadedSound::loadFromSaveFile(*psf, internalName, m_pMainSoundDevice.get(), m_pEchoSoundDevice.get());
+				uint32_t newID = (uint32_t)std::stoull(internalIDStr);
+				m_soundIDCounter = max(newID, m_soundIDCounter);
+				auto pSound = LoadedSound::loadFromSaveFile(*psf, internalIDStr, m_pMainSoundDevice.get(), m_pEchoSoundDevice.get());
 				if (pSound)
 					m_sounds.push_back(pSound);
 			}
+			++m_soundIDCounter;
 		}
 	}
 	~MainLayer()
 	{
 		SaveFile sf;
 		if (m_pCaptureDevice)
+		{
 			sf.setVar<GUID>("root.devices.microphone", "guid", *m_pCaptureDevice->getLPGuid());
+			sf.setVar<std::string>("root.devices.microphone", "description", m_pCaptureDevice->getDescription());
+		}
 		if (m_pMainSoundDevice)
+		{
 			sf.setVar<GUID>("root.devices.main-out", "guid", *m_pMainSoundDevice->getLPGuid());
+			sf.setVar<std::string>("root.devices.main-out", "description", m_pMainSoundDevice->getDescription());
+		}
 		if (m_pEchoSoundDevice)
+		{
 			sf.setVar<GUID>("root.devices.echo-out", "guid", *m_pEchoSoundDevice->getLPGuid());
+			sf.setVar<std::string>("root.devices.echo-out", "description", m_pEchoSoundDevice->getDescription());
+		}
+
+		if (m_pMicPlayback)
+		{
+			sf.setVar<float>("root.settings.microphone.volumes", "master", m_pMicPlayback->getVolume());
+			sf.setVar<float>("root.settings.microphone.volumes", "main", m_pMicPlayback->getVolumeMultiplier1());
+			sf.setVar<float>("root.settings.microphone.volumes", "echo", m_pMicPlayback->getVolumeMultiplier2());
+		}
 
 		sf.setVar<float>("root.settings.sound.volumes", "master", m_soundVolumes.master);
 		sf.setVar<float>("root.settings.sound.volumes", "main", m_soundVolumes.mainMultiplier);
 		sf.setVar<float>("root.settings.sound.volumes", "echo", m_soundVolumes.echoMultiplier);
+
+		sf.setVar<float>("root.settings.background.color", "red", m_backgroundColor[0]);
+		sf.setVar<float>("root.settings.background.color", "green", m_backgroundColor[1]);
+		sf.setVar<float>("root.settings.background.color", "blue", m_backgroundColor[2]);
 
 		if (m_pMicPlayback)
 		{
@@ -246,7 +306,7 @@ public:
 		}
 
 		for (uint32_t i = 0; i < m_sounds.size(); ++i)
-			m_sounds[i]->saveToSaveFile(sf, std::to_string(i));
+			m_sounds[i]->saveToSaveFile(sf);
 
 		sf.saveToFile("save.dhsf");
 	}
@@ -325,6 +385,10 @@ public:
 		return true;
 	}
 private:
+	void updateBackgroundColor()
+	{
+		Marx::RenderCommand::setClearColor(m_backgroundColor[0], m_backgroundColor[1], m_backgroundColor[2], 1.0f);
+	}
 	const MicPlayback2Desc* getMicPlaybackDesc()
 	{
 		static MicPlayback2Desc desc;
@@ -579,6 +643,15 @@ private:
 				}
 				ImGui::TreePop();
 			}
+			if (ImGui::TreeNodeEx("Background", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				{
+					if (ImGui::ColorEdit3("Color", m_backgroundColor))
+						updateBackgroundColor();
+					ImGui::Checkbox("Use Image", &m_useBackgroundImage);
+				}
+				ImGui::TreePop();
+			}
 		}
 		ImGui::End();
 	}
@@ -603,6 +676,7 @@ private:
 					{
 						auto newSound = std::make_shared<LoadedSound>();
 						newSound->name = extractNameFromFilepath(filepath);
+						newSound->internalID = m_soundIDCounter++;
 						newSound->pSound = std::make_shared<Sound2>(m_pMainSoundDevice.get(), m_pEchoSoundDevice.get(), filepath);
 						m_sounds.push_back(newSound);
 					}
@@ -878,7 +952,7 @@ private:
 		{
 			if (m_pSelectedSound->pSound->effectsEnabled() && m_pSelectedSound->pSound->useEffects() && ImGui::BeginPopupContextWindow())
 			{
-				for (uint32_t t = EffectType_Chorus; t < EffectType_Count; ++t)
+				for (uint32_t t = (EffectType)1; t < EffectType_Count; ++t)
 				{
 					std::string label = "Add " + effectTypeToString((EffectType)t);
 					if (!m_pSelectedSound->pSound->hasEffect((EffectType)t) && ImGui::Button(label.c_str()))
@@ -892,7 +966,7 @@ private:
 		{
 			if (m_pMicPlayback->effectsEnabled() && ImGui::BeginPopupContextWindow())
 			{
-				for (uint32_t t = EffectType_Chorus; t < EffectType_Count; ++t)
+				for (uint32_t t = (EffectType)1; t < EffectType_Count; ++t)
 				{
 					std::string label = "Add " + effectTypeToString((EffectType)t);
 					if (!m_pMicPlayback->hasEffect((EffectType)t) && ImGui::Button(label.c_str()))
@@ -982,6 +1056,9 @@ private:
 private:
 	std::vector<Marx::Reference<LoadedSound>> m_sounds;
 	LoadedSound* m_pSelectedSound = 0;
+	uint32_t m_soundIDCounter = 0;
+	bool m_useBackgroundImage = false;
+	float m_backgroundColor[3] = { 0.05f, 0.05f, 0.05f };
 };
 
 class Application : public Marx::Application

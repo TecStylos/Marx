@@ -15,7 +15,7 @@ struct SoundDeviceEnum
 class SoundDevice
 {
 public:
-	SoundDevice(HWND hWnd, GUID lpGuid, const std::string& description);
+	SoundDevice(HWND hWnd, GUID guid, const std::string& description);
 	~SoundDevice() = default;
 public:
 	void setVolume(float volume);

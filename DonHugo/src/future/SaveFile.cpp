@@ -145,6 +145,13 @@ std::vector<std::string> SaveFile::getVarNames(const BlockChain& blockChain) con
 	return std::vector<std::string>();
 }
 
+bool SaveFile::hasVar(const BlockChain& blockChain, const std::string& varName) const
+{
+	auto pBlock = getBlock(blockChain);
+
+	return pBlock ? pBlock->hasVar(varName) : false;
+}
+
 BlockRef SaveFile::addBlock(const BlockChain& blockChain)
 {
 	auto pBlock = m_pRootBlock;
@@ -231,6 +238,11 @@ std::vector<std::string> Block::getVarNames() const
 		names.push_back(elem.second->getName());
 
 	return names;
+}
+
+bool Block::hasVar(const std::string& varName) const
+{
+	return vars.find(varName) != vars.end();
 }
 
 uint32_t Block::getSize() const

@@ -24,4 +24,6 @@ std::shared_ptr<Effect> Effect::create(EffectType type)
 		EFF_TYPE(Reverb);
 	}
 #undef EFF_TYPE
+
+	return nullptr;
 }

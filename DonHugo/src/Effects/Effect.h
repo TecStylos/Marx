@@ -52,6 +52,8 @@ inline EffectType effectStringToType(const std::string& str)
 	EFF_TYPE(Equalizer);
 	EFF_TYPE(Reverb);
 #undef EFF_TYPE
+
+	return EffectType_None;
 }
 
 enum class EffectParamType

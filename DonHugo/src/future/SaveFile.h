@@ -84,6 +84,7 @@ public:
 	BlockMap subBlocks;
 	VarMap vars;
 	std::vector<std::string> getVarNames() const;
+	bool hasVar(const std::string& varName) const;
 	template <typename T> void setVar(const std::string& varName, const T& value);
 	template <typename T> T getVar(const std::string& varName, const T& defaultValue);
 public:
@@ -101,6 +102,7 @@ public:
 	bool hasBlockChain(const BlockChain& blockChain) const;
 	std::vector<std::string> getSubBlockNames(const BlockChain& blockChain) const;
 	std::vector<std::string> getVarNames(const BlockChain& blockChain) const;
+	bool hasVar(const BlockChain& blockChain, const std::string& varName) const;
 	template <typename T> void setVar(const BlockChain& blockChain, const std::string& varName, const T& value);
 	template <typename T> T getVar(const BlockChain& blockChain, const std::string& varName, const T& defaultValue);
 public:
