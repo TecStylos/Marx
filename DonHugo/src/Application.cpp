@@ -211,6 +211,87 @@ public:
 
 		auto psf = SaveFile::loadFromFile("save.dhsf");
 
+		updateCamera((float)Marx::Application::get()->getWindow()->getWidth() / (float)Marx::Application::get()->getWindow()->getHeight());
+
+		{
+			std::string vertexSrc = R"(
+cbuffer sceneData : register(b0)
+{
+	matrix c_viewProjection;
+};
+
+cbuffer modelData : register(b1)
+{
+	matrix c_modelTransform;
+}
+
+struct VS_INPUT
+{
+	float2 position : A_POSITION;
+	float2 texCoord : A_TEXCOORD;
+};
+
+struct VS_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float2 texCoord : TEXCOORD0;
+};
+
+VS_OUTPUT main(VS_INPUT inp)
+{
+	VS_OUTPUT op;
+
+	op.position = mul(float4(inp.position, 0.0f, 1.0f), c_modelTransform);
+	op.position = mul(op.position, c_viewProjection);
+	op.texCoord = inp.texCoord;
+
+	return op;
+}
+)";
+			std::string pixelSrc = R"(
+Texture2D g_tex : register(t0);
+SamplerState g_sState : register(s0);
+
+cbuffer brightnessData : register(b2)
+{
+	float4 c_brightness;
+}
+
+struct VS_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float2 texCoord : TEXCOORD0;
+};
+
+float4 main(VS_OUTPUT inp) : SV_TARGET
+{
+	return g_tex.Sample(g_sState, inp.texCoord) * c_brightness;
+}
+)";
+
+			m_background.pShader = Marx::Shader::create("backgroundShader", vertexSrc, pixelSrc);
+
+			struct Vertex { float x; float y; float u; float v; } pVertices[] = {
+				{-1.0f, -1.0f, 0.0f, 0.0f},
+				{-1.0f,  1.0f, 0.0f, 1.0f},
+				{ 1.0f,  1.0f, 1.0f, 1.0f},
+				{ 1.0f, -1.0f, 1.0f, 0.0f}
+			};
+			auto pVertexBuffer = Marx::VertexBuffer::create(pVertices, sizeof(pVertices));
+			pVertexBuffer->setLayout({
+				{ Marx::ShaderDataType::Float2, "A_POSITION"},
+				{ Marx::ShaderDataType::Float2, "A_TEXCOORD" }
+				}
+			);
+
+			uint32_t pIndices[] = { 0, 1, 2, 2, 3, 0 };
+			auto pIndexBuffer = Marx::IndexBuffer::create(pIndices, sizeof(pIndices) / sizeof(uint32_t), Marx::IndexBuffer::PrimitiveType::TriangleList);
+
+			m_background.pVertexArray = Marx::VertexArray::create(pVertexBuffer, pIndexBuffer);
+
+			m_background.pCBuffBrightness = Marx::PSConstantBuffer::create(&m_background.brightness, sizeof(float[4]));
+		}
+
 		if (psf)
 		{
 			if (psf->hasVar("root.devices.microphone", "guid"))
@@ -248,10 +329,18 @@ public:
 			m_soundVolumes.mainMultiplier = psf->getVar<float>("root.settings.sound.volumes", "main", 1.0f);
 			m_soundVolumes.echoMultiplier = psf->getVar<float>("root.settings.sound.volumes", "echo", 1.0f);
 
-			m_backgroundColor[0] = psf->getVar<float>("root.settings.background.color", "red", 0.05f);
-			m_backgroundColor[1] = psf->getVar<float>("root.settings.background.color", "green", 0.05f);
-			m_backgroundColor[2] = psf->getVar<float>("root.settings.background.color", "blue", 0.05f);
+			m_background.color[0] = psf->getVar<float>("root.settings.background.color", "red", 0.05f);
+			m_background.color[1] = psf->getVar<float>("root.settings.background.color", "green", 0.05f);
+			m_background.color[2] = psf->getVar<float>("root.settings.background.color", "blue", 0.05f);
 			updateBackgroundColor();
+			m_background.useImage = psf->getVar<bool>("root.settings.background", "useImage", false);
+			updateBackgroundBrightness(psf->getVar<float>("root.settings.background", "brightness", 0.5f));
+			m_background.imagePath = psf->getVar<std::string>("root.settings.background", "imagePath", "");
+			if (!m_background.imagePath.empty())
+			{
+				m_background.pImage = Marx::Texture2D::create(m_background.imagePath);
+				m_background.imageAspectRatio = (float)m_background.pImage->getWidth() / (float)m_background.pImage->getHeight();
+			}
 
 			for (auto& internalIDStr : psf->getSubBlockNames("root.sounds"))
 			{
@@ -294,9 +383,13 @@ public:
 		sf.setVar<float>("root.settings.sound.volumes", "main", m_soundVolumes.mainMultiplier);
 		sf.setVar<float>("root.settings.sound.volumes", "echo", m_soundVolumes.echoMultiplier);
 
-		sf.setVar<float>("root.settings.background.color", "red", m_backgroundColor[0]);
-		sf.setVar<float>("root.settings.background.color", "green", m_backgroundColor[1]);
-		sf.setVar<float>("root.settings.background.color", "blue", m_backgroundColor[2]);
+		sf.setVar<float>("root.settings.background.color", "red", m_background.color[0]);
+		sf.setVar<float>("root.settings.background.color", "green", m_background.color[1]);
+		sf.setVar<float>("root.settings.background.color", "blue", m_background.color[2]);
+		sf.setVar<bool>("root.settings.background", "useImage", m_background.useImage);
+		sf.setVar<float>("root.settings.background", "brightness", m_background.brightness[0]);
+		if (!m_background.imagePath.empty())
+			sf.setVar<std::string>("root.settings.background", "imagePath", m_background.imagePath);
 
 		if (m_pMicPlayback)
 		{
@@ -314,6 +407,18 @@ public:
 	virtual void onUpdate(Marx::Timestep ts) override
 	{
 		Marx::RenderCommand::clear();
+
+		if (m_background.useImage && m_background.pImage)
+		{
+			Marx::Renderer::beginScene(m_background.camera);
+
+			m_background.pCBuffBrightness->bind(2);
+
+			DX::XMMATRIX transform = DX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+			Marx::Renderer::submit(m_background.pShader, m_background.pVertexArray, transform, m_background.pImage);
+
+			Marx::Renderer::endScene();
+		}
 
 		if (!m_editingKeyCombo)
 		{
@@ -346,6 +451,7 @@ public:
 	{
 		Marx::EventDispatcher dispatcher(event);
 		dispatcher.dispatch<Marx::KeyPressEvent>(MX_BIND_EVENT_METHOD(MainLayer::onKeyPress));
+		dispatcher.dispatch<Marx::WindowResizeEvent>(MX_BIND_EVENT_METHOD(MainLayer::onWindowResize));
 	}
 	virtual void onImGuiRender() override
 	{
@@ -384,10 +490,31 @@ public:
 
 		return true;
 	}
+	bool onWindowResize(Marx::WindowResizeEvent& e)
+	{
+		updateCamera((float)e.getWidth() / (float)e.getHeight());
+		
+		return true;
+	}
+	void updateCamera(float aspectRatio)
+	{
+		if (aspectRatio > m_background.imageAspectRatio)
+			m_background.camera = Marx::OrthographicCamera(-1.0f, 1.0f, -1.0f / aspectRatio, 1.0f / aspectRatio);
+		else
+			m_background.camera = Marx::OrthographicCamera(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f);
+	}
+	void updateBackgroundBrightness(float brightness)
+	{
+		m_background.brightness[0] = brightness;
+		m_background.brightness[1] = brightness;
+		m_background.brightness[2] = brightness;
+		m_background.brightness[3] = 1.0f;
+		m_background.pCBuffBrightness->update(&m_background.brightness[0]);
+	}
 private:
 	void updateBackgroundColor()
 	{
-		Marx::RenderCommand::setClearColor(m_backgroundColor[0], m_backgroundColor[1], m_backgroundColor[2], 1.0f);
+		Marx::RenderCommand::setClearColor(m_background.color[0], m_background.color[1], m_background.color[2], 1.0f);
 	}
 	const MicPlayback2Desc* getMicPlaybackDesc()
 	{
@@ -646,9 +773,25 @@ private:
 			if (ImGui::TreeNodeEx("Background", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				{
-					if (ImGui::ColorEdit3("Color", m_backgroundColor))
+					if (ImGui::ColorEdit3("Color", m_background.color))
 						updateBackgroundColor();
-					ImGui::Checkbox("Use Image", &m_useBackgroundImage);
+					ImGui::Checkbox("Use Image", &m_background.useImage);
+					if (m_background.useImage)
+					{
+						ImGui::SameLine();
+						if (ImGui::Button("Load"))
+						{
+							std::string filepath = openFileDialog();
+							if (!filepath.empty())
+							{
+								m_background.pImage = Marx::Texture2D::create(filepath);
+								m_background.imageAspectRatio = (float)m_background.pImage->getWidth() / (float)m_background.pImage->getHeight();
+								m_background.imagePath = filepath;
+							}
+						}
+						if (ImGui::SliderFloat("Brightness", &m_background.brightness[0], 0.0f, 1.0f, "%.2f", 1.0f))
+							updateBackgroundBrightness(m_background.brightness[0]);
+					}
 				}
 				ImGui::TreePop();
 			}
@@ -1057,8 +1200,19 @@ private:
 	std::vector<Marx::Reference<LoadedSound>> m_sounds;
 	LoadedSound* m_pSelectedSound = 0;
 	uint32_t m_soundIDCounter = 0;
-	bool m_useBackgroundImage = false;
-	float m_backgroundColor[3] = { 0.05f, 0.05f, 0.05f };
+	struct Background
+	{
+		bool useImage = false;
+		float color[3] = { 0.05f, 0.05f, 0.05f };
+		float imageAspectRatio = 1.0f;
+		float brightness[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+		Marx::Reference<Marx::Texture2D> pImage;
+		Marx::Reference<Marx::Shader> pShader;
+		Marx::Reference<Marx::VertexArray> pVertexArray;
+		Marx::Reference<Marx::ConstantBuffer> pCBuffBrightness;
+		Marx::OrthographicCamera camera = Marx::OrthographicCamera(-1.0f, 1.0f, -1.0f, 1.0f);
+		std::string imagePath;
+	} m_background;
 };
 
 class Application : public Marx::Application
