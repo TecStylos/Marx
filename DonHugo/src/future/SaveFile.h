@@ -14,12 +14,12 @@
 
 struct SaveFileHeader
 {
-	char identifier[10] = "DonHugoSF";
+	char identifier[5] = "DHSF";
 };
 
 struct BlockHeader
 {
-	char blockName[16] = { 0 };
+	uint8_t nameSize;
 	uint16_t nSubBlocks;
 	uint32_t blockOffset;
 	uint16_t nVars;
@@ -27,7 +27,7 @@ struct BlockHeader
 
 struct BlockVarHeader
 {
-	char varName[16] = { 0 };
+	uint8_t nameSize;
 	uint16_t varSize;
 };
 

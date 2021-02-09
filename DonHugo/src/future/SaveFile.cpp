@@ -24,7 +24,10 @@ const std::string& BlockVar::getName() const
 
 uint32_t BlockVar::getSize() const
 {
-	return sizeof(BlockVarHeader) + getDataSize();
+	uint32_t headerSize = sizeof(BlockVarHeader);
+	uint32_t nameSize = m_name.size() + 1;
+	uint32_t dataSize = getDataSize();
+	return headerSize + nameSize + dataSize;
 }
 
 uint32_t BlockVar::getDataSize() const
@@ -41,21 +44,31 @@ void BlockVar::saveToFile(std::ofstream& file, uint32_t currOffset)
 {
 	BlockVarHeader bvh;
 
-	memcpy(bvh.varName, m_name.c_str(), m_name.size() + 1);
-
+	bvh.nameSize = m_name.size() + 1;
 	bvh.varSize = m_size;
 
 	file.write((const char*)&bvh, sizeof(BlockVarHeader));
-
-	file.write((const char*)getData(), m_size);
+	file.write(m_name.c_str(), bvh.nameSize);
+	file.write((const char*)getData(), bvh.varSize);
 }
 
 BlockVarRef BlockVar::loadFromFile(std::ifstream& file, uint32_t currOffset)
 {
+	BlockVarRef pVar;
+
 	BlockVarHeader bvh;
 	file.read((char*)&bvh, sizeof(BlockVarHeader));
 
-	BlockVarRef pVar = std::make_shared<BlockVar>(bvh.varName, bvh.varSize);
+	std::string name;
+
+	{
+		char* buff = new char[bvh.nameSize];
+		file.read(buff, bvh.nameSize);
+		name = buff;
+		delete[] buff;
+	}
+
+	pVar = std::make_shared<BlockVar>(name, bvh.varSize);
 	
 	file.read((char*)pVar->getData(), bvh.varSize);
 
@@ -217,7 +230,7 @@ std::shared_ptr<SaveFile> SaveFile::loadFromFile(const std::string& filepath)
 	uint32_t firstBlockOffset = sizeof(SaveFileHeader);
 
 	file.read((char*)&sfh, sizeof(SaveFileHeader));
-	DH_ASSERT(!strcmp(sfh.identifier, "DonHugoSF"));
+	DH_ASSERT(!strcmp(sfh.identifier, "DHSF"));
 
 	std::shared_ptr<SaveFile> psf = std::make_shared<SaveFile>();
 
@@ -248,6 +261,7 @@ bool Block::hasVar(const std::string& varName) const
 uint32_t Block::getSize() const
 {
 	uint32_t headerSize = sizeof(BlockHeader);
+	uint32_t nameSize = name.size() + 1;
 	uint32_t subSize = 0;
 	for (auto elem : subBlocks)
 		subSize += elem.second->getSize();
@@ -255,7 +269,7 @@ uint32_t Block::getSize() const
 	for (auto elem : vars)
 		varSize += elem.second->getSize();
 
-	return headerSize + subSize + varSize;
+	return headerSize + nameSize + subSize + varSize;
 }
 
 void Block::saveToFile(std::ofstream& file, uint32_t currOffset)
@@ -266,13 +280,13 @@ void Block::saveToFile(std::ofstream& file, uint32_t currOffset)
 
 	BlockHeader bh;
 
-	memcpy(bh.blockName, name.c_str(), name.size() + 1);
-
+	bh.nameSize = name.size() + 1;
 	bh.nSubBlocks = (uint32_t)subBlocks.size();
 	bh.blockOffset = currOffset + sizeof(BlockHeader) + subSize;
 	bh.nVars = (uint32_t)vars.size();
 
 	file.write((const char*)&bh, sizeof(BlockHeader));
+	file.write(name.c_str(), bh.nameSize);
 
 	uint32_t subOffset = currOffset + sizeof(BlockHeader);
 	for (auto elem : subBlocks)
@@ -296,9 +310,14 @@ BlockRef Block::loadFromFile(std::ifstream& file, uint32_t currOffset)
 	
 	file.read((char*)&bh, sizeof(BlockHeader));
 
-	pBlock->name = bh.blockName;
+	{
+		char* buff = new char[bh.nameSize];
+		file.read(buff, bh.nameSize);
+		pBlock->name = buff;
+		delete[] buff;
+	}
 
-	uint32_t subOffset = currOffset + sizeof(BlockHeader);
+	uint32_t subOffset = currOffset + sizeof(BlockHeader) + bh.nameSize;
 	for (uint32_t i = 0; i < bh.nSubBlocks; ++i)
 	{
 		BlockRef pSubBlock = Block::loadFromFile(file, subOffset);
