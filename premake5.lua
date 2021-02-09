@@ -20,6 +20,60 @@ group "Dependencies"
 	include "Marx/vendor/imgui"
 group ""
 
+project "MarC"
+	location "MarC"
+	kind "StaticLib"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+	characterset "MBCS"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	pchheader "mcpch.h"
+	pchsource "MarC/src/mcpch.cpp"
+
+	files {
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs {
+		"%{prj.name}/src"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+
+		defines {
+			"MC_PLATFORM_WINDOWS"
+		}
+
+		flags{
+			"MultiProcessorCompile"
+		}
+
+	filter "configurations:Debug"
+		defines {
+			"_DEBUG",
+		    "MC_DEBUG",
+			"MC_ENABLE_ASSERTS",
+			"MC_USE_CONDITIONAL_EXCEPT"
+		}
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "MC_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "MC_DIST"
+		runtime "Release"
+		optimize "on"
+
 project "Marx"
 	location "Marx"
 	kind "StaticLib"
@@ -64,6 +118,10 @@ project "Marx"
 			--"XInput.lib",
 			"D3D11.lib",
 			"dxguid.lib"
+		}
+
+		flags{
+			"MultiProcessorCompile"
 		}
 
 	filter "configurations:Debug"
@@ -120,6 +178,10 @@ project "Sandbox"
 			"MX_PLATFORM_WINDOWS"
 		}
 
+		flags{
+			"MultiProcessorCompile"
+		}
+
 	filter "configurations:Debug"
 		defines {
 			"_DEBUG",
@@ -172,6 +234,10 @@ project "DonHugo"
 
 		defines {
 			"MX_PLATFORM_WINDOWS"
+		}
+
+		flags{
+			"MultiProcessorCompile"
 		}
 
 	filter "configurations:Debug"
