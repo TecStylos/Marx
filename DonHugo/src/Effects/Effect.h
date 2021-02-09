@@ -72,8 +72,9 @@ struct EffectParamDesc
 	EffectParam_t minVal;
 	EffectParam_t maxVal;
 	EffectParam_t* pValue;
-	const char* name;
-	const char* internalName;
+	const char* name = "None";
+	const char* internalName = "None";
+	const char* help = "No help";
 };
 
 inline const char* EffectTypeString(EffectType type)

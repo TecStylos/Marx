@@ -171,24 +171,36 @@ std::shared_ptr<SoundBuffer> SoundBuffer::loadFromFile(SoundDevice* pDevice, con
 	if (!file.good())
 		throw std::exception("Cannot open sound file!");
 
-	WaveFileHeader header;
-	file.read((char*)&header, sizeof(WaveFileHeader));
-	if (!eqArray(header.chunkId, "RIFF", 4) || !eqArray(header.format, "WAVE", 4))
+	uint32_t dataOffset = sizeof(RIFFHeader) + sizeof(FMTHeader) + sizeof(DataHeader);
+
+	RIFFHeader riffHeader;
+	file.read((char*)&riffHeader, sizeof(RIFFHeader));
+	if (!eqArray(riffHeader.chunkID, "RIFF", 4) || !eqArray(riffHeader.format, "WAVE", 4))
 		throw std::exception("Invalid file format!");
-	if (!eqArray(header.subChunkId, "fmt ", 4))
+
+	FMTHeader fmtHeader;
+	file.read((char*)&fmtHeader, sizeof(FMTHeader));
+	if (!eqArray(fmtHeader.chunkID, "fmt ", 4))
 		throw std::exception("Invalid chunk format!");
-	DH_ASSERT(header.audioFormat == WAVE_FORMAT_PCM);
-	if (header.audioFormat != WAVE_FORMAT_PCM)
+	if (fmtHeader.audioFormat != WAVE_FORMAT_PCM)
 		throw std::exception("Invalid wave format!");
 
-	DH_ASSERT(eqArray(header.dataChunkId, "data", 4));
+	DataHeader dataHeader;
+	file.read((char*)&dataHeader, sizeof(DataHeader));
+	if (eqArray(dataHeader.chunkID, "LIST", 4))
+	{
+		dataOffset += sizeof(DataHeader) + dataHeader.chunkSize;
+		file.seekg(dataHeader.chunkSize, std::ios::cur);
+		file.read((char*)&dataHeader, sizeof(DataHeader));
+	}
+	DH_ASSERT(eqArray(dataHeader.chunkID, "data", 4));
 
-	std::shared_ptr<SoundBuffer> pSoundBuff = std::make_shared<SoundBuffer>(pDevice, header.dataSize, header.numChannels, header.sampleRate, header.bitsPerSample, true);
+	std::shared_ptr<SoundBuffer> pSoundBuff = std::make_shared<SoundBuffer>(pDevice, dataHeader.chunkSize, fmtHeader.numChannels, fmtHeader.sampleRate, fmtHeader.bitsPerSample, true);
 
-	file.seekg(sizeof(WaveFileHeader));
-	auto waveData = new char[header.dataSize];
+	file.seekg(dataOffset);
+	auto waveData = new char[dataHeader.chunkSize];
 
-	file.read(waveData, header.dataSize);
+	file.read(waveData, dataHeader.chunkSize);
 	file.close();
 
 	pSoundBuff->update(waveData);

@@ -6,21 +6,29 @@
 
 #include "SoundDevice.h"
 
-struct WaveFileHeader
+struct RIFFHeader
 {
-	char chunkId[4];
+	char chunkID[4];
 	uint32_t chunkSize;
 	char format[4];
-	char subChunkId[4];
-	uint32_t subChunkSize;
+};
+
+struct FMTHeader
+{
+	char chunkID[4];
+	uint32_t chunkSize;
 	uint16_t audioFormat;
 	uint16_t numChannels;
 	uint32_t sampleRate;
 	uint32_t bytesPerSecond;
 	uint16_t blockAlign;
 	uint16_t bitsPerSample;
-	char dataChunkId[4];
-	uint32_t dataSize;
+};
+
+struct DataHeader
+{
+	char chunkID[4];
+	uint32_t chunkSize;
 };
 
 class SoundBuffer
