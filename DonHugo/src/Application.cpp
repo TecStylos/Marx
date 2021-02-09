@@ -132,6 +132,19 @@ namespace MyImGui
 		};
 		return ImGui::InputText(label, (char*)pStr->c_str(), pStr->size() + 1, ImGuiInputTextFlags_CallbackResize, callback, (void*)pStr);
 	}
+
+	static void HelpMarker(const char* desc)
+	{
+		ImGui::TextDisabled("(?)");
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted(desc);
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+	}
 }
 
 std::string virtualKeyToString(int virtualKey)
@@ -681,6 +694,8 @@ private:
 				static bool alreadyOpen = false;
 				static std::vector<CaptureDeviceEnum> availDevices;
 
+				MyImGui::HelpMarker("The microphone that will record your beautiful voice.");
+				ImGui::SameLine();
 				if (ImGui::BeginCombo("Microphone", m_pCaptureDevice ? m_pCaptureDevice->getDescription().c_str() : nullptr))
 				{
 					if (!alreadyOpen)
@@ -708,6 +723,8 @@ private:
 				static bool alreadyOpen = false;
 				static std::vector<SoundDeviceEnum> availDevices;
 
+				MyImGui::HelpMarker("The output your friends will listen to. Usually a virtual cable like VB-Cable (www.vb-cable.com).");
+				ImGui::SameLine();
 				if (ImGui::BeginCombo("Main-Out", m_pMainSoundDevice ? m_pMainSoundDevice->getDescription().c_str() : nullptr))
 				{
 					if (!alreadyOpen)
@@ -741,6 +758,8 @@ private:
 				static bool alreadyOpen = false;
 				static std::vector<SoundDeviceEnum> availDevices;
 
+				MyImGui::HelpMarker("The output you will hear (like your own voice echo).");
+				ImGui::SameLine();
 				if (ImGui::BeginCombo("Echo-Out", m_pEchoSoundDevice ? m_pEchoSoundDevice->getDescription().c_str() : nullptr))
 				{
 					if (!alreadyOpen)
@@ -1024,6 +1043,8 @@ private:
 
 						while (pEffect->getNextParam(i++, &desc))
 						{
+							MyImGui::HelpMarker(desc.help);
+							ImGui::SameLine();
 							switch (desc.type)
 							{
 							case EffectParamType::FLOAT:
@@ -1120,6 +1141,8 @@ private:
 
 					while (pEffect->getNextParam(i++, &desc))
 					{
+						MyImGui::HelpMarker(desc.help);
+						ImGui::SameLine();
 						switch (desc.type)
 						{
 						case EffectParamType::FLOAT:
