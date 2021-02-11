@@ -12,6 +12,7 @@
   #define DH_ASSERT(r) { if (!(r)) __debugbreak(); }
 #endif
 
+#pragma pack(push, 1)
 struct SaveFileHeader
 {
 	char identifier[5] = "DHSF";
@@ -30,6 +31,7 @@ struct BlockVarHeader
 	uint8_t nameSize;
 	uint16_t varSize;
 };
+#pragma pack(pop)
 
 struct Block;
 class BlockVar;

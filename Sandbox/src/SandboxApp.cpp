@@ -1,4 +1,5 @@
 #include <Marx.h>
+#include <MarC.h>
 
 struct Vertex
 {
@@ -280,5 +281,26 @@ public:
 
 Marx::Application* Marx::createApplication()
 {
+	MarC::HeapMem mem(4096 * 10);
+	MarC::Address addr = mem.alloc(9999);
+	mem.free(&addr);
+
+	std::string codeStr;
+	{
+		std::ifstream file("code.marc");
+		while (!file.eof())
+		{
+			codeStr.push_back(file.get());
+		}
+		file.close();
+	}
+
+	MarC::TokenList tl;
+	MarC::Tokenizer::tokenize(codeStr, tl);
+	for (auto& t : tl)
+	{
+		std::cout << t.value << std::endl;
+	}
+
 	return new Sandbox();
 }

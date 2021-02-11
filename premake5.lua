@@ -47,7 +47,7 @@ project "MarC"
 		systemversion "latest"
 
 		defines {
-			"MC_PLATFORM_WINDOWS"
+			"MX_PLATFORM_WINDOWS"
 		}
 
 		flags{
@@ -57,20 +57,20 @@ project "MarC"
 	filter "configurations:Debug"
 		defines {
 			"_DEBUG",
-		    "MC_DEBUG",
-			"MC_ENABLE_ASSERTS",
-			"MC_USE_CONDITIONAL_EXCEPT"
+		    "MX_DEBUG",
+			"MX_ENABLE_ASSERTS",
+			"MX_USE_CONDITIONAL_EXCEPT"
 		}
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "MC_RELEASE"
+		defines "MX_RELEASE"
 		runtime "Release"
 		optimize "on"
 
 	filter "configurations:Dist"
-		defines "MC_DIST"
+		defines "MX_DIST"
 		runtime "Release"
 		optimize "on"
 
@@ -163,11 +163,13 @@ project "Sandbox"
 	includedirs {
 		"Marx/vendor/spdlog/include",
 		"Marx/src",
-		"Marx/vendor"
+		"Marx/vendor",
+		"MarC/src"
 	}
 
 	links {
-		"Marx"
+		"Marx",
+		"MarC"
 	}
 
 	filter "system:windows"
