@@ -32,9 +32,9 @@ struct LoadedSound
 public:
 	void saveToSaveFile(SaveFile& sf)
 	{
-		auto main = BlockChain("root.sounds") + std::to_string(internalID);
-		auto prop = main + "properties";
-		auto effects = main + "effects";
+		auto main = "root.sounds." + std::to_string(internalID);
+		auto prop = main + ".properties";
+		auto effects = main + ".effects";
 
 		sf.setVar<std::string>(prop, "name", name);
 		sf.setVar<KeyCombo>(prop, "keyCombo", keyCombo);
@@ -66,9 +66,9 @@ public:
 	}
 	static Marx::Reference<LoadedSound> loadFromSaveFile(SaveFile& sf, const std::string& internalIDStr, SoundDevice* pDev1, SoundDevice* pDev2)
 	{
-		auto main = BlockChain("root.sounds") + internalIDStr;
-		auto prop = main + "properties";
-		auto effects = main + "effects";
+		auto main = "root.sounds." + internalIDStr;
+		auto prop = main + ".properties";
+		auto effects = main + ".effects";
 
 		auto ps = std::make_shared<LoadedSound>();
 		ps->name = sf.getVar<std::string>(prop, "name", "None");
@@ -995,17 +995,17 @@ private:
 			{
 				EffectList* pEl = m_pSelectedSound->pSound->getEffectList();
 				uint32_t effectID = 0;
-				for (EffectType effectType : *pEl)
+				for (EffectType effecX : *pEl)
 				{
 					bool effectChanged = true;
-					Effect* pEffect = pEl->getEffect(effectType);
+					Effect* pEffect = pEl->getEffect(effecX);
 
 					bool effectRemoved = false;
 					{
 						ImGui::PushID(pEffect);
 						if (ImGui::Button("X"))
 						{
-							m_pSelectedSound->pSound->removeEffect(effectType);
+							m_pSelectedSound->pSound->removeEffect(effecX);
 							effectRemoved = true;
 						}
 						ImGui::PopID();
@@ -1036,7 +1036,7 @@ private:
 						break;
 
 					ImGui::SameLine();
-					if (ImGui::TreeNodeEx(EffectTypeString(effectType), ImGuiTreeNodeFlags_DefaultOpen))
+					if (ImGui::TreeNodeEx(EffectTypeString(effecX), ImGuiTreeNodeFlags_DefaultOpen))
 					{
 						uint32_t i = 0;
 						EffectParamDesc desc;
@@ -1072,7 +1072,7 @@ private:
 					}
 
 					if (effectChanged)
-						m_pSelectedSound->pSound->updateEffect(effectType);
+						m_pSelectedSound->pSound->updateEffect(effecX);
 
 					++effectID;
 				}
@@ -1093,17 +1093,17 @@ private:
 		{
 			EffectList* pEl = m_pMicPlayback->getEffectList();
 			uint32_t effectID = 0;
-			for (EffectType effectType : *pEl)
+			for (EffectType effecX : *pEl)
 			{
 				bool effectChanged = true;
-				Effect* pEffect = pEl->getEffect(effectType);
+				Effect* pEffect = pEl->getEffect(effecX);
 
 				bool effectRemoved = false;
 				{
 					ImGui::PushID(pEffect);
 					if (ImGui::Button("X"))
 					{
-						m_pMicPlayback->removeEffect(effectType);
+						m_pMicPlayback->removeEffect(effecX);
 						effectRemoved = true;
 					}
 					ImGui::PopID();
@@ -1134,7 +1134,7 @@ private:
 					break;
 
 				ImGui::SameLine();
-				if (ImGui::TreeNodeEx(EffectTypeString(effectType), ImGuiTreeNodeFlags_DefaultOpen))
+				if (ImGui::TreeNodeEx(EffectTypeString(effecX), ImGuiTreeNodeFlags_DefaultOpen))
 				{
 					uint32_t i = 0;
 					EffectParamDesc desc;
@@ -1170,7 +1170,7 @@ private:
 				}
 
 				if (effectChanged)
-					m_pMicPlayback->updateEffect(effectType);
+					m_pMicPlayback->updateEffect(effecX);
 
 				++effectID;
 			}

@@ -1,13 +1,12 @@
 #include "SaveFile.h"
 
-BlockVar::BlockVar(const std::string& name, uint32_t size)
-	: m_name(name), m_size(size)
+BlockVar::BlockVar(uint16_t keyID, uint32_t size)
+	: m_keyID(keyID), m_size(size), m_pData(malloc(size))
 {
-	m_pData = malloc(size);
 }
 
-BlockVar::BlockVar(const std::string& name, uint32_t size, const void* pData)
-	: BlockVar(name, size)
+BlockVar::BlockVar(uint16_t keyID, uint32_t size, const void* pData)
+	: BlockVar(keyID, size)
 {
 	memcpy(m_pData, pData, size);
 }
@@ -17,17 +16,16 @@ BlockVar::~BlockVar()
 	free(m_pData);
 }
 
-const std::string& BlockVar::getName() const
+uint16_t BlockVar::getKeyID() const
 {
-	return m_name;
+	return m_keyID;
 }
 
 uint32_t BlockVar::getSize() const
 {
 	uint32_t headerSize = sizeof(BlockVarHeader);
-	uint32_t nameSize = m_name.size() + 1;
 	uint32_t dataSize = getDataSize();
-	return headerSize + nameSize + dataSize;
+	return headerSize + dataSize;
 }
 
 uint32_t BlockVar::getDataSize() const
@@ -40,129 +38,92 @@ void* BlockVar::getData()
 	return m_pData;
 }
 
-void BlockVar::saveToFile(std::ofstream& file, uint32_t currOffset)
+const void* BlockVar::getData() const
+{
+	return m_pData;
+}
+
+void BlockVar::saveToFile(std::ofstream& file) const
 {
 	BlockVarHeader bvh;
 
-	bvh.nameSize = m_name.size() + 1;
+	bvh.keyID = m_keyID;
 	bvh.varSize = m_size;
 
 	file.write((const char*)&bvh, sizeof(BlockVarHeader));
-	file.write(m_name.c_str(), bvh.nameSize);
 	file.write((const char*)getData(), bvh.varSize);
 }
 
-BlockVarRef BlockVar::loadFromFile(std::ifstream& file, uint32_t currOffset)
+BlockVarRef BlockVar::loadFromFile(std::ifstream& file)
 {
 	BlockVarRef pVar;
 
 	BlockVarHeader bvh;
 	file.read((char*)&bvh, sizeof(BlockVarHeader));
 
-	std::string name;
-
-	{
-		char* buff = new char[bvh.nameSize];
-		file.read(buff, bvh.nameSize);
-		name = buff;
-		delete[] buff;
-	}
-
-	pVar = std::make_shared<BlockVar>(name, bvh.varSize);
+	pVar = std::make_shared<BlockVar>(bvh.keyID, bvh.varSize);
 	
 	file.read((char*)pVar->getData(), bvh.varSize);
 
 	return pVar;
 }
 
-BlockChain::BlockChain(const char* chainStr)
-	: BlockChain(std::string(chainStr))
+BlockChain::BlockChain(std::vector<uint16_t> chain)
+	: m_chain(chain)
 {}
 
-BlockChain::BlockChain(const std::string& chainStr)
-	: m_chainStr(chainStr)
+BlockChain::BlockChain(KeyListRef pKeyList, const std::string& chainStr)
 {
-	m_depth = chainStr.empty() ? 0 : 1;
-
+	std::string token;
 	for (char c : chainStr)
+	{
 		if (c == '.')
-			++m_depth;
+		{
+			m_chain.push_back(pKeyList->get(token));
+			token.clear();
+			continue;
+		}
+		token.push_back(c);
+	}
+	if (!token.empty())
+		m_chain.push_back(pKeyList->get(token));
 }
 
 uint32_t BlockChain::getDepth() const
 {
-	return m_depth;
+	return (uint32_t)m_chain.size();
 }
 
-std::string BlockChain::operator[](uint32_t index) const
+uint16_t BlockChain::operator[](uint32_t index) const
 {
-	uint32_t begin = 0;
-	uint32_t end = 0;
-	for (uint32_t i = 0; i < m_chainStr.size(); ++i)
-	{
-		if (m_chainStr[i] == '.')
-		{
-			if (index == 0)
-			{
-				end = i;
-				break;
-			}
-			if (index == 1)
-			{
-				begin = i + 1;
-			}
-			--index;
-		}
-	}
-
-	return m_chainStr.substr(begin, end - begin);
+	return m_chain[index];
 }
 
 BlockChain BlockChain::operator+(const BlockChain& other) const
 {
-	if (m_chainStr.size() > 0 && other.m_chainStr.size() > 0)
-		return m_chainStr + "." + other.m_chainStr;
-	return m_chainStr + other.m_chainStr;
+	auto nChain = m_chain;
+	for (uint16_t i : other.m_chain)
+		nChain.push_back(i);
+	
+	return nChain;
 }
 
 SaveFile::SaveFile()
-	: m_pRootBlock(std::make_shared<Block>())
 {
-	m_pRootBlock->name = "root";
+	m_pKeyList = std::make_shared<KeyList>();
+	m_pRootBlock = std::make_shared<Block>(m_pKeyList->get("root"));
 }
 
-bool SaveFile::hasBlockChain(const BlockChain& blockChain) const
+bool SaveFile::hasBlockChain(const std::string& blockChain) const
 {
-	return !!getBlock(blockChain);
+	return !!getBlock(BlockChain(m_pKeyList, blockChain));
 }
 
-std::vector<std::string> SaveFile::getSubBlockNames(const BlockChain& blockChain) const
+bool SaveFile::hasVar(const std::string& blockChain, const std::string& varName) const
 {
-	auto pBlock = getBlock(blockChain);
-	if (!pBlock)
-		return std::vector<std::string>();
+	auto pBlock = getBlock(BlockChain(m_pKeyList, blockChain));
 
-	std::vector<std::string> names;
-	for (auto& elem : pBlock->subBlocks)
-		names.push_back(elem.first);
-	return names;
-}
-
-std::vector<std::string> SaveFile::getVarNames(const BlockChain& blockChain) const
-{
-	auto pBlock = getBlock(blockChain);
-
-	if (pBlock)
-		return pBlock->getVarNames();
-
-	return std::vector<std::string>();
-}
-
-bool SaveFile::hasVar(const BlockChain& blockChain, const std::string& varName) const
-{
-	auto pBlock = getBlock(blockChain);
-
-	return pBlock ? pBlock->hasVar(varName) : false;
+	return pBlock ? pBlock->hasVar(m_pKeyList->get(varName)) : false;
 }
 
 BlockRef SaveFile::addBlock(const BlockChain& blockChain)
@@ -183,15 +144,6 @@ BlockRef SaveFile::addBlock(const BlockChain& blockChain)
 BlockRef SaveFile::getBlock(const BlockChain& blockChain)
 {
 	return addBlock(blockChain);
-	/*auto pBlock = m_pRootBlock;
-	for (uint32_t i = 1; i < blockChain.getDepth(); ++i)
-	{
-		auto& res = pBlock->subBlocks.find(blockChain[i]);
-		if (res == pBlock->subBlocks.end())
-			return nullptr;
-		pBlock = res->second;
-	}
-	return pBlock;*/
 }
 
 const BlockRef SaveFile::getBlock(const BlockChain& blockChain) const
@@ -213,11 +165,27 @@ void SaveFile::saveToFile(const std::string& filepath) const
 	std::ofstream file(filepath, std::ios::out | std::ios::binary);
 	DH_ASSERT(file.good());
 
-	uint32_t firstBlockOffset = sizeof(SaveFileHeader);
-
 	file.write((const char*)&sfh, sizeof(SaveFileHeader));
-	m_pRootBlock->saveToFile(file, firstBlockOffset);
+	m_pKeyList->saveToFile(file);
+
+	m_pRootBlock->saveToFile(file);
 	file.close();
+}
+
+std::vector<std::string> SaveFile::getSubBlockNames(const std::string& blockChain) const
+{
+	auto pBlock = getBlock(BlockChain(m_pKeyList, blockChain));
+
+	if (!pBlock)
+		return std::vector<std::string>();
+
+	std::vector<std::string> names;
+	for (auto& elem : pBlock->subBlocks)
+	{
+		names.push_back(m_pKeyList->get(elem.first));
+	}
+
+	return names;
 }
 
 std::shared_ptr<SaveFile> SaveFile::loadFromFile(const std::string& filepath)
@@ -227,41 +195,30 @@ std::shared_ptr<SaveFile> SaveFile::loadFromFile(const std::string& filepath)
 	if (!file.good())
 		return nullptr;
 
-	uint32_t firstBlockOffset = sizeof(SaveFileHeader);
-
 	file.read((char*)&sfh, sizeof(SaveFileHeader));
 	DH_ASSERT(!strcmp(sfh.identifier, "DHSF"));
 
 	std::shared_ptr<SaveFile> psf = std::make_shared<SaveFile>();
 
-	psf->m_pRootBlock = Block::loadFromFile(file, firstBlockOffset);
+	psf->m_pKeyList = KeyList::loadFromFile(file);
+
+	psf->m_pRootBlock = Block::loadFromFile(file);
 
 	return psf;
 }
 
-Block::Block(const std::string& name)
-	: name(name)
+Block::Block(uint16_t keyID)
+	: keyID(keyID)
 {}
 
-std::vector<std::string> Block::getVarNames() const
+bool Block::hasVar(uint16_t keyID) const
 {
-	std::vector<std::string> names;
-
-	for (auto elem : vars)
-		names.push_back(elem.second->getName());
-
-	return names;
-}
-
-bool Block::hasVar(const std::string& varName) const
-{
-	return vars.find(varName) != vars.end();
+	return vars.find(keyID) != vars.end();
 }
 
 uint32_t Block::getSize() const
 {
 	uint32_t headerSize = sizeof(BlockHeader);
-	uint32_t nameSize = name.size() + 1;
 	uint32_t subSize = 0;
 	for (auto elem : subBlocks)
 		subSize += elem.second->getSize();
@@ -269,10 +226,10 @@ uint32_t Block::getSize() const
 	for (auto elem : vars)
 		varSize += elem.second->getSize();
 
-	return headerSize + nameSize + subSize + varSize;
+	return headerSize + subSize + varSize;
 }
 
-void Block::saveToFile(std::ofstream& file, uint32_t currOffset)
+void Block::saveToFile(std::ofstream& file)
 {
 	uint32_t subSize = 0;
 	for (auto elem : subBlocks)
@@ -280,57 +237,100 @@ void Block::saveToFile(std::ofstream& file, uint32_t currOffset)
 
 	BlockHeader bh;
 
-	bh.nameSize = name.size() + 1;
+	bh.keyID = keyID;
 	bh.nSubBlocks = (uint32_t)subBlocks.size();
-	bh.blockOffset = currOffset + sizeof(BlockHeader) + subSize;
 	bh.nVars = (uint32_t)vars.size();
 
 	file.write((const char*)&bh, sizeof(BlockHeader));
-	file.write(name.c_str(), bh.nameSize);
 
-	uint32_t subOffset = currOffset + sizeof(BlockHeader);
 	for (auto elem : subBlocks)
 	{
-		elem.second->saveToFile(file, subOffset);
-		subOffset += elem.second->getSize();
+		elem.second->saveToFile(file);
 	}
 
 	for (auto elem : vars)
 	{
-		elem.second->saveToFile(file, subOffset);
-		subOffset += elem.second->getSize();
+		elem.second->saveToFile(file);
 	}
 }
 
-BlockRef Block::loadFromFile(std::ifstream& file, uint32_t currOffset)
+BlockRef Block::loadFromFile(std::ifstream& file)
 {
-	BlockRef pBlock = std::make_shared<Block>();
-
 	BlockHeader bh;
 	
 	file.read((char*)&bh, sizeof(BlockHeader));
 
-	{
-		char* buff = new char[bh.nameSize];
-		file.read(buff, bh.nameSize);
-		pBlock->name = buff;
-		delete[] buff;
-	}
+	BlockRef pBlock = std::make_shared<Block>(bh.keyID);
 
-	uint32_t subOffset = currOffset + sizeof(BlockHeader) + bh.nameSize;
 	for (uint32_t i = 0; i < bh.nSubBlocks; ++i)
 	{
-		BlockRef pSubBlock = Block::loadFromFile(file, subOffset);
-		pBlock->subBlocks.insert(std::make_pair(pSubBlock->name, pSubBlock));
-		subOffset += pSubBlock->getSize();
+		BlockRef pSubBlock = Block::loadFromFile(file);
+		pBlock->subBlocks.insert(std::make_pair(pSubBlock->keyID, pSubBlock));
 	}
 
 	for (uint32_t i = 0; i < bh.nVars; ++i)
 	{
-		BlockVarRef pVar = BlockVar::loadFromFile(file, subOffset);
-		pBlock->vars.insert(std::make_pair(pVar->getName(), pVar));
-		subOffset += pVar->getSize();
+		BlockVarRef pVar = BlockVar::loadFromFile(file);
+		pBlock->vars.insert(std::make_pair(pVar->getKeyID(), pVar));
 	}
 
 	return pBlock;
+}
+
+uint16_t KeyList::get(const std::string& strID)
+{
+	auto it = m_keys.find(strID);
+	if (it != m_keys.end())
+		return it->second;
+
+	m_keys.insert(std::make_pair(strID, m_currIndex));
+	m_keyStrings.push_back(strID);
+	return m_currIndex++;
+}
+
+const std::string& KeyList::get(uint16_t keyID) const
+{
+	return m_keyStrings[keyID];
+}
+
+uint32_t KeyList::getSize() const
+{
+	uint32_t size = 0;
+	size += sizeof(KeyListHeader);
+	for (auto& elem : m_keys)
+	{
+		size += (uint32_t)elem.first.size() + 1;
+	}
+	return size;
+}
+
+void KeyList::saveToFile(std::ofstream& file) const
+{
+	KeyListHeader klh;
+	klh.nKeys = (uint16_t)m_keys.size();
+	file.write((const char*)&klh, sizeof(KeyListHeader));
+
+	for (auto& elem : m_keyStrings)
+	{
+		file.write(elem.c_str(), elem.size() + 1);
+	}
+}
+
+KeyListRef KeyList::loadFromFile(std::ifstream& file)
+{
+	auto pKl = std::make_shared<KeyList>();
+
+	KeyListHeader klh;
+	file.read((char*)&klh, sizeof(KeyListHeader));
+
+	for (uint16_t i = 0; i < klh.nKeys; ++i)
+	{
+		std::string str;
+		char c;
+		while ((c = file.get()) != '\0')
+			str.push_back(c);
+		pKl->get(str);
+	}
+
+	return pKl;
 }

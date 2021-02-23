@@ -20,80 +20,102 @@ struct SaveFileHeader
 
 struct BlockHeader
 {
-	uint8_t nameSize;
+	uint16_t keyID;
 	uint16_t nSubBlocks;
-	uint32_t blockOffset;
 	uint16_t nVars;
 };
 
 struct BlockVarHeader
 {
-	uint8_t nameSize;
+	uint16_t keyID;
 	uint16_t varSize;
+};
+
+struct KeyListHeader
+{
+	uint16_t nKeys;
 };
 #pragma pack(pop)
 
 struct Block;
 class BlockVar;
+class KeyList;
 typedef std::shared_ptr<Block> BlockRef;
 typedef std::shared_ptr<BlockVar> BlockVarRef;
-typedef std::unordered_map<std::string, BlockRef> BlockMap;
-typedef std::unordered_map<std::string, BlockVarRef> VarMap;
+typedef std::shared_ptr<KeyList> KeyListRef;
+typedef std::unordered_map<uint16_t, BlockRef> BlockMap;
+typedef std::unordered_map<uint16_t, BlockVarRef> VarMap;
 
 class BlockVar
 {
 public:
-	BlockVar(const std::string& name, uint32_t size);
-	BlockVar(const std::string& name, uint32_t size, const void* pData);
+	BlockVar(uint16_t keyID, uint32_t size);
+	BlockVar(uint16_t keyID, uint32_t size, const void* pData);
 	~BlockVar();
 public:
-	const std::string& getName() const;
+	uint16_t getKeyID() const;
 	uint32_t getSize() const;
 	uint32_t getDataSize() const;
 	void* getData();
+	const void* getData() const;
 public:
-	void saveToFile(std::ofstream& file, uint32_t currOffset);
+	void saveToFile(std::ofstream& file) const;
 public:
-	static BlockVarRef loadFromFile(std::ifstream& file, uint32_t currOffset);
+	static BlockVarRef loadFromFile(std::ifstream& file);
 private:
-	std::string m_name;
+	uint16_t m_keyID;
 	uint32_t m_size;
 	void* m_pData;
+};
+
+class KeyList
+{
+public:
+	KeyList() = default;
+public:
+	uint16_t get(const std::string& strID);
+	const std::string& get(uint16_t keyID) const;
+	uint32_t getSize() const;
+public:
+	void saveToFile(std::ofstream& file) const;
+public:
+	static KeyListRef loadFromFile(std::ifstream& file);
+private:
+	uint16_t m_currIndex = 0;
+	std::vector<std::string> m_keyStrings;
+	std::unordered_map<std::string, uint16_t> m_keys;
 };
 
 class BlockChain
 {
 public:
 	BlockChain() = default;
-	BlockChain(const char* chainStr);
-	BlockChain(const std::string& chainStr);
+	BlockChain(std::vector<uint16_t> chain);
+	BlockChain(KeyListRef pKeyList, const std::string& chainStr);
 public:
 	uint32_t getDepth() const;
-	std::string operator[](uint32_t index) const;
+	uint16_t operator[](uint32_t index) const;
 	BlockChain operator+(const BlockChain& other) const;
 private:
-	uint32_t m_depth = 0;
-	std::string m_chainStr;
+	std::vector<uint16_t> m_chain;
 };
 
 struct Block
 {
 public:
-	Block() = default;
-	Block(const std::string& name);
+	Block(uint16_t keyID);
 public:
-	std::string name;
+	uint16_t keyID;
 	BlockMap subBlocks;
 	VarMap vars;
-	std::vector<std::string> getVarNames() const;
-	bool hasVar(const std::string& varName) const;
-	template <typename T> void setVar(const std::string& varName, const T& value);
-	template <typename T> T getVar(const std::string& varName, const T& defaultValue);
+	bool hasVar(uint16_t keyID) const;
+	template <typename T> void setVar(uint16_t keyID, const T& value);
+	template <typename T> T getVar(uint16_t keyID, const T& defaultValue);
 public:
 	uint32_t getSize() const;
-	void saveToFile(std::ofstream& file, uint32_t currOffset);
+	void saveToFile(std::ofstream& file);
 public:
-	static BlockRef loadFromFile(std::ifstream& file, uint32_t currOffset);
+	static BlockRef loadFromFile(std::ifstream& file);
 };
 
 class SaveFile
@@ -101,14 +123,13 @@ class SaveFile
 public:
 	SaveFile();
 public:
-	bool hasBlockChain(const BlockChain& blockChain) const;
-	std::vector<std::string> getSubBlockNames(const BlockChain& blockChain) const;
-	std::vector<std::string> getVarNames(const BlockChain& blockChain) const;
-	bool hasVar(const BlockChain& blockChain, const std::string& varName) const;
-	template <typename T> void setVar(const BlockChain& blockChain, const std::string& varName, const T& value);
-	template <typename T> T getVar(const BlockChain& blockChain, const std::string& varName, const T& defaultValue);
+	bool hasBlockChain(const std::string& blockChain) const;
+	bool hasVar(const std::string& blockChain, const std::string& varName) const;
+	template <typename T> void setVar(const std::string& blockChain, const std::string& varName, const T& value);
+	template <typename T> T getVar(const std::string& blockChain, const std::string& varName, const T& defaultValue);
 public:
 	void saveToFile(const std::string& filepath) const;
+	std::vector<std::string> getSubBlockNames(const std::string& blockChain) const;
 public:
 	static std::shared_ptr<SaveFile> loadFromFile(const std::string& filepath);
 private:
@@ -117,15 +138,16 @@ private:
 	const BlockRef getBlock(const BlockChain& blockChain) const;
 private:
 	BlockRef m_pRootBlock;
+	KeyListRef m_pKeyList;
 };
 
 template<typename T>
-inline void Block::setVar(const std::string& varName, const T& value)
+inline void Block::setVar(uint16_t keyID, const T& value)
 {
-	auto it = vars.find(varName);
+	auto it = vars.find(keyID);
 	if (it == vars.end())
 	{
-		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, (uint32_t)sizeof(T), &value)));
+		vars.insert(std::make_pair(keyID, std::make_shared<BlockVar>(keyID, (uint32_t)sizeof(T), &value)));
 	}
 	else
 	{
@@ -135,18 +157,18 @@ inline void Block::setVar(const std::string& varName, const T& value)
 		}
 		else
 		{
-			it->second = std::make_shared<BlockVar>(varName, (uint32_t)sizeof(T), &value);
+			it->second = std::make_shared<BlockVar>(keyID, (uint32_t)sizeof(T), &value);
 		}
 	}
 }
 
 template<>
-inline void Block::setVar<std::string>(const std::string& varName, const std::string& value)
+inline void Block::setVar<std::string>(uint16_t keyID, const std::string& value)
 {
-	auto it = vars.find(varName);
+	auto it = vars.find(keyID);
 	if (it == vars.end())
 	{
-		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, (uint32_t)value.size() + 1, value.c_str())));
+		vars.insert(std::make_pair(keyID, std::make_shared<BlockVar>(keyID, (uint32_t)value.size() + 1, value.c_str())));
 	}
 	else
 	{
@@ -156,18 +178,18 @@ inline void Block::setVar<std::string>(const std::string& varName, const std::st
 		}
 		else
 		{
-			it->second = std::make_shared<BlockVar>(varName, (uint32_t)value.size() + 1, value.c_str());
+			it->second = std::make_shared<BlockVar>(keyID, (uint32_t)value.size() + 1, value.c_str());
 		}
 	}
 }
 
 template<typename T>
-inline T Block::getVar(const std::string& varName, const T& defaultValue)
+inline T Block::getVar(uint16_t keyID, const T& defaultValue)
 {
-	auto it = vars.find(varName);
+	auto it = vars.find(keyID);
 	if (it == vars.end())
 	{
-		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, (uint32_t)sizeof(T), &defaultValue)));
+		vars.insert(std::make_pair(keyID, std::make_shared<BlockVar>(keyID, (uint32_t)sizeof(T), &defaultValue)));
 		return defaultValue;
 	}
 	else
@@ -178,19 +200,19 @@ inline T Block::getVar(const std::string& varName, const T& defaultValue)
 		}
 		else
 		{
-			it->second = std::make_shared<BlockVar>(varName, (uint32_t)sizeof(T), &defaultValue);
+			it->second = std::make_shared<BlockVar>(keyID, (uint32_t)sizeof(T), &defaultValue);
 			return *(T*)it->second->getData();
 		}
 	}
 }
 
 template<>
-inline std::string Block::getVar<std::string>(const std::string& varName, const std::string& defaultValue)
+inline std::string Block::getVar<std::string>(uint16_t keyID, const std::string& defaultValue)
 {
-	auto it = vars.find(varName);
+	auto it = vars.find(keyID);
 	if (it == vars.end())
 	{
-		vars.insert(std::make_pair(varName, std::make_shared<BlockVar>(varName, (uint32_t)defaultValue.size() + 1, &defaultValue)));
+		vars.insert(std::make_pair(keyID, std::make_shared<BlockVar>(keyID, (uint32_t)defaultValue.size() + 1, &defaultValue)));
 		return defaultValue;
 	}
 	else
@@ -200,13 +222,13 @@ inline std::string Block::getVar<std::string>(const std::string& varName, const 
 }
 
 template<typename T>
-inline void SaveFile::setVar(const BlockChain& blockChain, const std::string& varName, const T& value)
+inline void SaveFile::setVar(const std::string& blockChain, const std::string& varName, const T& value)
 {
-	getBlock(blockChain)->setVar<T>(varName, value);
+	getBlock(BlockChain(m_pKeyList, blockChain))->setVar<T>(m_pKeyList->get(varName), value);
 }
 
 template<typename T>
-inline T SaveFile::getVar(const BlockChain& blockChain, const std::string& varName, const T& defaultValue)
+inline T SaveFile::getVar(const std::string& blockChain, const std::string& varName, const T& defaultValue)
 {
-	return getBlock(blockChain)->getVar<T>(varName, defaultValue);
+	return getBlock(BlockChain(m_pKeyList, blockChain))->getVar<T>(m_pKeyList->get(varName), defaultValue);
 }
