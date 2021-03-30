@@ -230,8 +230,6 @@ public:
 	{
 		Marx::RenderCommand::setClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
-		auto psf = SaveFile::loadFromFile("save.dhsf");
-
 		{
 			std::string vertexSrc = R"(
 cbuffer sceneData : register(b0)
@@ -311,148 +309,171 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 			m_background.pCBuffBrightness = Marx::PSConstantBuffer::create(&m_background.brightness, sizeof(float[4]));
 		}
 
-		if (psf)
 		{
-			if (psf->hasVar("root.devices.microphone", "guid"))
+			auto deviceSaveFile = SaveFile::loadFromFile("savefiles\\devices.dhsf");
+			if (deviceSaveFile)
 			{
-				try
+				if (deviceSaveFile->hasVar("root.devices.microphone", "guid"))
 				{
-					setNewCaptureDevice(
-						std::make_shared<CaptureDevice>(
-							psf->getVar<GUID>("root.devices.microphone", "guid", GUID()),
-							psf->getVar<std::string>("root.devices.microphone", "description", "Last Microphone")
-							)
-					);
+					try
+					{
+						setNewCaptureDevice(
+							std::make_shared<CaptureDevice>(
+								deviceSaveFile->getVar<GUID>("root.devices.microphone", "guid", GUID()),
+								deviceSaveFile->getVar<std::string>("root.devices.microphone", "description", "Last Microphone")
+								)
+						);
+					}
+					catch (std::exception& e)
+					{
+						MX_ERROR("{0}", e.what());
+					}
 				}
-				catch (std::exception& e)
+				if (deviceSaveFile->hasVar("root.devices.main-out", "guid"))
 				{
-					MX_ERROR("{0}", e.what());
+					try
+					{
+						setNewMainSoundDevice(
+							std::make_shared<SoundDevice>(
+								(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
+								deviceSaveFile->getVar<GUID>("root.devices.main-out", "guid", GUID()),
+								deviceSaveFile->getVar<std::string>("root.devices.main-out", "description", "Last Main Output")
+								)
+						);
+					}
+					catch (std::exception& e)
+					{
+						MX_ERROR("{0}", e.what());
+					}
+				}
+				if (deviceSaveFile->hasVar("root.devices.echo-out", "guid"))
+				{
+					try
+					{
+						setNewEchoSoundDevice(
+							std::make_shared<SoundDevice>(
+								(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
+								deviceSaveFile->getVar<GUID>("root.devices.echo-out", "guid", GUID()),
+								deviceSaveFile->getVar<std::string>("root.devices.echo-out", "description", "Last Echo Output")
+								)
+						);
+					}
+					catch (std::exception& e)
+					{
+						MX_ERROR("{0}", e.what());
+					}
 				}
 			}
-			if (psf->hasVar("root.devices.main-out", "guid"))
-			{
-				try
-				{
-					setNewMainSoundDevice(
-						std::make_shared<SoundDevice>(
-							(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
-							psf->getVar<GUID>("root.devices.main-out", "guid", GUID()),
-							psf->getVar<std::string>("root.devices.main-out", "description", "Last Main Output")
-							)
-					);
-				}
-				catch (std::exception& e)
-				{
-					MX_ERROR("{0}", e.what());
-				}
-			}
-			if (psf->hasVar("root.devices.echo-out", "guid"))
-			{
-				try
-				{
-					setNewEchoSoundDevice(
-						std::make_shared<SoundDevice>(
-							(HWND)(Marx::Application::get()->getWindow()->getNativeWindow()),
-							psf->getVar<GUID>("root.devices.echo-out", "guid", GUID()),
-							psf->getVar<std::string>("root.devices.echo-out", "description", "Last Echo Output")
-							)
-					);
-				}
-				catch (std::exception& e)
-				{
-					MX_ERROR("{0}", e.what());
-				}
-			}
+		}
 
-			if (m_pMicPlayback)
+		{
+			auto settingsSaveFile = SaveFile::loadFromFile("savefiles\\settings.dhsf");
+			if (settingsSaveFile)
 			{
-				m_pMicPlayback->setVolume(psf->getVar<float>("root.settings.microphone.volumes", "master", 1.0f));
-				m_pMicPlayback->setVolumeMultiplier1(psf->getVar<float>("root.settings.microphone.volumes", "main", 1.0f));
-				m_pMicPlayback->setVolumeMultiplier2(psf->getVar<float>("root.settings.microphone.volumes", "echo", 1.0f));
+				if (m_pMicPlayback)
+				{
+					m_pMicPlayback->setVolume(settingsSaveFile->getVar<float>("root.settings.microphone.volumes", "master", 1.0f));
+					m_pMicPlayback->setVolumeMultiplier1(settingsSaveFile->getVar<float>("root.settings.microphone.volumes", "main", 1.0f));
+					m_pMicPlayback->setVolumeMultiplier2(settingsSaveFile->getVar<float>("root.settings.microphone.volumes", "echo", 1.0f));
+				}
+
+				m_soundVolumes.master = settingsSaveFile->getVar<float>("root.settings.sound.volumes", "master", 1.0f);
+				m_soundVolumes.mainMultiplier = settingsSaveFile->getVar<float>("root.settings.sound.volumes", "main", 1.0f);
+				m_soundVolumes.echoMultiplier = settingsSaveFile->getVar<float>("root.settings.sound.volumes", "echo", 1.0f);
+
+				m_background.color[0] = settingsSaveFile->getVar<float>("root.settings.background.color", "red", 0.05f);
+				m_background.color[1] = settingsSaveFile->getVar<float>("root.settings.background.color", "green", 0.05f);
+				m_background.color[2] = settingsSaveFile->getVar<float>("root.settings.background.color", "blue", 0.05f);
+				updateBackgroundColor();
+				updateBackgroundBrightness(settingsSaveFile->getVar<float>("root.settings.background", "brightness", 0.5f));
+				m_background.imagePath = settingsSaveFile->getVar<std::string>("root.settings.background", "imagePath", "");
+				if (!m_background.imagePath.empty())
+				{
+					m_background.pImage = Marx::Texture2D::create(m_background.imagePath);
+					if (m_background.pImage)
+						m_background.imageAspectRatio = (float)m_background.pImage->getWidth() / (float)m_background.pImage->getHeight();
+				}
+				m_background.useImage = m_background.pImage ? settingsSaveFile->getVar<bool>("root.settings.background", "useImage", false) : false;
 			}
+		}
 
-			m_soundVolumes.master = psf->getVar<float>("root.settings.sound.volumes", "master", 1.0f);
-			m_soundVolumes.mainMultiplier = psf->getVar<float>("root.settings.sound.volumes", "main", 1.0f);
-			m_soundVolumes.echoMultiplier = psf->getVar<float>("root.settings.sound.volumes", "echo", 1.0f);
-
-			m_background.color[0] = psf->getVar<float>("root.settings.background.color", "red", 0.05f);
-			m_background.color[1] = psf->getVar<float>("root.settings.background.color", "green", 0.05f);
-			m_background.color[2] = psf->getVar<float>("root.settings.background.color", "blue", 0.05f);
-			updateBackgroundColor();
-			updateBackgroundBrightness(psf->getVar<float>("root.settings.background", "brightness", 0.5f));
-			m_background.imagePath = psf->getVar<std::string>("root.settings.background", "imagePath", "");
-			if (!m_background.imagePath.empty())
+		{
+			auto soundsSaveFile = SaveFile::loadFromFile("savefiles\\sounds.dhsf");
+			if (soundsSaveFile)
 			{
-				m_background.pImage = Marx::Texture2D::create(m_background.imagePath);
-				if (m_background.pImage)
-					m_background.imageAspectRatio = (float)m_background.pImage->getWidth() / (float)m_background.pImage->getHeight();
+				for (auto& internalIDStr : soundsSaveFile->getSubBlockNames("root.sounds"))
+				{
+					uint32_t newID = (uint32_t)std::stoull(internalIDStr);
+					m_soundIDCounter = max(newID, m_soundIDCounter);
+					auto pSound = LoadedSound::loadFromSaveFile(*soundsSaveFile, internalIDStr, m_pMainSoundDevice.get(), m_pEchoSoundDevice.get());
+					if (pSound)
+						m_sounds.push_back(pSound);
+				}
+				++m_soundIDCounter;
 			}
-			m_background.useImage = m_background.pImage ? psf->getVar<bool>("root.settings.background", "useImage", false) : false;
-
-			for (auto& internalIDStr : psf->getSubBlockNames("root.sounds"))
-			{
-				uint32_t newID = (uint32_t)std::stoull(internalIDStr);
-				m_soundIDCounter = max(newID, m_soundIDCounter);
-				auto pSound = LoadedSound::loadFromSaveFile(*psf, internalIDStr, m_pMainSoundDevice.get(), m_pEchoSoundDevice.get());
-				if (pSound)
-					m_sounds.push_back(pSound);
-			}
-			++m_soundIDCounter;
 		}
 
 		updateCamera((float)Marx::Application::get()->getWindow()->getWidth() / (float)Marx::Application::get()->getWindow()->getHeight());
 	}
 	~MainLayer()
 	{
-		SaveFile sf;
-		if (m_pCaptureDevice)
 		{
-			sf.setVar<GUID>("root.devices.microphone", "guid", *m_pCaptureDevice->getLPGuid());
-			sf.setVar<std::string>("root.devices.microphone", "description", m_pCaptureDevice->getDescription());
-		}
-		if (m_pMainSoundDevice)
-		{
-			sf.setVar<GUID>("root.devices.main-out", "guid", *m_pMainSoundDevice->getLPGuid());
-			sf.setVar<std::string>("root.devices.main-out", "description", m_pMainSoundDevice->getDescription());
-		}
-		if (m_pEchoSoundDevice)
-		{
-			sf.setVar<GUID>("root.devices.echo-out", "guid", *m_pEchoSoundDevice->getLPGuid());
-			sf.setVar<std::string>("root.devices.echo-out", "description", m_pEchoSoundDevice->getDescription());
-		}
-
-		if (m_pMicPlayback)
-		{
-			sf.setVar<float>("root.settings.microphone.volumes", "master", m_pMicPlayback->getVolume());
-			sf.setVar<float>("root.settings.microphone.volumes", "main", m_pMicPlayback->getVolumeMultiplier1());
-			sf.setVar<float>("root.settings.microphone.volumes", "echo", m_pMicPlayback->getVolumeMultiplier2());
+			SaveFile sf;
+			if (m_pCaptureDevice)
+			{
+				sf.setVar<GUID>("root.devices.microphone", "guid", *m_pCaptureDevice->getLPGuid());
+				sf.setVar<std::string>("root.devices.microphone", "description", m_pCaptureDevice->getDescription());
+			}
+			if (m_pMainSoundDevice)
+			{
+				sf.setVar<GUID>("root.devices.main-out", "guid", *m_pMainSoundDevice->getLPGuid());
+				sf.setVar<std::string>("root.devices.main-out", "description", m_pMainSoundDevice->getDescription());
+			}
+			if (m_pEchoSoundDevice)
+			{
+				sf.setVar<GUID>("root.devices.echo-out", "guid", *m_pEchoSoundDevice->getLPGuid());
+				sf.setVar<std::string>("root.devices.echo-out", "description", m_pEchoSoundDevice->getDescription());
+			}
+			sf.saveToFile("savefiles\\devices.dhsf");
 		}
 
-		sf.setVar<float>("root.settings.sound.volumes", "master", m_soundVolumes.master);
-		sf.setVar<float>("root.settings.sound.volumes", "main", m_soundVolumes.mainMultiplier);
-		sf.setVar<float>("root.settings.sound.volumes", "echo", m_soundVolumes.echoMultiplier);
-
-		sf.setVar<float>("root.settings.background.color", "red", m_background.color[0]);
-		sf.setVar<float>("root.settings.background.color", "green", m_background.color[1]);
-		sf.setVar<float>("root.settings.background.color", "blue", m_background.color[2]);
-		sf.setVar<float>("root.settings.background", "brightness", m_background.brightness[0]);
-		if (!m_background.imagePath.empty() && m_background.pImage)
-			sf.setVar<std::string>("root.settings.background", "imagePath", m_background.imagePath);
-		else
-			m_background.useImage = false;
-		sf.setVar<bool>("root.settings.background", "useImage", m_background.useImage);
-
-		if (m_pMicPlayback)
 		{
-			sf.setVar<float>("root.settings.microphone.volumes", "master", m_pMicPlayback->getVolume());
-			sf.setVar<float>("root.settings.microphone.volumes", "main", m_pMicPlayback->getVolumeMultiplier1());
-			sf.setVar<float>("root.settings.microphone.volumes", "echo", m_pMicPlayback->getVolumeMultiplier2());
+			SaveFile sf;
+			if (m_pMicPlayback)
+			{
+				sf.setVar<float>("root.settings.microphone.volumes", "master", m_pMicPlayback->getVolume());
+				sf.setVar<float>("root.settings.microphone.volumes", "main", m_pMicPlayback->getVolumeMultiplier1());
+				sf.setVar<float>("root.settings.microphone.volumes", "echo", m_pMicPlayback->getVolumeMultiplier2());
+			}
+
+			sf.setVar<float>("root.settings.sound.volumes", "master", m_soundVolumes.master);
+			sf.setVar<float>("root.settings.sound.volumes", "main", m_soundVolumes.mainMultiplier);
+			sf.setVar<float>("root.settings.sound.volumes", "echo", m_soundVolumes.echoMultiplier);
+
+			sf.setVar<float>("root.settings.background.color", "red", m_background.color[0]);
+			sf.setVar<float>("root.settings.background.color", "green", m_background.color[1]);
+			sf.setVar<float>("root.settings.background.color", "blue", m_background.color[2]);
+			sf.setVar<float>("root.settings.background", "brightness", m_background.brightness[0]);
+			if (!m_background.imagePath.empty() && m_background.pImage)
+				sf.setVar<std::string>("root.settings.background", "imagePath", m_background.imagePath);
+			else
+				m_background.useImage = false;
+			sf.setVar<bool>("root.settings.background", "useImage", m_background.useImage);
+
+			if (m_pMicPlayback)
+			{
+				sf.setVar<float>("root.settings.microphone.volumes", "master", m_pMicPlayback->getVolume());
+				sf.setVar<float>("root.settings.microphone.volumes", "main", m_pMicPlayback->getVolumeMultiplier1());
+				sf.setVar<float>("root.settings.microphone.volumes", "echo", m_pMicPlayback->getVolumeMultiplier2());
+			}
+			sf.saveToFile("savefiles\\settings.dhsf");
 		}
-
-		for (uint32_t i = 0; i < m_sounds.size(); ++i)
-			m_sounds[i]->saveToSaveFile(sf);
-
-		sf.saveToFile("save.dhsf");
+		{
+			SaveFile sf;
+			for (uint32_t i = 0; i < m_sounds.size(); ++i)
+				m_sounds[i]->saveToSaveFile(sf);
+			sf.saveToFile("savefiles\\sounds.dhsf");
+		}
 	}
 public:
 	virtual void onUpdate(Marx::Timestep ts) override
@@ -1308,6 +1329,7 @@ public:
 	Application()
 	{
 		getWindow()->enableImGuiFallthrough(true);
+		getWindow()->setTitle("DonHugo");
 		HRESULT hr = CoInitialize(nullptr);
 		pushLayer(new MainLayer());
 	}

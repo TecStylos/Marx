@@ -20,6 +20,7 @@ namespace Marx
 		virtual void* getNativeWindow() const override { return m_hWnd; }
 		virtual GraphicsContext& getGfxContext() const override { return *m_pContext; }
 		virtual void enableImGuiFallthrough(bool enable) override { m_imGuiFallthroughEnabled = enable; }
+		virtual void setTitle(const std::string& title) override { SetWindowTextA(m_hWnd, title.c_str()); }
 	public:
 		inline void setEventCallback(const EventCallbackFunc& callback) override { m_eventCallback = callback; }
 	protected:
