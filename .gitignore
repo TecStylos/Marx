@@ -33,3 +33,4 @@ Makefile
 .codelite/
 
 /DonHugo/DonHugo.zip
+/out/build/x64-Debug
