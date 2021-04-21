@@ -281,7 +281,7 @@ public:
 
 Marx::Application* Marx::createApplication()
 {
-	MarC::HeapMem mem(4096 * 10);
+	/*MarC::HeapMem mem(4096 * 10);
 	MarC::Address addr = mem.alloc(9999);
 	mem.free(&addr);
 
@@ -295,12 +295,14 @@ Marx::Application* Marx::createApplication()
 		file.close();
 	}
 
-	MarC::TokenList tl;
-	MarC::Tokenizer::tokenize(codeStr, tl);
-	for (auto& t : tl)
+	MarC::CompileData tl;
+	MarC::Tokenizer::Error tokenizeErr = MarC::Tokenizer::tokenize(codeStr, tl);
+	for (auto& t : tl.tokens)
 	{
-		std::cout << t.value << std::endl;
+		std::cout << ">>> " << t.value << " <<<" << std::endl;
 	}
+	std::cout << tokenizeErr.toString() << std::endl;
+	MarC::ParseTree pt = MarC::Parser::parse(tl);*/
 
 	return new Sandbox();
 }
