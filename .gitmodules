@@ -1,0 +1,7 @@
+[submodule "Marx/vendor/spdlog"]
+	path = Marx/vendor/spdlog
+	url = https://github.com/TecStylos/spdlog
+[submodule "Marx/vendor/imgui"]
+	path = Marx/vendor/imgui
+	url = https://github.com/TecStylos/imgui
+	branch = docking
