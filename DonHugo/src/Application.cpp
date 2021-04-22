@@ -13,6 +13,7 @@
 #include <Marx.h>
 
 #include <ShObjIdl.h>
+#include <filesystem>
 
 struct KeyCombo
 {
@@ -417,6 +418,7 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 	}
 	~MainLayer()
 	{
+		std::filesystem::create_directory("savefiles");
 		{
 			SaveFile sf;
 			if (m_pCaptureDevice)
