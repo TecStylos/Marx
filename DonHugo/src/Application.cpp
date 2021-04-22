@@ -232,62 +232,7 @@ public:
 		Marx::RenderCommand::setClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
 		{
-			std::string vertexSrc = R"(
-cbuffer sceneData : register(b0)
-{
-	matrix c_viewProjection;
-};
-
-cbuffer modelData : register(b1)
-{
-	matrix c_modelTransform;
-}
-
-struct VS_INPUT
-{
-	float2 position : A_POSITION;
-	float2 texCoord : A_TEXCOORD;
-};
-
-struct VS_OUTPUT
-{
-	float4 position : SV_POSITION;
-	float2 texCoord : TEXCOORD0;
-};
-
-VS_OUTPUT main(VS_INPUT inp)
-{
-	VS_OUTPUT op;
-
-	op.position = mul(float4(inp.position, 0.0f, 1.0f), c_modelTransform);
-	op.position = mul(op.position, c_viewProjection);
-	op.texCoord = inp.texCoord;
-
-	return op;
-}
-)";
-			std::string pixelSrc = R"(
-Texture2D g_tex : register(t0);
-SamplerState g_sState : register(s0);
-
-cbuffer brightnessData : register(b2)
-{
-	float4 c_brightness;
-}
-
-struct VS_OUTPUT
-{
-	float4 position : SV_POSITION;
-	float2 texCoord : TEXCOORD0;
-};
-
-float4 main(VS_OUTPUT inp) : SV_TARGET
-{
-	return g_tex.Sample(g_sState, inp.texCoord) * c_brightness;
-}
-)";
-
-			m_background.pShader = Marx::Shader::create("backgroundShader", vertexSrc, pixelSrc);
+			m_background.pShader = Marx::Shader::create("assets/shaders/background.hlsl");
 
 			struct Vertex { float x; float y; float u; float v; } pVertices[] = {
 				{-1.0f, -1.0f, 0.0f, 0.0f},
@@ -311,7 +256,7 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 		}
 
 		{
-			auto deviceSaveFile = SaveFile::loadFromFile("savefiles\\devices.dhsf");
+			auto deviceSaveFile = SaveFile::loadFromFile("savefiles/devices.dhsf");
 			if (deviceSaveFile)
 			{
 				if (deviceSaveFile->hasVar("root.devices.microphone", "guid"))
@@ -368,7 +313,7 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 		}
 
 		{
-			auto settingsSaveFile = SaveFile::loadFromFile("savefiles\\settings.dhsf");
+			auto settingsSaveFile = SaveFile::loadFromFile("savefiles/settings.dhsf");
 			if (settingsSaveFile)
 			{
 				if (m_pMicPlayback)
@@ -399,7 +344,7 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 		}
 
 		{
-			auto soundsSaveFile = SaveFile::loadFromFile("savefiles\\sounds.dhsf");
+			auto soundsSaveFile = SaveFile::loadFromFile("savefiles/sounds.dhsf");
 			if (soundsSaveFile)
 			{
 				for (auto& internalIDStr : soundsSaveFile->getSubBlockNames("root.sounds"))
@@ -436,7 +381,7 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 				sf.setVar<GUID>("root.devices.echo-out", "guid", *m_pEchoSoundDevice->getLPGuid());
 				sf.setVar<std::string>("root.devices.echo-out", "description", m_pEchoSoundDevice->getDescription());
 			}
-			sf.saveToFile("savefiles\\devices.dhsf");
+			sf.saveToFile("savefiles/devices.dhsf");
 		}
 
 		{
@@ -468,13 +413,13 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 				sf.setVar<float>("root.settings.microphone.volumes", "main", m_pMicPlayback->getVolumeMultiplier1());
 				sf.setVar<float>("root.settings.microphone.volumes", "echo", m_pMicPlayback->getVolumeMultiplier2());
 			}
-			sf.saveToFile("savefiles\\settings.dhsf");
+			sf.saveToFile("savefiles/settings.dhsf");
 		}
 		{
 			SaveFile sf;
 			for (uint32_t i = 0; i < m_sounds.size(); ++i)
 				m_sounds[i]->saveToSaveFile(sf);
-			sf.saveToFile("savefiles\\sounds.dhsf");
+			sf.saveToFile("savefiles/sounds.dhsf");
 		}
 	}
 public:
