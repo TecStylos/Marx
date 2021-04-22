@@ -60,6 +60,7 @@ target_link_libraries(
 	Marx PUBLIC
 	imgui
 	${DirectX11_LIBRARY}
+	Xinput
 )
 
 target_precompile_headers (
