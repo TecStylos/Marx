@@ -2,11 +2,10 @@
 
 #define INITGUID
 
+#include <mmreg.h>
 #include <dsound.h>
 #include <wrl.h>
 using Microsoft::WRL::ComPtr;
-
-#pragma comment(lib, "dsound.lib")
 
 #include <comdef.h>
 

@@ -404,7 +404,7 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 				for (auto& internalIDStr : soundsSaveFile->getSubBlockNames("root.sounds"))
 				{
 					uint32_t newID = (uint32_t)std::stoull(internalIDStr);
-					m_soundIDCounter = max(newID, m_soundIDCounter);
+					m_soundIDCounter = std::max(newID, m_soundIDCounter);
 					auto pSound = LoadedSound::loadFromSaveFile(*soundsSaveFile, internalIDStr, m_pMainSoundDevice.get(), m_pEchoSoundDevice.get());
 					if (pSound)
 						m_sounds.push_back(pSound);
