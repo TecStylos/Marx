@@ -1,0 +1,20 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Sandbox.exe (Sandbox\\Sandbox.exe)",
+      "name": "Sandbox.exe (Sandbox\\Sandbox.exe)",
+      "currentDir": "${workspaceRoot}\\Sandbox"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "DonHugo.exe (DonHugo\\DonHugo.exe)",
+      "name": "DonHugo.exe (DonHugo\\DonHugo.exe)",
+      "currentDir": "${workspaceRoot}\\DonHugo"
+    }
+  ]
+}
