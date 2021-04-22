@@ -54,13 +54,13 @@ target_include_directories(
 	"vendor/stb_image"
 )
 
-include("FindDirectX11.cmake")
+#include("FindDirectX11.cmake")
 
 target_link_libraries(
 	Marx PUBLIC
 	imgui
 	${DirectX11_LIBRARY}
-	Xinput
+	Xinput.lib d3d11.lib dxgi.lib dxguid.lib
 )
 
 target_precompile_headers (

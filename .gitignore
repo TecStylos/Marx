@@ -1,6 +1,5 @@
 ### General Dirs ###
-/bin/
-/bin-int/
+/out
 
 ### General Files ###
 *.dhsf
@@ -13,24 +12,9 @@
 .vs/
 
 ### Win Files ###
-*.user
-*.vcxproj
-*.filters
-*.sln
 DonHugo.exe
 
 ####################
 ####################
 
-### CodeLite files ###
-*.project
-*.workspace
-compile_flags.*
-*.mk
-Makefile
-
-### CodeLite dirs ###
-.codelite/
-
 /DonHugo/DonHugo.zip
-/out/build/x64-Debug
