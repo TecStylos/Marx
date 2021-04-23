@@ -99,14 +99,14 @@ namespace Marx
 		D3D11GraphicsContext::D3D11Manager::getContext()->PSSetSamplers(slot, 1, m_pSampler.GetAddressOf());
 	}
 
-	void D3D11Texture2D::update(const BYTE* pData)
+	void D3D11Texture2D::update(const unsigned char* pData)
 	{
 		uint32_t offsetX = 0;
 		uint32_t offsetY = 0;
 		updatePartial(&pData, &offsetX, &offsetY, &m_width, &m_height, 1);
 	}
 
-	void D3D11Texture2D::updatePartial(const BYTE* const* pData, const uint32_t* pOffsetX, const uint32_t* pOffsetY, const uint32_t* pWidth, const uint32_t* pHeight, uint32_t nBuffers)
+	void D3D11Texture2D::updatePartial(const unsigned char* const* pData, const uint32_t* pOffsetX, const uint32_t* pOffsetY, const uint32_t* pWidth, const uint32_t* pHeight, uint32_t nBuffers)
 	{
 		for (uint32_t i = 0; i < nBuffers; ++i)
 		{

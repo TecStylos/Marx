@@ -15,8 +15,7 @@
 
 #include <stdexcept>
 
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "Marx/Core/Log.h"

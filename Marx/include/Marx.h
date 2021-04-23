@@ -32,3 +32,5 @@
 
 // --- Entry Point ---
 #include "Marx/EntryPoint.h"
+
+#include "mxpch.h"

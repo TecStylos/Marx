@@ -25,7 +25,7 @@ namespace Marx
 		// Updates the whole texture data
 		//
 		// @param pData The new data for the texture (The size of the buffer must be equal to the size of the texture)
-		virtual void update(const char* pData) = 0;
+		virtual void update(const unsigned char* pData) = 0;
 	};
 
 	class Texture2D : public Texture
@@ -40,7 +40,7 @@ namespace Marx
 		// @param pWidth Array of widths for each pixel buffer (in pixels not bytes)
 		// @param pHeight Array of heights for each pixel buffer (int pixels not bytes)
 		// @param nBuffers The number of buffers in pPixels
-		virtual void updatePartial(const char* const* pPixels, const uint32_t* pOffsetX, const uint32_t* pOffsetY, const uint32_t* pWidth, const uint32_t* pHeight, uint32_t nBuffers) = 0;
+		virtual void updatePartial(const unsigned char* const* pPixels, const uint32_t* pOffsetX, const uint32_t* pOffsetY, const uint32_t* pWidth, const uint32_t* pHeight, uint32_t nBuffers) = 0;
 	public:
 		static Reference<Texture2D> create(const std::string& path);
 	};

@@ -51,11 +51,33 @@ set(
 	"$<$<CONFIG:DEBUG>:-DMX_ENABLE_ASSERTS>"
 )
 
+set(
+	MARX_LINK_LIBRARIES
+	imgui
+)
+
+set(
+	MARX_INCLUDE_DIRECTORIES
+	"include"
+
+	"vendor/imgui"
+	"vendor/spdlog/include"
+	"vendor/stb_image"
+	"vendor/glm"
+	"vendor/glfw/include"
+	"vendor/glad/include"
+)
+
 if (WIN32)
 	set(
 		MARX_COMPILE_OPTIONS
 		${MARX_COMPILE_OPTIONS}
 		"-DMX_PLATFORM_WINDOWS"
+	)
+	set(
+		MARX_LINK_LIBRARIES
+		${MARX_LINK_LIBRARIES}
+		Xinput.lib d3d11.lib dxgi.lib dxguid.lib
 	)
 elseif(UNIX)
 	set(
@@ -67,12 +89,7 @@ endif()
 
 target_include_directories(
 	Marx PUBLIC 
-	"include"
-
-	"vendor/imgui"
-	"vendor/spdlog/include"
-	"vendor/stb_image"
-	"vendor/glm-0.9.9.8/glm"
+	${MARX_INCLUDE_DIRECTORIES}
 )
 
 target_compile_options(
@@ -82,8 +99,7 @@ target_compile_options(
 
 target_link_libraries(
 	Marx PUBLIC
-	imgui
-	Xinput.lib d3d11.lib dxgi.lib dxguid.lib
+	${MARX_LINK_LIBRARIES}
 )
 
 target_precompile_headers (

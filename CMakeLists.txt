@@ -8,4 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 add_subdirectory("Marx/vendor/imgui")
 add_subdirectory("Marx")
 add_subdirectory("Sandbox")
-add_subdirectory("DonHugo")
+
+if(WIN32)
+    add_subdirectory("DonHugo")
+endif()

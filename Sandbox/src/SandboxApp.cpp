@@ -125,8 +125,8 @@ public:
 public:
 	virtual void onUpdate(Marx::Timestep ts) override
 	{
-		static constexpr float moveSpeed = 1.0f;
-		static constexpr float rotSpeed = DX::XMConvertToRadians(90.0f);
+		static const float moveSpeed = 1.0f;
+		static const float rotSpeed = glm::radians(90.0f);
 		static float rotation = 0.0f;
 
 		if (Marx::Input::isKeyPressed(MX_KEY_Q))
@@ -152,7 +152,7 @@ public:
 		if (Marx::Input::isKeyPressed(MX_KEY_UP))
 			m_vertexY += 0.001f;
 
-		DX::XMFLOAT3 camPos = m_orthographicCam.getPosition();
+		glm::vec3 camPos = m_orthographicCam.getPosition();
 		if (Marx::Input::isKeyPressed(MX_KEY_I))
 			camPos.y += moveSpeed * ts;
 		if (Marx::Input::isKeyPressed(MX_KEY_K))
@@ -165,8 +165,8 @@ public:
 		m_orthographicCam.setPosition(camPos);
 		m_perspectiveCam.setPosition(camPos);
 
-		DX::XMMATRIX scaleMat = DX::XMMatrixScaling(0.5f, 0.5f, 0.5f);
-		DX::XMMATRIX rotationMat = DX::XMMatrixRotationY(rotation);
+		glm::mat4 scaleMat = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+		glm::mat4 rotationMat = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 
 		Marx::RenderCommand::setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		Marx::RenderCommand::clear();
@@ -181,19 +181,19 @@ public:
 		}
 
 		{
-			BYTE pixels1[] = {
+			unsigned char pixels1[] = {
 				0, 0, 0, 255
 			};
-			BYTE pixels2[] = {
+			unsigned char pixels2[] = {
 				255, 0, 0, 255,
 				0, 255, 0, 255
 			};
-			BYTE* pPixels[] = { &pixels1[0], &pixels2[0] };
+			unsigned char* pPixels[] = { &pixels1[0], &pixels2[0] };
 			uint32_t offsetsX[] = { 0, 1 };
 			uint32_t offsetsY[] = { 0, 0 };
 			uint32_t widths[] = { 1, 1 };
 			uint32_t heights[] = { 1, 2 };
-			m_pTexture->updatePartial((BYTE**)pPixels, offsetsX, offsetsY, widths, heights, 2);
+			m_pTexture->updatePartial((unsigned char**)pPixels, offsetsX, offsetsY, widths, heights, 2);
 		}
 
 		if (m_usePerspective)
@@ -214,9 +214,9 @@ public:
 		}*/
 		//Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pTexture);
 
-		DX::XMMATRIX transformMat = scaleMat * rotationMat * DX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
-		Marx::Renderer::submit(texShader, m_pCubeVertexArray, DX::XMMatrixTranspose(transformMat), m_pTexture);
-		Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pAlphaTexture);
+		glm::mat4 transformMat = scaleMat * rotationMat * glm::translate(glm::mat4(1.0f), m_position);
+		Marx::Renderer::submit(texShader, m_pCubeVertexArray, glm::transpose(transformMat), m_pTexture);
+		Marx::Renderer::submit(texShader, m_pVertexArray, glm::transpose(glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.5f, 1.5f))), m_pAlphaTexture);
 
 		Marx::Renderer::endScene();
 	}
@@ -256,12 +256,12 @@ private:
 	Marx::Reference<Marx::VertexArray> m_pVertexArray;
 	Marx::Reference<Marx::VertexArray> m_pCubeVertexArray;
 	Marx::Reference<Marx::Texture2D> m_pTexture, m_pAlphaTexture;
-	DX::XMFLOAT3 m_position;
+	glm::vec3 m_position;
 	Marx::OrthographicCamera m_orthographicCam;
 	Marx::PerspectiveCamera m_perspectiveCam;
 	float m_mouseX = 0.0f;
 	float m_mouseY = 0.0f;
-	DX::XMFLOAT4 m_color[2] = { {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f} };
+	glm::vec4 m_color[2] = { glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, 0.0f, 0.0f) };
 	float m_vertexX = -0.5f;
 	float m_vertexY = -0.5f;
 	bool m_usePerspective = false;

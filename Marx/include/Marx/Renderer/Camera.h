@@ -21,7 +21,7 @@ namespace Marx
 	private:
 		void recalculateAll();
 	private:
-		glm::vec3 m_position = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_position;
 		float m_rotation = 0.0f;
 	private:
 		glm::mat4 m_viewMatrix;
@@ -49,8 +49,8 @@ namespace Marx
 	private:
 		void recalculateAll();
 	private:
-		glm::vec3 m_position = { 0.0f, 0.0f, 0.f };
-		glm::vec3 m_rotation = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_position;
+		glm::vec3 m_rotation;
 		float m_fovDeg;
 		float m_aspectRatio;
 		float m_nearClip;
