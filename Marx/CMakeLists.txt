@@ -29,21 +29,21 @@ add_library(
 
 	"vendor/stb_image/stb_image.cpp"
 
-	#"$<$<BOOL:WIN32>:"
-	#	"include/Marx/Platform/D3D11/D3D11Buffer.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11GraphicsContext.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11InfoManager.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11RendererAPI.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11Shader.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11Texture.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11VertexArray.cpp"
-	#	"include/Marx/Platform/Win32/Win32Input.cpp"
-	#	"include/Marx/Platform/Win32/Win32Window.cpp"
-	#	"include/Marx/Platform/XInput/XController.cpp"
+	"$<$<BOOL:WIN32>:"
+		"include/Marx/Platform/D3D11/D3D11Buffer.cpp"
+		"include/Marx/Platform/D3D11/D3D11GraphicsContext.cpp"
+		"include/Marx/Platform/D3D11/D3D11InfoManager.cpp"
+		"include/Marx/Platform/D3D11/D3D11RendererAPI.cpp"
+		"include/Marx/Platform/D3D11/D3D11Shader.cpp"
+		"include/Marx/Platform/D3D11/D3D11Texture.cpp"
+		"include/Marx/Platform/D3D11/D3D11VertexArray.cpp"
+		"include/Marx/Platform/Win32/Win32Input.cpp"
+		"include/Marx/Platform/Win32/Win32Window.cpp"
+		"include/Marx/Platform/XInput/XController.cpp"
 	
-	#	"vendor/imgui/backends/imgui_impl_win32.cpp"
-	#	"vendor/imgui/backends/imgui_impl_dx11.cpp"
-	#">"
+		"vendor/imgui/backends/imgui_impl_win32.cpp"
+		"vendor/imgui/backends/imgui_impl_dx11.cpp"
+	">"
 )
 
 set(

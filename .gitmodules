@@ -7,9 +7,9 @@
 	branch = docking
 [submodule "Marx/vendor/glfw"]
 	path = Marx/vendor/glfw
-	url = git@github.com:TecStylos/glfw.git
+	url = https://github.com/TecStylos/glfw.git
 	branch = 3.3-stable
 [submodule "Marx/vendor/glm"]
 	path = Marx/vendor/glm
-	url = git@github.com:TecStylos/glm.git
+	url = https://github.com/TecStylos/glm.git
 	branch = 0.9.4

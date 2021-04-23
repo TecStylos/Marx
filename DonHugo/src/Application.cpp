@@ -433,7 +433,7 @@ public:
 
 			m_background.pCBuffBrightness->bind(2);
 
-			DX::XMMATRIX transform = DX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 			Marx::Renderer::submit(m_background.pShader, m_background.pVertexArray, transform, m_background.pImage);
 
 			Marx::Renderer::endScene();

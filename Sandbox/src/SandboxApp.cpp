@@ -125,8 +125,8 @@ public:
 public:
 	virtual void onUpdate(Marx::Timestep ts) override
 	{
-		static const float moveSpeed = 1.0f;
-		static const float rotSpeed = glm::radians(90.0f);
+		static constexpr float moveSpeed = 1.0f;
+		static constexpr float rotSpeed = 90.0f;
 		static float rotation = 0.0f;
 
 		if (Marx::Input::isKeyPressed(MX_KEY_Q))
@@ -214,7 +214,8 @@ public:
 		}*/
 		//Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pTexture);
 
-		glm::mat4 transformMat = scaleMat * rotationMat * glm::translate(glm::mat4(1.0f), m_position);
+		//glm::mat4 transformMat = scaleMat * rotationMat * glm::translate(glm::mat4(1.0f), m_position);
+		glm::mat4 transformMat = glm::translate(glm::mat4(1.0f), m_position) * rotationMat * scaleMat;
 		Marx::Renderer::submit(texShader, m_pCubeVertexArray, glm::transpose(transformMat), m_pTexture);
 		Marx::Renderer::submit(texShader, m_pVertexArray, glm::transpose(glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.5f, 1.5f))), m_pAlphaTexture);
 

@@ -12,7 +12,7 @@ namespace Marx
 
 	void Renderer::beginScene(const OrthographicCamera& camera)
 	{
-		s_sceneData->viewProjectionMatrix = camera.getViewProjectionTransposed();
+		s_sceneData->viewProjectionMatrix = glm::transpose(camera.getViewProjectionMatrix());
 	}
 
 	void Renderer::beginScene(const PerspectiveCamera& camera)

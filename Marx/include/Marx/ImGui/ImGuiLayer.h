@@ -22,7 +22,7 @@ namespace Marx
 		void begin();
 		void end();
 	private:
-		std::chrono::high_resolution_clock m_clock;
+		std::chrono::system_clock m_clock;
 		DISABLE_DLL_INTERFACE_WARN;
 		std::chrono::system_clock::time_point m_time;
 		REENABLE_DLL_INTERFACE_WARN;
