@@ -1,5 +1,6 @@
 ### General Dirs ###
 /out
+/build
 
 ### General Files ###
 *.dhsf
