@@ -19,6 +19,7 @@ namespace Marx
 	}
 
 	PerspectiveCamera::PerspectiveCamera()
+		: m_position(0.0f, 0.0f, 0.0f), m_rotation(0.0f, 0.0f, 0.0f)
 	{
 		setProperties(90.0f, 1.0f, 0.01f, 1000.0f);
 	}
@@ -30,11 +31,11 @@ namespace Marx
 
 	void PerspectiveCamera::setProperties(float fovDeg, float aspectRatio, float nearClip, float farClip)
 	{
-		m_fovRad = glm::radians(fovDeg);
+		m_fovDeg = fovDeg;
 		m_aspectRatio = aspectRatio;
 		m_nearClip = nearClip;
 		m_farClip = farClip;
-		m_projectionMatrix = glm::perspective(m_fovRad, m_aspectRatio, m_nearClip, m_farClip);
+		m_projectionMatrix = glm::perspective(m_fovDeg, m_aspectRatio, m_nearClip, m_farClip);
 
 		recalculateAll();
 	}
@@ -42,9 +43,9 @@ namespace Marx
 	void PerspectiveCamera::recalculateAll()
 	{
 		glm::quat orientation = glm::quat(glm::vec3(m_rotation.y, m_rotation.z, m_rotation.x));
+		glm::mat4 translation = glm::translate(glm::mat4(1.0f), m_position);
 
-		m_viewMatrix = glm::inverse(glm::translate(glm::mat4(1.0f), m_position) * glm::toMat4(orientation));
+		m_viewMatrix = translation * glm::toMat4(orientation);
 		m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
-		m_viewProjectionMatrixTransposed = m_viewProjectionMatrix;
 	}
 }

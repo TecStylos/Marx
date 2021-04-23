@@ -3,7 +3,7 @@
 #include "Marx/Core.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
-#include "spdlog/sinks/wincolor_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace Marx
 {

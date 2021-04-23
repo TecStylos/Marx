@@ -17,14 +17,14 @@ namespace Marx
 
 	void Renderer::beginScene(const PerspectiveCamera& camera)
 	{
-		s_sceneData->viewProjectionMatrix = camera.getViewProjectionTransposed();
+		s_sceneData->viewProjectionMatrix = glm::transpose(camera.getViewProjectionMatrix());
 	}
 
 	void Renderer::endScene()
 	{
 	}
 
-	void Renderer::submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, const glm::mat4& transform, const Reference<Texture2D> texture)
+	void Renderer::submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, glm::mat4 transform, const Reference<Texture2D> texture)
 	{
 		static Reference<ConstantBuffer> sceneVSConstBuffer = VSConstantBuffer::create(nullptr, sizeof(glm::mat4));
 		static Reference<ConstantBuffer> modelVSConstBuffer = VSConstantBuffer::create(nullptr, sizeof(glm::mat4));
@@ -32,6 +32,8 @@ namespace Marx
 		shader->bind();
 		vertexArray->bind();
 		texture->bind();
+
+		transform = glm::transpose(transform);
 
 		sceneVSConstBuffer->update(&s_sceneData->viewProjectionMatrix);
 		sceneVSConstBuffer->bind(0);

@@ -23,7 +23,7 @@ namespace Marx
 		static void beginScene(const PerspectiveCamera& camera);
 		static void endScene();
 	public:
-		static void submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, const glm::mat4& transform, const Reference<Texture2D> texture);
+		static void submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, glm::mat4 transform, const Reference<Texture2D> texture);
 	public:
 		inline static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
 	private:

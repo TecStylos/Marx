@@ -214,10 +214,9 @@ public:
 		}*/
 		//Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pTexture);
 
-		//glm::mat4 transformMat = scaleMat * rotationMat * glm::translate(glm::mat4(1.0f), m_position);
 		glm::mat4 transformMat = glm::translate(glm::mat4(1.0f), m_position) * rotationMat * scaleMat;
-		Marx::Renderer::submit(texShader, m_pCubeVertexArray, glm::transpose(transformMat), m_pTexture);
-		Marx::Renderer::submit(texShader, m_pVertexArray, glm::transpose(glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.5f, 1.5f))), m_pAlphaTexture);
+		Marx::Renderer::submit(texShader, m_pCubeVertexArray, transformMat, m_pTexture);
+		Marx::Renderer::submit(texShader, m_pVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.5f, 1.5f)), m_pAlphaTexture);
 
 		Marx::Renderer::endScene();
 	}
@@ -234,6 +233,7 @@ public:
 		dispatcher.dispatch<Marx::MouseMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseMove));
 		dispatcher.dispatch<Marx::MouseButtonPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseButtonPress));
 		dispatcher.dispatch<Marx::KeyPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onKeyPress));
+		dispatcher.dispatch<Marx::WindowResizeEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onWindowResize));
 	}
 	bool onMouseMove(Marx::MouseMoveEvent& e)
 	{
@@ -250,6 +250,11 @@ public:
 	{
 		if (e.getKeyCode() == MX_KEY_T)
 			m_usePerspective = !m_usePerspective;
+		return true;
+	}
+	bool onWindowResize(Marx::WindowResizeEvent& e)
+	{
+		m_perspectiveCam.setProperties(90.0f, (float)e.getWidth() / (float)e.getHeight(), 0.001f, 1000.0f);
 		return true;
 	}
 private:
