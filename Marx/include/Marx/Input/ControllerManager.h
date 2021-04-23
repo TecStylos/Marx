@@ -1,11 +1,15 @@
 #pragma once
 
 #include "Controller.h"
-#include "Marx/Platform/XInput/XController.h"
 
+#ifdef MX_PLATFORM_WINDOWS
+	#include "Marx/Platform/XInput/XController.h"
+#endif
 
 namespace Marx
 {
+	constexpr int MX_USER_MAX_COUNT = 4;
+
 	class MARX_API ControllerManager
 	{
 	public:
@@ -19,6 +23,6 @@ namespace Marx
 		DISABLE_DLL_INTERFACE_WARN;
 		static EventCallbackFunc s_eventCallback;
 		REENABLE_DLL_INTERFACE_WARN;
-		static Reference<Controller> s_controller[XUSER_MAX_COUNT];
+		static Reference<Controller> s_controller[MX_USER_MAX_COUNT];
 	};
 }

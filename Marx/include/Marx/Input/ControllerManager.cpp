@@ -5,7 +5,7 @@ namespace Marx
 {
 	bool ControllerManager::s_initialized = false;
 	EventCallbackFunc ControllerManager::s_eventCallback;
-	Reference<Controller> ControllerManager::s_controller[XUSER_MAX_COUNT];
+	Reference<Controller> ControllerManager::s_controller[MX_USER_MAX_COUNT];
 
 	void ControllerManager::init(const EventCallbackFunc& callback)
 	{
@@ -13,10 +13,12 @@ namespace Marx
 
 		s_eventCallback = callback;
 
-		for (int i = 0; i < XUSER_MAX_COUNT; ++i)
+		for (int i = 0; i < MX_USER_MAX_COUNT; ++i)
 		{
-			s_controller[i] = std::make_shared<XController>(i, i);
-			s_controller[i]->setEventCallback(s_eventCallback);
+			#ifdef MX_PLATFORM_WINDOWS
+				s_controller[i] = std::make_shared<XController>(i, i);
+				s_controller[i]->setEventCallback(s_eventCallback);
+			#endif
 		}
 
 		s_initialized = true;
@@ -31,7 +33,7 @@ namespace Marx
 
 	void ControllerManager::onUpdate()
 	{
-		for (int i = 0; i < XUSER_MAX_COUNT; ++i)
+		for (int i = 0; i < MX_USER_MAX_COUNT; ++i)
 		{
 			s_controller[i]->onUpdate();
 		}

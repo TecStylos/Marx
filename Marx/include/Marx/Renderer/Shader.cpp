@@ -2,7 +2,10 @@
 #include "Shader.h"
 
 #include "Renderer.h"
-#include "Marx/Platform/D3D11/D3D11Shader.h"
+
+#ifdef MX_PLATFORM_WINDOWS
+	#include "Marx/Platform/D3D11/D3D11Shader.h"
+#endif
 
 namespace Marx
 {

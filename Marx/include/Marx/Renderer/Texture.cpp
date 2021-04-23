@@ -2,7 +2,10 @@
 #include "Texture.h"
 
 #include "Renderer.h"
-#include "Marx/Platform/D3D11/D3D11Texture.h"
+
+#ifdef MX_PLATFORM_WINDOWS
+	#include "Marx/Platform/D3D11/D3D11Texture.h"
+#endif
 
 namespace Marx
 {

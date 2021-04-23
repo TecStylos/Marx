@@ -2,7 +2,10 @@
 #include "VertexArray.h"
 
 #include "Renderer.h"
-#include "Marx/Platform/D3D11/D3D11VertexArray.h"
+
+#ifdef MX_PLATFORM_WINDOWS
+	#include "Marx/Platform/D3D11/D3D11VertexArray.h"
+#endif
 
 namespace Marx
 {

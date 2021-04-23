@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Marx/Platform/DX11/DX11Includes.h"
+//#include "Marx/Platform/DX11/DX11Includes.h"
 
 namespace Marx
 {
@@ -9,25 +9,25 @@ namespace Marx
 	public:
 		OrthographicCamera(float left, float right, float bottom, float top);
 	public:
-		void setPosition(const DX::XMFLOAT3& position) { m_position = position; recalculateAll(); }
+		void setPosition(const glm::vec3& position) { m_position = position; recalculateAll(); }
 		void setRotation(float rotation) { m_rotation = rotation; recalculateAll(); }
 	public:
-		const DX::XMFLOAT3& getPosition() const { return m_position; }
+		const glm::vec3& getPosition() const { return m_position; }
 		float getRotation() const { return m_rotation; }
-		const DX::XMMATRIX& getViewMatrix() const { return m_viewMatrix; }
-		const DX::XMMATRIX& getProjectionMatrix() const { return m_projectionMatrix; }
-		const DX::XMMATRIX& getViewProjectionMatrix() const { return m_viewProjectionMatrix; }
-		const DX::XMMATRIX& getViewProjectionTransposed() const { return m_viewProjectionMatrixTransposed; }
+		const glm::mat4& getViewMatrix() const { return m_viewMatrix; }
+		const glm::mat4& getProjectionMatrix() const { return m_projectionMatrix; }
+		const glm::mat4& getViewProjectionMatrix() const { return m_viewProjectionMatrix; }
+		const glm::mat4& getViewProjectionTransposed() const { return m_viewProjectionMatrixTransposed; }
 	private:
 		void recalculateAll();
 	private:
-		DX::XMFLOAT3 m_position = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_position = { 0.0f, 0.0f, 0.0f };
 		float m_rotation = 0.0f;
 	private:
-		DX::XMMATRIX m_viewMatrix;
-		DX::XMMATRIX m_projectionMatrix;
-		DX::XMMATRIX m_viewProjectionMatrix;
-		DX::XMMATRIX m_viewProjectionMatrixTransposed;
+		glm::mat4 m_viewMatrix;
+		glm::mat4 m_projectionMatrix;
+		glm::mat4 m_viewProjectionMatrix;
+		glm::mat4 m_viewProjectionMatrixTransposed;
 	};
 
 	class PerspectiveCamera
@@ -36,29 +36,29 @@ namespace Marx
 		PerspectiveCamera();
 		PerspectiveCamera(float fovDeg, float aspectRatio, float nearClip, float farClip);
 	public:
-		void setPosition(const DX::XMFLOAT3& position) { m_position = position; recalculateAll(); }
-		void setRotation(const DX::XMFLOAT3& rotation) { m_rotation = rotation; recalculateAll(); }
+		void setPosition(const glm::vec3& position) { m_position = position; recalculateAll(); }
+		void setRotation(const glm::vec3& rotation) { m_rotation = rotation; recalculateAll(); }
 		void setProperties(float fovDeg, float aspectRatio, float nearClip, float farClip);
 	public:
-		const DX::XMFLOAT3& getPosition() const { return m_position; }
-		const DX::XMFLOAT3& getRotation() const { return m_rotation; }
-		const DX::XMMATRIX& getViewMatrix() const { return m_viewMatrix; }
-		const DX::XMMATRIX& getProjectionMatrix() const { return m_projectionMatrix; }
-		const DX::XMMATRIX& getViewProjectionMatrix() const { return m_viewProjectionMatrix; }
-		const DX::XMMATRIX& getViewProjectionTransposed() const { return m_viewProjectionMatrixTransposed; }
+		const glm::vec3& getPosition() const { return m_position; }
+		const glm::vec3& getRotation() const { return m_rotation; }
+		const glm::mat4& getViewMatrix() const { return m_viewMatrix; }
+		const glm::mat4& getProjectionMatrix() const { return m_projectionMatrix; }
+		const glm::mat4& getViewProjectionMatrix() const { return m_viewProjectionMatrix; }
+		const glm::mat4& getViewProjectionTransposed() const { return m_viewProjectionMatrixTransposed; }
 	private:
 		void recalculateAll();
 	private:
-		DX::XMFLOAT3 m_position = { 0.0f, 0.0f, 0.f };
-		DX::XMFLOAT3 m_rotation = { 0.0f, 0.0f, 0.0f };
-		float m_fovRad;
+		glm::vec3 m_position = { 0.0f, 0.0f, 0.f };
+		glm::vec3 m_rotation = { 0.0f, 0.0f, 0.0f };
+		float m_fovDeg;
 		float m_aspectRatio;
 		float m_nearClip;
 		float m_farClip;
 	private:
-		DX::XMMATRIX m_viewMatrix;
-		DX::XMMATRIX m_projectionMatrix;
-		DX::XMMATRIX m_viewProjectionMatrix;
-		DX::XMMATRIX m_viewProjectionMatrixTransposed;
+		glm::mat4 m_viewMatrix;
+		glm::mat4 m_projectionMatrix;
+		glm::mat4 m_viewProjectionMatrix;
+		glm::mat4 m_viewProjectionMatrixTransposed;
 	};
 }

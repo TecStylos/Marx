@@ -3,11 +3,17 @@
 
 #include "Marx/Application.h"
 #include "Marx/Input/KeyCodes.h"
-#include "Marx/Platform/Win32/Win32Window.h"
-#include "Marx/Platform/D3D11/D3D11GraphicsContext.h"
 
-#include "backends/imgui_impl_dx11.h"
-#include "backends/imgui_impl_win32.h"
+#if defined MX_PLATFORM_WINDOWS
+	#include "Marx/Platform/Win32/Win32Window.h"
+	#include "Marx/Platform/D3D11/D3D11GraphicsContext.h"
+
+	#include "backends/imgui_impl_dx11.h"
+	#include "backends/imgui_impl_win32.h"
+#elif defined MX_PLATFORM_UNIX
+	#include "backends/imgui_impl_glfw.h"
+	#include "backends/imgui_impl_opengl3.h"
+#endif
 
 namespace Marx
 {
@@ -44,15 +50,28 @@ namespace Marx
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
+		void* nativeWindow = Application::get()->getWindow()->getNativeWindow();
+
 		// Setup Platform/Renderer backends
-		ImGui_ImplDX11_Init(D3D11GraphicsContext::D3D11Manager::getDevice(), D3D11GraphicsContext::D3D11Manager::getContext());
-		ImGui_ImplWin32_Init(Win32Window::getWnd()->getNativeWindow());
+		#if defined MX_PLATFORM_WINDOWS
+			ImGui_ImplDX11_Init(D3D11GraphicsContext::D3D11Manager::getDevice(), D3D11GraphicsContext::D3D11Manager::getContext());
+			ImGui_ImplWin32_Init(nativeWindow);
+		#elif defined MX_PLATFORM_UNIX
+			ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)nativeWindow, true);
+			ImGui_ImplOpenGL3_Init("#version 410");
+		#endif
 	}
 
 	void ImGuiLayer::onDetach()
 	{
-		ImGui_ImplDX11_Shutdown();
-		ImGui_ImplWin32_Shutdown();
+		#if defined MX_PLATFORM_WINDOWS
+			ImGui_ImplDX11_Shutdown();
+			ImGui_ImplWin32_Shutdown();
+		#elif defined MX_PLATFORM_UNIX
+			ImGui_ImplOpenGL3_Shutdown();
+			ImGui_ImplGlfw_Shutdown();
+		#endif
+
 		ImGui::DestroyContext();
 	}
 
@@ -64,8 +83,14 @@ namespace Marx
 
 	void ImGuiLayer::begin()
 	{
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
+		#if defined MX_PLATFORM_WINDOWS
+			ImGui_ImplDX11_NewFrame();
+			ImGui_ImplWin32_NewFrame();
+		#elif defined MX_PLATFORM_UNIX
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+		#endif
+
 		ImGui::NewFrame();
 	}
 
@@ -76,7 +101,12 @@ namespace Marx
 		io.DisplaySize = ImVec2((float)app->getWindow()->getWidth(), (float)app->getWindow()->getHeight());
 
 		ImGui::Render();
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+		#if defined MX_PLATFORM_WINDOWS
+			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		#elif defined MX_PLATFORM_UNIX
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		#endif
 		
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{

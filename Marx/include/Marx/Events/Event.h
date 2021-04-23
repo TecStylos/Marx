@@ -36,7 +36,7 @@ namespace Marx
 		EventFlagControllerButton = FLAG(8),
 	};
 
-	#define EVENT_CLASS_TYPE(type)   static EventType getStaticType() { return EventType::##type; }\
+	#define EVENT_CLASS_TYPE(type)   static EventType getStaticType() { return EventType::type; }\
                                      virtual EventType getType() const override { return getStaticType(); }\
                                      virtual const char* getName() const override { return #type; }
 	#define EVENT_CLASS_FLAGS(flags) virtual EventFlag getFlags() const override { return flags; }

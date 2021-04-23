@@ -4,19 +4,19 @@
 namespace Marx
 {
 	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
-		: m_projectionMatrix(DX::XMMatrixOrthographicOffCenterLH(left, right, bottom, top, -1.0f, 1.0f))
+		: m_projectionMatrix(glm::ortho(left, right, bottom, top))
 	{
 		recalculateAll();
 	}
 
 	void OrthographicCamera::recalculateAll()
 	{
-		DX::XMMATRIX transform = DX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z) *
-			DX::XMMatrixRotationZ(DX::XMConvertToRadians(m_rotation));
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_position) *
+			glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		m_viewMatrix = DX::XMMatrixInverse(NULL, transform);
+		m_viewMatrix = glm::transpose(transform);
 		m_viewProjectionMatrix = m_viewMatrix * m_projectionMatrix;
-		m_viewProjectionMatrixTransposed = DX::XMMatrixTranspose(m_viewProjectionMatrix);
+		m_viewProjectionMatrixTransposed = glm::transpose(m_viewProjectionMatrix);
 	}
 
 	PerspectiveCamera::PerspectiveCamera()
@@ -31,22 +31,22 @@ namespace Marx
 
 	void PerspectiveCamera::setProperties(float fovDeg, float aspectRatio, float nearClip, float farClip)
 	{
-		m_fovRad = DX::XMConvertToRadians(fovDeg);
+		m_fovDeg = fovDeg;
 		m_aspectRatio = aspectRatio;
 		m_nearClip = nearClip;
 		m_farClip = farClip;
-		m_projectionMatrix = DX::XMMatrixPerspectiveFovLH(m_fovRad, m_aspectRatio, m_nearClip, m_farClip);
+		m_projectionMatrix = glm::perspective(m_fovDeg, m_aspectRatio, m_nearClip, m_farClip);
 
 		recalculateAll();
 	}
 
 	void PerspectiveCamera::recalculateAll()
 	{
-		DX::XMMATRIX transform = DX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z) *
-			DX::XMMatrixRotationRollPitchYaw(DX::XMConvertToRadians(m_rotation.x), DX::XMConvertToRadians(m_rotation.y), DX::XMConvertToRadians(m_rotation.z));
+		glm::quat orientation = glm::quat(glm::vec3(m_rotation.y, m_rotation.z, m_rotation.x));
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_position) * glm::toMat4(orientation);
 
-		m_viewMatrix = DX::XMMatrixInverse(NULL, transform);
+		m_viewMatrix = glm::inverse(transform);
 		m_viewProjectionMatrix = m_viewMatrix * m_projectionMatrix;
-		m_viewProjectionMatrixTransposed = DX::XMMatrixTranspose(m_viewProjectionMatrix);
+		m_viewProjectionMatrixTransposed = glm::transpose(m_viewProjectionMatrix);
 	}
 }

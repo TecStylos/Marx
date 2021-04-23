@@ -10,7 +10,9 @@ namespace Marx
 	public:
 		enum class API
 		{
-			None = 0, D3D11 = 1
+			None = 0,
+			D3D11 = 1,
+			OpenGL = 2,
 		};
 	public:
 		virtual void init() = 0;

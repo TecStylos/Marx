@@ -6,7 +6,10 @@
 #include "Shader.h"
 #include "VertexArray.h"
 #include "Texture.h"
-#include "Marx/Platform/D3D11/D3D11Buffer.h"
+
+#ifdef MX_PLATFORM_WINDOWS
+	#include "Marx/Platform/D3D11/D3D11Buffer.h"
+#endif
 
 namespace Marx
 {
@@ -20,13 +23,13 @@ namespace Marx
 		static void beginScene(const PerspectiveCamera& camera);
 		static void endScene();
 	public:
-		static void submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, const DX::XMMATRIX& transform, const Reference<Texture2D> texture);
+		static void submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, const glm::mat4& transform, const Reference<Texture2D> texture);
 	public:
 		inline static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
 	private:
 		struct SceneData
 		{
-			DX::XMMATRIX viewProjectionMatrix;
+			glm::mat4 viewProjectionMatrix;
 		};
 		static SceneData* s_sceneData;
 	};

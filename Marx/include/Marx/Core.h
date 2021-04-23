@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#ifdef MX_PLATFORM_WINDOWS
+#if defined MX_PLATFORM_WINDOWS
   #if MX_DYNAMIC_LINK
     #ifdef MX_BUILD_DLL
       #define MARX_API __declspec(dllexport)
@@ -12,6 +12,16 @@
   #else
     #define MARX_API
   #endif
+
+  #define MX_DEBUG_BREAK() __debugbreak()
+#elif defined MX_PLATFORM_UNIX
+  #if MX_DYNAMIC_LINK
+    #error Marx doesn't support dynamice linkage on unix platforms!
+  #else
+    #define MARX_API
+  #endif
+  
+  #define MX_DEBUG_BREAK() __builtin_trap()
 #else
   #error Marx only supports Windows!
 #endif
@@ -27,8 +37,8 @@
 
 // Debug asserts
 #ifdef MX_ENABLE_ASSERTS
-#define MX_ASSERT(x, ...)      { if (!(x)) { MX_ERROR     ("Assertion failed! {0}", __VA_ARGS__); __debugbreak(); } }
-#define MX_CORE_ASSERT(x, ...) { if (!(x)) { MX_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak(); } }
+#define MX_ASSERT(x, ...)      { if (!(x)) { MX_ERROR     ("Assertion failed! {0}", __VA_ARGS__); MX_DEBUG_BREAK(); } }
+#define MX_CORE_ASSERT(x, ...) { if (!(x)) { MX_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); MX_DEBUG_BREAK(); } }
 #else
 #define MX_ASSERT(x, ...)
 #define MX_CORE_ASSERT(x, ...)
