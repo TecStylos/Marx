@@ -45,40 +45,40 @@ public:
 		Vertex cubeVertices[] =
 		{
 			// Front
-			{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
-			{ -0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
-			{  0.5f,  0.5f, -0.5f, 1.0f, 1.0f },
-			{  0.5f, -0.5f, -0.5f, 1.0f, 0.0f },
-
-			// Back
-			{  0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
-			{  0.5f,  0.5f,  0.5f, 0.0f, 1.0f },
-			{ -0.5f,  0.5f,  0.5f, 1.0f, 1.0f },
-			{ -0.5f, -0.5f,  0.5f, 1.0f, 0.0f },
-
-			// Top
-			{ -0.5f,  0.5f, -0.5f, 0.0f, 0.0f },
+			{ -0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
 			{ -0.5f,  0.5f,  0.5f, 0.0f, 1.0f },
 			{  0.5f,  0.5f,  0.5f, 1.0f, 1.0f },
-			{  0.5f,  0.5f, -0.5f, 1.0f, 0.0f },
-
-			// Bottom
-			{ -0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
-			{ -0.5f, -0.5f, -0.5f, 0.0f, 1.0f },
-			{  0.5f, -0.5f, -0.5f, 1.0f, 1.0f },
 			{  0.5f, -0.5f,  0.5f, 1.0f, 0.0f },
 
-			// Left
-			{ -0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
-			{ -0.5f,  0.5f,  0.5f, 0.0f, 1.0f },
+			// Back
+			{  0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
+			{  0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
 			{ -0.5f,  0.5f, -0.5f, 1.0f, 1.0f },
 			{ -0.5f, -0.5f, -0.5f, 1.0f, 0.0f },
 
+			// Top
+			{ -0.5f,  0.5f,  0.5f, 0.0f, 0.0f },
+			{ -0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
+			{  0.5f,  0.5f, -0.5f, 1.0f, 1.0f },
+			{  0.5f,  0.5f,  0.5f, 1.0f, 0.0f },
+
+			// Bottom
+			{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
+			{ -0.5f, -0.5f,  0.5f, 0.0f, 1.0f },
+			{  0.5f, -0.5f,  0.5f, 1.0f, 1.0f },
+			{  0.5f, -0.5f, -0.5f, 1.0f, 0.0f },
+
+			// Left
+			{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
+			{ -0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
+			{ -0.5f,  0.5f,  0.5f, 1.0f, 1.0f },
+			{ -0.5f, -0.5f,  0.5f, 1.0f, 0.0f },
+
 			// Right
-			{  0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
-			{  0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
-			{  0.5f,  0.5f,  0.5f, 1.0f, 1.0f },
-			{  0.5f, -0.5f,  0.5f, 1.0f, 0.0f },
+			{  0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
+			{  0.5f,  0.5f,  0.5f, 0.0f, 1.0f },
+			{  0.5f,  0.5f, -0.5f, 1.0f, 1.0f },
+			{  0.5f, -0.5f, -0.5f, 1.0f, 0.0f },
 		};
 		Marx::Reference<Marx::VertexBuffer> pCubeVertexBuffer(Marx::VertexBuffer::create(cubeVertices, sizeof(cubeVertices)));
 
@@ -161,7 +161,11 @@ public:
 			camPos.x -= moveSpeed * ts;
 		if (Marx::Input::isKeyPressed(MX_KEY_L))
 			camPos.x += moveSpeed * ts;
-		camPos.z = -1.0f;
+		if (Marx::Input::isKeyPressed(MX_KEY_O))
+			camPos.z -= moveSpeed * ts;
+		if (Marx::Input::isKeyPressed(MX_KEY_U))
+			camPos.z += moveSpeed * ts;
+
 		m_orthographicCam.setPosition(camPos);
 		m_perspectiveCam.setPosition(camPos);
 
