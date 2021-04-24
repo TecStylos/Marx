@@ -1,19 +1,17 @@
 #pragma once
 
 #include "Marx/Exceptions/MarxException.h"
-
-#ifdef MX_PLATFORM_WINDOWS
+#include "Marx/Renderer/RendererAPISelector.h"
 
 extern Marx::Application* Marx::createApplication();
 
 #define MX_EXCEPT_LOG(except) MX_CRITICAL(except.what())
 #define MX_STD_EXCEPT_LOG(except) MX_CRITICAL(except.what())
 
-#define MX_EXCEPT_BOX(except) MessageBox(NULL, except.what(), except.getName(), MB_ICONEXCLAMATION | MB_OK | MB_DEFAULT_DESKTOP_ONLY)
-#define MX_STD_EXCEPT_BOX(except) MessageBox(NULL, except.what(), "std::exception", MB_ICONEXCLAMATION | MB_OK | MB_DEFAULT_DESKTOP_ONLY)
-
-int main(int argc, char** argv)
+int main(int argc, char* argv[], char* env[])
 {
+	Marx::selectRendererAPIFromCmdLine(argc, argv);
+
 	{
 		Marx::Log::init();
 		MX_CORE_INFO("Initialized Log!");
@@ -25,12 +23,7 @@ int main(int argc, char** argv)
 			app.reset(Marx::createApplication());
 			app->run();
 		}
-		catch (const Marx::MarxException& except) { MX_EXCEPT_BOX(except); }
-		catch (const std::exception& except) { MX_STD_EXCEPT_BOX(except); }
+		catch (const Marx::MarxException& except) { MX_EXCEPT_LOG(except); MX_DEBUG_BREAK(); }
+		catch (const std::exception& except) { MX_STD_EXCEPT_LOG(except); MX_DEBUG_BREAK(); }
 	}
 }
-
-#undef MX_EXCEPT_BOX
-#undef MX_STD_EXCEPT_BOX
-
-#endif

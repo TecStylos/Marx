@@ -14,7 +14,7 @@ namespace Marx
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_position) *
 			glm::rotate(glm::mat4(1.0f), m_rotDeg, glm::vec3(0.0f, 0.0f, 1.0f));
 
-		m_viewMatrix = transform;
+		m_viewMatrix = glm::inverse(transform);
 		m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
 	}
 
@@ -45,7 +45,7 @@ namespace Marx
 		glm::quat orientation = glm::quat(glm::vec3(m_rotation.y, m_rotation.z, m_rotation.x));
 		glm::mat4 translation = glm::translate(glm::mat4(1.0f), m_position);
 
-		m_viewMatrix = translation * glm::toMat4(orientation);
+		m_viewMatrix = glm::inverse(translation * glm::toMat4(orientation));
 		m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
 	}
 }

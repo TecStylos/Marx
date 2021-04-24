@@ -3,6 +3,8 @@
 #include "Buffer.h"
 #include "VertexArray.h"
 
+extern int main(int argc, char* argv[], char* env[]);
+
 namespace Marx
 {
 	class RendererAPI
@@ -24,6 +26,10 @@ namespace Marx
 	public:
 		inline static API getAPI() { return s_API; }
 	private:
+		inline static void setAPI(API api) { s_API = api; }
+	private:
 		static API s_API;
+	private:
+		friend void selectRendererAPIFromCmdLine(int argc, char* argv[]);
 	};
 }

@@ -7,7 +7,7 @@
 #include "VertexArray.h"
 #include "Texture.h"
 
-#ifdef MX_PLATFORM_WINDOWS
+#ifdef MX_ENABLE_D3D11
 	#include "Marx/Platform/D3D11/D3D11Buffer.h"
 #endif
 

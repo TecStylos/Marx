@@ -3,27 +3,28 @@
 #include <memory>
 
 #if defined MX_PLATFORM_WINDOWS
-  #if MX_DYNAMIC_LINK
-    #ifdef MX_BUILD_DLL
-      #define MARX_API __declspec(dllexport)
-    #else
-      #define MARX_API __declspec(dllimport)
-    #endif
-  #else
-    #define MARX_API
-  #endif
-
-  #define MX_DEBUG_BREAK() __debugbreak()
+   #if MX_DYNAMIC_LINK
+      #ifdef MX_BUILD_DLL
+         #define MARX_API __declspec(dllexport)
+      #else
+         #define MARX_API __declspec(dllimport)
+      #endif
+   #else
+      #define MARX_API
+   #endif
+   #define MX_DEBUG_BREAK() __debugbreak()
+   #define MX_ENABLE_D3D11
+   #define MX_ENABLE_OPENGL
 #elif defined MX_PLATFORM_UNIX
-  #if MX_DYNAMIC_LINK
-    #error Marx doesn't support dynamice linkage on unix platforms!
-  #else
-    #define MARX_API
-  #endif
-  
-  #define MX_DEBUG_BREAK() __builtin_trap()
+   #if MX_DYNAMIC_LINK
+      #error Marx doesn't support dynamice linkage on unix platforms!
+   #else
+      #define MARX_API
+   #endif
+   #define MX_DEBUG_BREAK() __builtin_trap()
+   #define MX_ENABLE_OPENGL
 #else
-  #error Marx only supports Windows!
+   #error Marx only supports Windows!
 #endif
 
 #if MX_DYNAMIC_LINK

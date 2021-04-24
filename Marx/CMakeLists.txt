@@ -44,7 +44,12 @@ add_library(
 		"vendor/imgui/backends/imgui_impl_win32.cpp"
 		"vendor/imgui/backends/imgui_impl_dx11.cpp"
 	">"
-)
+
+	"$<$<BOOL:UNIX>:"
+		"vendor/imgui/backends/imgui_impl_glfw.cpp"
+		"vendor/imgui/backends/imgui_impl_opengl3.cpp"
+	">"
+ "include/Marx/Renderer/RendererAPISelector.h" "include/Marx/Renderer/RendererAPISelector.cpp")
 
 set(
 	MARX_COMPILE_OPTIONS

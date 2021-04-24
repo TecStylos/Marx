@@ -3,7 +3,7 @@
 
 #include "Renderer.h"
 
-#ifdef MX_PLATFORM_WINDOWS
+#ifdef MX_ENABLE_D3D11
 	#include "Marx/Platform/D3D11/D3D11Buffer.h"
 #endif
 
@@ -31,7 +31,7 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
 			return nullptr;
 		case RendererAPI::API::D3D11:
-		#ifdef MX_PLATFORM_WINDOWS
+		#ifdef MX_ENABLE_D3D11
 			return std::make_shared<D3D11VertexBuffer>(vertices, size);
 		#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
@@ -55,12 +55,12 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
 			return nullptr;
 		case RendererAPI::API::D3D11:
-#ifdef MX_PLATFORM_WINDOWS
+			#ifdef MX_ENABLE_D3D11
 			return std::make_shared<DX11IndexBuffer>(indices, count, primType);
-#else
+			#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
-#endif
+			#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -79,12 +79,12 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
 			return nullptr;
 		case RendererAPI::API::D3D11:
-		#ifdef MX_PLATFORM_WINDOWS
+			#ifdef MX_ENABLE_D3D11
 			return std::make_shared<D3D11VSConstantBuffer>(data, size);
-		#else
+			#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
-		#endif
+			#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -99,12 +99,12 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
 			return nullptr;
 		case RendererAPI::API::D3D11:
-		#ifdef MX_PLATFORM_WINDOWS
+			#ifdef MX_ENABLE_D3D11
 			return std::make_shared<D3D11PSConstantBuffer>(data, size);
-		#else
+			#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
-		#endif
+			#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
