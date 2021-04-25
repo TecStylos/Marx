@@ -39,7 +39,7 @@ namespace Marx
 		bind();
 		for (uint32_t i = 0; i < nBuffers; ++i)
 		{
-			glBufferSubData(GL_ARRAY_BUFFER, pOffset[i], pCount[i] * m_stride, pVertices[i]);
+			glBufferSubData(GL_ARRAY_BUFFER, pOffset[i] * m_stride, pCount[i] * m_stride, pVertices[i]);
 		}
 	}
 

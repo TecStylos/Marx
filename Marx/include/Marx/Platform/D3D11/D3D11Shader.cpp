@@ -39,6 +39,11 @@ namespace Marx
 		D3D11GraphicsContext::D3D11Manager::getContext()->PSSetShader(m_pPixelShader.Get(), 0, 0);
 	}
 
+	void D3D11Shader::updateConstBuff(ShaderDataType sdt, const void* data, const std::string& name)
+	{
+		; // TODO: Implement constant buffer update (d3d11)
+	}
+
 	const char* D3D11Shader::getTargetStringFromType(ShaderType type)
 	{
 		switch (type)

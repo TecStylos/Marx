@@ -185,19 +185,19 @@ public:
 		}
 
 		{
-			unsigned char pixels1[] = {
+			uint8_t pixels1[] = {
 				0, 0, 0, 255
 			};
-			unsigned char pixels2[] = {
+			uint8_t pixels2[] = {
 				255, 0, 0, 255,
 				0, 255, 0, 255
 			};
-			unsigned char* pPixels[] = { &pixels1[0], &pixels2[0] };
+			uint8_t* pPixels[] = { &pixels1[0], &pixels2[0] };
 			uint32_t offsetsX[] = { 0, 1 };
 			uint32_t offsetsY[] = { 0, 0 };
 			uint32_t widths[] = { 1, 1 };
 			uint32_t heights[] = { 1, 2 };
-			m_pTexture->updatePartial((unsigned char**)pPixels, offsetsX, offsetsY, widths, heights, 2);
+			m_pTexture->updatePartial((uint8_t**)pPixels, offsetsX, offsetsY, widths, heights, 2);
 		}
 
 		if (m_usePerspective)

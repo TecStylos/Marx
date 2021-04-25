@@ -64,7 +64,10 @@ namespace Marx
 
 	void OpenGLGraphicsContext::enableDepthTest(bool enabled)
 	{
-		; // TODO: Implement depth test switch
+		if (enabled)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
 	}
 
 	void OpenGLGraphicsContext::enableBlending(bool enabled)

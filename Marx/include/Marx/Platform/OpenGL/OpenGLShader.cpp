@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace Marx
 {
 	static GLenum ShaderTypeToGLenum(ShaderType type)
@@ -109,5 +111,50 @@ namespace Marx
 	void OpenGLShader::bind() const
 	{
 		glUseProgram(m_shader);
+	}
+
+	void OpenGLShader::updateConstBuff(ShaderDataType sdt, const void* data, const std::string& name)
+	{
+		GLint location = glGetUniformLocation(m_shader, name.c_str());
+
+		switch (sdt)
+		{
+		case ShaderDataType::None:
+			MX_CORE_ASSERT(false, "ShaderDataType::None is not supported!");
+			break;
+		case ShaderDataType::Float1:
+			glUniform1f(location, ((GLfloat*)data)[0]);
+			break;
+		case ShaderDataType::Float2:
+			glUniform2f(location, ((GLfloat*)data)[0], ((GLfloat*)data)[1]);
+			break;
+		case ShaderDataType::Float3:
+			glUniform3f(location, ((GLfloat*)data)[0], ((GLfloat*)data)[1], ((GLfloat*)data)[2]);
+			break;
+		case ShaderDataType::Float4:
+			glUniform4f(location, ((GLfloat*)data)[0], ((GLfloat*)data)[1], ((GLfloat*)data)[2], ((GLfloat*)data)[3]);
+			break;
+		case ShaderDataType::Mat3:
+			glUniformMatrix3fv(location, 1, GL_TRUE, glm::value_ptr(*(glm::mat3*)data));
+			break;
+		case ShaderDataType::Mat4:
+			glUniformMatrix4fv(location, 1, GL_TRUE, glm::value_ptr(*(glm::mat4*)data));
+			break;
+		case ShaderDataType::Int1:
+			glUniform1i(location, ((GLint*)data)[0]);
+			break;
+		case ShaderDataType::Int2:
+			glUniform2i(location, ((GLint*)data)[0], ((GLint*)data)[1]);
+			break;
+		case ShaderDataType::Int3:
+			glUniform3i(location, ((GLint*)data)[0], ((GLint*)data)[1], ((GLint*)data)[2]);
+			break;
+		case ShaderDataType::Int4:
+			glUniform4i(location, ((GLint*)data)[0], ((GLint*)data)[1], ((GLint*)data)[2], ((GLint*)data)[3]);
+			break;
+		default:
+			MX_CORE_ASSERT(false, "Unknown ShaderDataType!");
+		}
+
 	}
 }

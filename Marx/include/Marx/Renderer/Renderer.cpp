@@ -35,6 +35,9 @@ namespace Marx
 
 		transform = glm::transpose(transform);
 
+		shader->updateConstBuff(Marx::ShaderDataType::Mat4, &transform, "c_modelTransform");
+		shader->updateConstBuff(Marx::ShaderDataType::Mat4, &s_sceneData->viewProjectionMatrix, "c_viewProjection");
+
 		//sceneVSConstBuffer->update(&s_sceneData->viewProjectionMatrix);
 		//sceneVSConstBuffer->bind(0);
 		//modelVSConstBuffer->update(&transform);
