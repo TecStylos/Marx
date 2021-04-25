@@ -13,8 +13,11 @@
       #define MARX_API
    #endif
    #define MX_DEBUG_BREAK() __debugbreak()
+
    #define MX_ENABLE_D3D11
    #define MX_ENABLE_OPENGL
+   #define MX_ENABLE_WIN32
+   #define MX_ENABLE_GLFW
 #elif defined MX_PLATFORM_UNIX
    #if MX_DYNAMIC_LINK
       #error Marx doesn't support dynamice linkage on unix platforms!
@@ -22,7 +25,9 @@
       #define MARX_API
    #endif
    #define MX_DEBUG_BREAK() __builtin_trap()
+
    #define MX_ENABLE_OPENGL
+   #define MX_ENABLE_GLFW
 #else
    #error Marx only supports Windows!
 #endif

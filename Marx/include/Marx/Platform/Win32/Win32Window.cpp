@@ -17,11 +17,6 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace Marx
 {
-	Window* Window::create(const WindowDesc& desc)
-	{
-		return new Win32Window(desc);
-	}
-
 	Win32Window::Win32Window(const WindowDesc& desc)
 	{
 		init(desc);
@@ -36,7 +31,6 @@ namespace Marx
 	{
 		m_pContext->swapBuffers();
 
-		//Win32Manager::handleMessages(m_hWnd);
 		Win32Manager::handleMessages(NULL);
 	}
 
@@ -131,7 +125,7 @@ namespace Marx
 		}
 		case WM_DESTROY:
 		{
-			if (getWndCount() == 1)
+			if (Win32Manager::getWndCount() == 1)
 			{
 				PostQuitMessage(0);
 			}
@@ -330,7 +324,7 @@ namespace Marx
 			// Retrieve any active hWnd
 			hWnd = FindWindowEx(NULL, NULL, getName(), NULL);
 		}
-		WNDPROC procedure;
+		WNDPROC procedure = 0;
 		switch (proc)
 		{
 		case Procedure::Setup: procedure = wndProcSetup; break;

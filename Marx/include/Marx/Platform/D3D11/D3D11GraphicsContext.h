@@ -20,6 +20,7 @@ namespace Marx
 		virtual void onResize(unsigned int width, unsigned int height) override;
 		virtual void enableDepthTest(bool enabled) override { m_depthEnabled = enabled ? 1 : 0; }
 		virtual void enableBlending(bool enabled) override { m_blendEnabled = enabled ? 1 : 0; }
+		virtual void enableVSync(bool enabled) override { m_vSyncEnabled = enabled; }
 	public:
 		static GraphicsContext* get(uint32_t index = 0) { return s_contexts[index]; }
 		static uint32_t getCount() { return (uint32_t)s_contexts.size(); }
@@ -50,6 +51,7 @@ namespace Marx
 		unsigned int m_width;
 		unsigned int m_height;
 		bool m_initialized = false;
+		bool m_vSyncEnabled = true;
 		int m_depthEnabled = 0;
 		int m_blendEnabled = 0;
 	private:

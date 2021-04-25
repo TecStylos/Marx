@@ -84,7 +84,7 @@ namespace Marx
 
 	void D3D11GraphicsContext::swapBuffers()
 	{
-		present(true);
+		present(m_vSyncEnabled);
 	}
 
 	void D3D11GraphicsContext::onResize(unsigned int width, unsigned int height)

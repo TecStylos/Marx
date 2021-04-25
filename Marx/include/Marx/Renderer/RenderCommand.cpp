@@ -4,6 +4,9 @@
 #ifdef MX_ENABLE_D3D11
 	#include "Marx/Platform/D3D11/D3D11RendererAPI.h"
 #endif
+#ifdef MX_ENABLE_OPENGL
+#include "Marx/Platform/OpenGL/OpenGLRendererAPI.h""
+#endif
 
 namespace Marx
 {
@@ -18,8 +21,7 @@ namespace Marx
 			break;
 		case RendererAPI::API::OpenGL:
 			#ifdef MX_ENABLE_OPENGL
-			//s_rendererAPI = std::make_shared<OpenGLRendererAPI>();
-			MX_CORE_ASSERT(false, "The renderer API 'OpenGL' is currently not supported!");
+			s_rendererAPI = std::make_shared<OpenGLRendererAPI>();
 			#else
 			MX_CORE_ASSERT(false, "The renderer API 'OpenGL' is not supported by this configuration!");
 			#endif

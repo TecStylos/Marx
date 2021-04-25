@@ -15,16 +15,15 @@ namespace Marx
 		virtual void onUpdate() override;
 		inline uint32_t getWidth() const override { return m_width; }
 		inline uint32_t getHeight() const override { return m_height; }
-		virtual uint32_t getWndCount() const override { return (uint32_t)Win32Manager::getWndCount(); }
-		static Win32Window* getWnd(unsigned int index = 0) { return Win32Manager::getWnd(index); }
 		virtual void* getNativeWindow() const override { return m_hWnd; }
 		virtual GraphicsContext& getGfxContext() const override { return *m_pContext; }
 		virtual void enableImGuiFallthrough(bool enable) override { m_imGuiFallthroughEnabled = enable; }
-		virtual void setTitle(const std::string& title) override { SetWindowTextA(m_hWnd, title.c_str()); }
+		virtual void setTitle(const std::string& title) override { m_title = title; SetWindowTextA(m_hWnd, title.c_str()); }
+		virtual uint32_t getWndCount() const override { return (uint32_t)Win32Manager::getWndCount(); }
 	public:
 		inline void setEventCallback(const EventCallbackFunc& callback) override { m_eventCallback = callback; }
 	protected:
-		void init(const WindowDesc& desc);
+		virtual void init(const WindowDesc& desc) override;
 		virtual void shutdown() override;
 	protected:
 		LRESULT CALLBACK wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

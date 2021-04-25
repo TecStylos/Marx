@@ -115,8 +115,8 @@ public:
 		// Shader
 		m_shaderLib.load("assets/shaders/Texture.hlsl");
 
-		m_pTexture = Marx::Texture2D::create("assets\\textures\\testLow.png");
-		m_pAlphaTexture = Marx::Texture2D::create("assets\\textures\\testAlpha.png");
+		m_pTexture = Marx::Texture2D::create("assets/textures/testLow.png");
+		m_pAlphaTexture = Marx::Texture2D::create("assets/textures/testAlpha.png");
 
 		Marx::RenderCommand::enableBlending(true);
 
@@ -207,16 +207,6 @@ public:
 		Marx::RenderCommand::enableDepthTest(m_usePerspective);
 
 		auto texShader = m_shaderLib.get("Texture");
-
-		/*for (int y = 0; y < 9; ++y)
-		{
-			for (int x = 0; x < 9; ++x)
-			{
-				DX::XMMATRIX transformMat = scaleMat * DX::XMMatrixTranslation(x * 0.11f, y * 0.11f, 0.0f) * rotationMat * DX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
-				Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(transformMat), m_pTexture);
-			}
-		}*/
-		//Marx::Renderer::submit(texShader, m_pVertexArray, DX::XMMatrixTranspose(DX::XMMatrixScaling(1.5f, 1.5f, 1.5f)), m_pTexture);
 
 		glm::mat4 transformMat = glm::translate(glm::mat4(1.0f), m_position) * rotationMat * scaleMat;
 		Marx::Renderer::submit(texShader, m_pCubeVertexArray, transformMat, m_pTexture);

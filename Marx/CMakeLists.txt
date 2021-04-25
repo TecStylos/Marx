@@ -2,19 +2,20 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("Marx")
 
+add_subdirectory("vendor/imgui")
+add_subdirectory("vendor/glfw")
+add_subdirectory("vendor/glad")
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 set(
 	MARX_LIB_FILES
-
-)
-
-add_library(
-	Marx STATIC
 	"include/Marx/Application.cpp"
 	"include/Marx/Layer.cpp"
 	"include/Marx/LayerStack.cpp"
+	"include/Marx/Window.cpp"
+	"include/Marx/WindowAPISelector.cpp"
 	"include/Marx/Core/Log.cpp"
 	"include/Marx/ImGui/ImGuiLayer.cpp"
 	"include/Marx/Input/ControllerManager.cpp"
@@ -23,11 +24,23 @@ add_library(
 	"include/Marx/Renderer/RenderCommand.cpp"
 	"include/Marx/Renderer/Renderer.cpp"
 	"include/Marx/Renderer/RendererAPI.cpp"
+	"include/Marx/Renderer/RendererAPISelector.cpp"
 	"include/Marx/Renderer/Shader.cpp"
 	"include/Marx/Renderer/Texture.cpp"
 	"include/Marx/Renderer/VertexArray.cpp"
 
 	"vendor/stb_image/stb_image.cpp"
+
+	"vendor/imgui/backends/imgui_impl_glfw.cpp"
+	"vendor/imgui/backends/imgui_impl_opengl3.cpp"
+
+	"include/Marx/Platform/GLFW/CrossWindow.cpp"
+	"include/Marx/Platform/OpenGL/OpenGLGraphicsContext.cpp"
+)
+
+add_library(
+	Marx STATIC
+	${MARX_LIB_FILES}
 
 	"$<$<BOOL:WIN32>:"
 		"include/Marx/Platform/D3D11/D3D11Buffer.cpp"
@@ -44,12 +57,7 @@ add_library(
 		"vendor/imgui/backends/imgui_impl_win32.cpp"
 		"vendor/imgui/backends/imgui_impl_dx11.cpp"
 	">"
-
-	"$<$<BOOL:UNIX>:"
-		"vendor/imgui/backends/imgui_impl_glfw.cpp"
-		"vendor/imgui/backends/imgui_impl_opengl3.cpp"
-	">"
- "include/Marx/Renderer/RendererAPISelector.h" "include/Marx/Renderer/RendererAPISelector.cpp")
+)
 
 set(
 	MARX_COMPILE_OPTIONS
@@ -58,7 +66,7 @@ set(
 
 set(
 	MARX_LINK_LIBRARIES
-	imgui
+	imgui GLFW GLAD
 )
 
 set(
