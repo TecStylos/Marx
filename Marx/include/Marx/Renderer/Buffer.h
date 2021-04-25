@@ -64,10 +64,33 @@ namespace Marx
 			ShaderDataType type;
 			uint32_t size;
 			uint32_t offset;
+			uint32_t componentCount;
+			bool normalized;
 		public:
-			Element(ShaderDataType Type, const std::string& Name)
-				: type(Type), name(Name), size(ShaderDataTypeSize(Type)), offset(0)
+			Element(ShaderDataType Type, const std::string& Name, bool normalized = false)
+				: type(Type), name(Name), size(ShaderDataTypeSize(Type)), offset(0), normalized(normalized)
 			{}
+		public:
+			uint32_t getComponentCount() const
+			{
+				switch (type)
+				{
+				case ShaderDataType::Float1: return 1;
+				case ShaderDataType::Float2: return 2;
+				case ShaderDataType::Float3: return 3;
+				case ShaderDataType::Float4: return 4;
+				case ShaderDataType::Mat3:   return 3 * 3;
+				case ShaderDataType::Mat4:   return 4 * 4;
+				case ShaderDataType::Int1:   return 1;
+				case ShaderDataType::Int2:   return 2;
+				case ShaderDataType::Int3:   return 3;
+				case ShaderDataType::Int4:   return 4;
+				case ShaderDataType::Bool1:  return 1;
+				}
+
+				MX_CORE_ASSERT(false, "Unknown ShaderDataType!");
+				return 0;
+			}
 		};
 	};
 
@@ -77,6 +100,7 @@ namespace Marx
 		virtual ~VertexBuffer() {}
 		virtual void bind() const = 0;
 		virtual void setLayout(const BufferLayout& layout) = 0;
+		virtual const BufferLayout& getLayout() const = 0;
 		// Updates the whole vertex buffer
 		//
 		// @param vertices Array of vertices (The size of the buffer must be equal to the size specified on creation)

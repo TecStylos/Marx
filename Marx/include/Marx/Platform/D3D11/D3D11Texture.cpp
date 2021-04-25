@@ -27,7 +27,7 @@ namespace Marx
 		texFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 		if (!texFormat)
-			TextureLoadException("Invalid image format!");
+			throw TextureLoadException("Invalid image format!");
 
 		D3D11_TEXTURE2D_DESC texDesc;
 		texDesc.Width = width;

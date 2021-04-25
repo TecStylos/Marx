@@ -3,8 +3,11 @@
 
 #include "Renderer.h"
 
-#ifdef MX_PLATFORM_WINDOWS
+#ifdef MX_ENABLE_D3D11
 	#include "Marx/Platform/D3D11/D3D11VertexArray.h"
+#endif
+#ifdef MX_ENABLE_OPENGL
+#include "Marx/Platform/OpenGL/OpenGLVertexArray.h"
 #endif
 
 namespace Marx
@@ -17,12 +20,19 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
 			return nullptr;
 		case RendererAPI::API::D3D11:
-		#ifdef MX_PLATFORM_WINDOWS
+			#ifdef MX_ENABLE_D3D11
 			return std::make_shared<D3D11VertexArray>();
-		#else
+			#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
-		#endif
+			#endif
+		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
+			return std::make_shared<OpenGLVertexArray>();
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported!");
+			return nullptr;
+			#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -37,12 +47,19 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
 			return nullptr;
 		case RendererAPI::API::D3D11:
-		#ifdef MX_PLATFORM_WINDOWS
+			#ifdef MX_ENABLE_D3D11
 			return std::make_shared<D3D11VertexArray>(vertexBuffer, indexBuffer);
-		#else
+			#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
-		#endif
+			#endif
+		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
+			return std::make_shared<OpenGLVertexArray>(vertexBuffer, indexBuffer);
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported!");
+			return nullptr;
+			#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");

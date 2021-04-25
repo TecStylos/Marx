@@ -6,6 +6,9 @@
 #ifdef MX_ENABLE_D3D11
 	#include "Marx/Platform/D3D11/D3D11Buffer.h"
 #endif
+#ifdef MX_ENABLE_OPENGL
+#include "Marx/Platform/OpenGL/OpenGLBuffer.h"
+#endif
 
 namespace Marx
 {
@@ -37,6 +40,13 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
 		#endif
+		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
+			return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported!");
+			return nullptr;
+			#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -59,6 +69,13 @@ namespace Marx
 			return std::make_shared<DX11IndexBuffer>(indices, count, primType);
 			#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
+			return nullptr;
+			#endif
+		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
+			return std::make_shared<OpenGLIndexBuffer>(indices, count, primType);
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported!");
 			return nullptr;
 			#endif
 		}
@@ -85,6 +102,14 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
 			#endif
+		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
+			//return std::make_shared<OpenGLVSConstantBuffer>(data, size);
+			break;
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported!");
+			return nullptr;
+			#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -103,6 +128,14 @@ namespace Marx
 			return std::make_shared<D3D11PSConstantBuffer>(data, size);
 			#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
+			return nullptr;
+			#endif
+		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
+			//return std::make_shared<OpenGLPSConstantBuffer>(data, size);
+			break;
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported!");
 			return nullptr;
 			#endif
 		}

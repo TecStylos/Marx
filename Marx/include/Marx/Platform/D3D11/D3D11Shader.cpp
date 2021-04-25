@@ -49,28 +49,7 @@ namespace Marx
 		}
 	}
 
-	std::unordered_map<ShaderType, std::string> D3D11Shader::preprocess(std::string shaderSrc)
-	{
-		std::unordered_map<ShaderType, std::string> shaderSources;
-
-		const char* typeToken = "#type";
-		size_t typeTokenLength = strlen(typeToken);
-		size_t pos = shaderSrc.find(typeToken, 0);
-		while (pos != std::string::npos)
-		{
-			size_t eol = shaderSrc.find_first_of("\r\n", pos);
-			MX_CORE_ASSERT(eol != std::string::npos, "Syntax error");
-			size_t begin = pos + typeTokenLength + 1;
-			std::string type = shaderSrc.substr(begin, eol - begin);
-			MX_CORE_ASSERT(type == "vertex" || type == "pixel", "Invalid shader type");
-
-			size_t nextLinePos = shaderSrc.find_first_not_of("\r\n", eol);
-			pos = shaderSrc.find(typeToken, nextLinePos);
-			shaderSources[shaderTypeFromString(type)] = shaderSrc.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? shaderSrc.size() - 1 : nextLinePos));
-		}
-
-		return shaderSources;
-	}
+	
 
 	HRESULT D3D11Shader::compileSrc(const std::string& src, const char* pTarget, ID3DBlob** ppBytecode)
 	{
@@ -92,7 +71,7 @@ namespace Marx
 		return hr;
 	}
 
-	void D3D11Shader::compile(const std::unordered_map<ShaderType, std::string> shaderSources)
+	void D3D11Shader::compile(const std::unordered_map<ShaderType, std::string>& shaderSources)
 	{
 		MX_DEBUG_HR_DECL;
 

@@ -59,6 +59,8 @@ namespace Marx
 			)
 		);
 		m_stride = layout.getStride();
+
+		m_pBufferLayout = std::make_unique<BufferLayout>(layout);
 	}
 
 	void D3D11VertexBuffer::update(const void* vertices)

@@ -25,14 +25,15 @@ namespace Marx
 	public:
 		static std::string readFile(const std::string& filepath);
 		static std::string extractNameFromFilepath(const std::string& filepath);
+		static std::unordered_map<ShaderType, std::string> preprocess(std::string shaderSrc);
 	};
 
 	class ShaderLib
 	{
 	public:
 		void add(const Reference<Shader>& shader);
-		Reference<Shader> load(const std::string& filepath);
-		Reference<Shader> load(const std::string& filepath, const std::string& name);
+		Reference<Shader> load(std::string filepath, bool autoDetectType = false);
+		Reference<Shader> load(std::string filepath, const std::string& name, bool autoDetectType = false);
 	public:
 		Reference<Shader> get(const std::string& name);
 		bool exists(const std::string& name) const;

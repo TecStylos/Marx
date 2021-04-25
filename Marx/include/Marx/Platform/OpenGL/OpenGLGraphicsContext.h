@@ -10,6 +10,7 @@ namespace Marx
 	{
 	public:
 		OpenGLGraphicsContext(GLFWwindow* wnd);
+		~OpenGLGraphicsContext();
 	public:
 		virtual void init() override;
 		virtual void shutdown() override;
@@ -19,7 +20,11 @@ namespace Marx
 		virtual void enableDepthTest(bool enabled) override;
 		virtual void enableBlending(bool enabled) override;
 		virtual void enableVSync(bool enabled) override;
+	public:
+		static GraphicsContext* get(uint32_t index = 0) { return s_contexts[index]; }
 	private:
 		GLFWwindow* m_wnd;
+	private:
+		static std::vector<OpenGLGraphicsContext*> s_contexts;
 	};
 }

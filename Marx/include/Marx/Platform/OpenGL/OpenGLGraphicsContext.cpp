@@ -7,10 +7,26 @@
 
 namespace Marx
 {
+	std::vector<OpenGLGraphicsContext*> OpenGLGraphicsContext::s_contexts;
+
 	OpenGLGraphicsContext::OpenGLGraphicsContext(GLFWwindow* wnd)
 		: m_wnd(wnd)
 	{
 		MX_CORE_ASSERT(wnd, "Window handle is null!");
+
+		s_contexts.push_back(this);
+	}
+
+	OpenGLGraphicsContext::~OpenGLGraphicsContext()
+	{
+		for (uint32_t i = 0; i < s_contexts.size(); ++i)
+		{
+			if (s_contexts[i] == this)
+			{
+				s_contexts.erase(s_contexts.begin() + i);
+				break;
+			}
+		}
 	}
 
 	void OpenGLGraphicsContext::init()
@@ -33,7 +49,7 @@ namespace Marx
 
 	void OpenGLGraphicsContext::clear(float color[4])
 	{
-		;
+		; // Nothing to do here, see OpenGLRendererAPI
 	}
 
 	void OpenGLGraphicsContext::swapBuffers()
@@ -43,17 +59,25 @@ namespace Marx
 
 	void OpenGLGraphicsContext::onResize(uint32_t width, uint32_t height)
 	{
-		;
+		; // Nothing to do here
 	}
 
 	void OpenGLGraphicsContext::enableDepthTest(bool enabled)
 	{
-		;
+		; // TODO: Implement depth test switch
 	}
 
 	void OpenGLGraphicsContext::enableBlending(bool enabled)
 	{
-		;
+		if (enabled)
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else
+		{
+			glDisable(GL_BLEND);
+		}
 	}
 
 	void OpenGLGraphicsContext::enableVSync(bool enabled)

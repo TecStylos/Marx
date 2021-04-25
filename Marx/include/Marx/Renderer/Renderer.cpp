@@ -26,8 +26,8 @@ namespace Marx
 
 	void Renderer::submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, glm::mat4 transform, const Reference<Texture2D> texture)
 	{
-		static Reference<ConstantBuffer> sceneVSConstBuffer = VSConstantBuffer::create(nullptr, sizeof(glm::mat4));
-		static Reference<ConstantBuffer> modelVSConstBuffer = VSConstantBuffer::create(nullptr, sizeof(glm::mat4));
+		//static Reference<ConstantBuffer> sceneVSConstBuffer = VSConstantBuffer::create(nullptr, sizeof(glm::mat4));
+		//static Reference<ConstantBuffer> modelVSConstBuffer = VSConstantBuffer::create(nullptr, sizeof(glm::mat4));
 
 		shader->bind();
 		vertexArray->bind();
@@ -35,10 +35,10 @@ namespace Marx
 
 		transform = glm::transpose(transform);
 
-		sceneVSConstBuffer->update(&s_sceneData->viewProjectionMatrix);
-		sceneVSConstBuffer->bind(0);
-		modelVSConstBuffer->update(&transform);
-		modelVSConstBuffer->bind(1);
+		//sceneVSConstBuffer->update(&s_sceneData->viewProjectionMatrix);
+		//sceneVSConstBuffer->bind(0);
+		//modelVSConstBuffer->update(&transform);
+		//modelVSConstBuffer->bind(1);
 
 		RenderCommand::drawIndexed(vertexArray);
 	}

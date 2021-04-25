@@ -36,7 +36,11 @@ set(
 
 	"include/Marx/Platform/GLFW/CrossWindow.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLGraphicsContext.cpp"
-)
+	"include/Marx/Platform/OpenGL/OpenGLRendererAPI.cpp"
+	"include/Marx/Platform/OpenGL/OpenGLBuffer.cpp"
+	"include/Marx/Platform/OpenGL/OpenGLVertexArray.cpp"
+	"include/Marx/Platform/OpenGL/OpenGLShader.cpp"
+ "include/Marx/Platform/OpenGL/OpenGLTexture.cpp")
 
 add_library(
 	Marx STATIC

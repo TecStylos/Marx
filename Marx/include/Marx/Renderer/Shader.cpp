@@ -3,12 +3,28 @@
 
 #include "Renderer.h"
 
-#ifdef MX_PLATFORM_WINDOWS
-	#include "Marx/Platform/D3D11/D3D11Shader.h"
+#ifdef MX_ENABLE_D3D11
+#include "Marx/Platform/D3D11/D3D11Shader.h"
+#endif
+#ifdef MX_ENABLE_OPENGL
+#include "Marx/Platform/OpenGL/OpenGLShader.h"
 #endif
 
 namespace Marx
 {
+	static const char* getShaderFileExtension()
+	{
+		switch (RendererAPI::getAPI())
+		{
+		case RendererAPI::API::OpenGL:
+			return ".glsl";
+		case RendererAPI::API::D3D11:
+			return ".hlsl";
+		}
+		MX_CORE_ASSERT(false, "Unknown RendererAPI::API!");
+		return ".UNKNOWN";
+	}
+
 	ShaderType shaderTypeFromString(const std::string& str)
 	{
 		if (str == "vertex") return ShaderType::Vertex;
@@ -31,12 +47,18 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
 			return nullptr;
 		case RendererAPI::API::D3D11:
-		#ifdef MX_PLATFORM_WINDOWS
+			#ifdef MX_ENABLE_D3D11
 			return std::make_shared<D3D11Shader>(filepath, name);
-		#else
+			#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
-		#endif
+			#endif
+		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
+			return std::make_shared<OpenGLShader>(filepath, name);
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported!");
+			#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -51,12 +73,19 @@ namespace Marx
 			MX_CORE_ASSERT(false, "RendererAPI::None is not supported!");
 			return nullptr;
 		case RendererAPI::API::D3D11:
-		#ifdef MX_PLATFORM_WINDOWS
+			#ifdef MX_ENABLE_D3D11
 			return std::make_shared<D3D11Shader>(name, vertexSrc, pixelSrc);
-		#else
+			#else
 			MX_CORE_ASSERT(false, "RendererAPI::D3D11 is not supported!");
 			return nullptr;
-		#endif
+			#endif
+		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
+			return std::make_shared<OpenGLShader>(name, vertexSrc, pixelSrc);
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported!");
+			return nullptr;
+			#endif
 		}
 
 		MX_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -89,6 +118,29 @@ namespace Marx
 		return filepath.substr(lastSlash, lastDot - lastSlash);
 	}
 
+	std::unordered_map<ShaderType, std::string> Shader::preprocess(std::string shaderSrc)
+	{
+		std::unordered_map<ShaderType, std::string> shaderSources;
+
+		const char* typeToken = "#type";
+		size_t typeTokenLength = strlen(typeToken);
+		size_t pos = shaderSrc.find(typeToken, 0);
+		while (pos != std::string::npos)
+		{
+			size_t eol = shaderSrc.find_first_of("\r\n", pos);
+			MX_CORE_ASSERT(eol != std::string::npos, "Syntax error");
+			size_t begin = pos + typeTokenLength + 1;
+			std::string type = shaderSrc.substr(begin, eol - begin);
+			MX_CORE_ASSERT(type == "vertex" || type == "pixel", "Invalid shader type");
+
+			size_t nextLinePos = shaderSrc.find_first_not_of("\r\n", eol);
+			pos = shaderSrc.find(typeToken, nextLinePos);
+			shaderSources[shaderTypeFromString(type)] = shaderSrc.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? shaderSrc.size() - 1 : nextLinePos));
+		}
+
+		return shaderSources;
+	}
+
 	void ShaderLib::add(const Reference<Shader>& shader)
 	{
 		auto& name = shader->getName();
@@ -96,13 +148,17 @@ namespace Marx
 		m_shaders[name] = shader;
 	}
 
-	Reference<Shader> Marx::ShaderLib::load(const std::string& filepath)
+	Reference<Shader> Marx::ShaderLib::load(std::string filepath, bool autoDetectType)
 	{
-		return load(filepath, Shader::extractNameFromFilepath(filepath));
+		if (autoDetectType)
+			filepath += getShaderFileExtension();
+		return load(filepath, Shader::extractNameFromFilepath(filepath), false);
 	}
 
-	Reference<Shader> ShaderLib::load(const std::string& filepath, const std::string& name)
+	Reference<Shader> ShaderLib::load(std::string filepath, const std::string& name, bool autoDetectType)
 	{
+		if (autoDetectType)
+			filepath += getShaderFileExtension();
 		auto shader = Shader::create(filepath, name);
 		add(shader);
 		return shader;

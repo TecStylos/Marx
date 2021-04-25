@@ -113,7 +113,7 @@ public:
 		m_pVertexArray = Marx::VertexArray::create(pVertexBuffer, pIndexBuffer);
 
 		// Shader
-		m_shaderLib.load("assets/shaders/Texture.hlsl");
+		m_shaderLib.load("assets/shaders/Texture", true);
 
 		m_pTexture = Marx::Texture2D::create("assets/textures/testLow.png");
 		m_pAlphaTexture = Marx::Texture2D::create("assets/textures/testAlpha.png");

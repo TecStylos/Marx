@@ -24,7 +24,8 @@ namespace Marx
 	void CrossWindow::onUpdate()
 	{
 		glfwPollEvents();
-		m_pContext->swapBuffers();
+		if (!m_data.wndClosed)
+			m_pContext->swapBuffers();
 	}
 
 	void CrossWindow::init(const WindowDesc& desc)
@@ -73,6 +74,7 @@ namespace Marx
 			{
 				WndData& data = *(WndData*)glfwGetWindowUserPointer(wnd);
 				data.eventCallback(WindowCloseEvent(data.pWnd));
+				data.wndClosed = true;
 			}
 		);
 
@@ -148,6 +150,7 @@ namespace Marx
 
 	void CrossWindow::shutdown()
 	{
-		glfwDestroyWindow(m_wnd);
+		if (!m_data.wndClosed)
+			glfwDestroyWindow(m_wnd);
 	}
 }

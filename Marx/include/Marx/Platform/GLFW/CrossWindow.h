@@ -35,6 +35,7 @@ namespace Marx
 			std::string title;
 			EventCallbackFunc eventCallback = [](Event&) {};
 			Window* pWnd;
+			bool wndClosed = false;
 		} m_data;
 		GLFWwindow* m_wnd;
 		bool m_initialized = false;

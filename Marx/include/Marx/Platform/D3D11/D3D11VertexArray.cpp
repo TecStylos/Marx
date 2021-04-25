@@ -6,7 +6,7 @@ namespace Marx
 	D3D11VertexArray::D3D11VertexArray()
 	{}
 
-	D3D11VertexArray::D3D11VertexArray(const Reference<VertexBuffer>&pVertexBuffer, const Reference<IndexBuffer>&pIndexBuffer)
+	D3D11VertexArray::D3D11VertexArray(const Reference<VertexBuffer>& pVertexBuffer, const Reference<IndexBuffer>&pIndexBuffer)
 	{
 		setVertexBuffer(pVertexBuffer);
 		setIndexBuffer(pIndexBuffer);

@@ -59,6 +59,7 @@ namespace Marx
 	public:
 		virtual void bind() const override;
 		virtual void setLayout(const BufferLayout& layout) override;
+		virtual const BufferLayout& getLayout() const override { return *m_pBufferLayout; }
 		virtual void update(const void* vertices) override;
 		virtual void updatePartial(const void* const* pVertices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers) override;
 	public:
@@ -69,6 +70,7 @@ namespace Marx
 		uint32_t m_stride;
 		ComPtr<ID3D11Buffer> m_pVertexBuffer;
 		ComPtr<ID3D11InputLayout> m_pInputLayout;
+		Scope<BufferLayout> m_pBufferLayout;
 	};
 
 	///////////////////////////////////////

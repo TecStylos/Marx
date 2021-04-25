@@ -21,10 +21,10 @@ namespace Marx
 	public:
 		static HRESULT compileSrc(const std::string& src, const char* pTarget, ID3DBlob** ppBytecode);
 	private:
-		void compile(const std::unordered_map<ShaderType, std::string> shaderSources);
+		void compile(const std::unordered_map<ShaderType, std::string>& shaderSources);
 	private:
 		static const char* getTargetStringFromType(ShaderType type);
-		static std::unordered_map<ShaderType, std::string> preprocess(std::string shaderSrc);
+		
 	private:
 		std::string m_name;
 		ComPtr<ID3D11PixelShader> m_pPixelShader;

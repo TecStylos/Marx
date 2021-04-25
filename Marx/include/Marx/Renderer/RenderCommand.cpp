@@ -21,7 +21,7 @@ namespace Marx
 			break;
 		case RendererAPI::API::OpenGL:
 			#ifdef MX_ENABLE_OPENGL
-			s_rendererAPI = std::make_shared<OpenGLRendererAPI>();
+			s_rendererAPI = std::make_unique<OpenGLRendererAPI>();
 			#else
 			MX_CORE_ASSERT(false, "The renderer API 'OpenGL' is not supported by this configuration!");
 			#endif

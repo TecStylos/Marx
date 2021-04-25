@@ -3,6 +3,7 @@
 
 #include "Marx/Application.h"
 #include "Marx/Input/KeyCodes.h"
+#include "Marx/Renderer/RendererAPI.h"
 
 #if defined MX_ENABLE_D3D11
 	#include "Marx/Platform/Win32/Win32Window.h"
@@ -10,7 +11,8 @@
 
 	#include "backends/imgui_impl_dx11.h"
 	#include "backends/imgui_impl_win32.h"
-#elif defined MX_ENABLE_OPENGL
+#endif
+#if defined MX_ENABLE_OPENGL
 	#include <glad/glad.h>
 	#include <GLFW/glfw3.h>
 	#include <backends/imgui_impl_glfw.h>
@@ -55,24 +57,55 @@ namespace Marx
 		void* nativeWindow = Application::get()->getWindow()->getNativeWindow();
 
 		// Setup Platform/Renderer backends
-		#if defined MX_ENABLE_D3D11
-			ImGui_ImplDX11_Init(D3D11GraphicsContext::D3D11Manager::getDevice(), D3D11GraphicsContext::D3D11Manager::getContext());
-			ImGui_ImplWin32_Init(nativeWindow);
-		#elif defined MX_ENABLE_OPENGL
+		switch (Window::getAPI())
+		{
+		case Window::API::GLFW:
 			ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)nativeWindow, true);
+			break;
+		case Window::API::Win32:
+			ImGui_ImplWin32_Init(nativeWindow);
+			break;
+		}
+
+		switch (RendererAPI::getAPI())
+		{
+		case RendererAPI::API::D3D11:
+			ImGui_ImplDX11_Init(D3D11GraphicsContext::D3D11Manager::getDevice(), D3D11GraphicsContext::D3D11Manager::getContext());
+			break;
+		case RendererAPI::API::OpenGL:
 			ImGui_ImplOpenGL3_Init("#version 410");
-		#endif
+		}
 	}
 
 	void ImGuiLayer::onDetach()
 	{
-		#if defined MX_ENABLE_D3D11
+		switch (RendererAPI::getAPI())
+		{
+			#ifdef MX_ENABLE_D3D11
+		case RendererAPI::API::D3D11:
 			ImGui_ImplDX11_Shutdown();
-			ImGui_ImplWin32_Shutdown();
-		#elif defined MX_ENABLE_OPENGL
+			break;
+			#endif
+			#ifdef MX_ENABLE_OPENGL
+		case RendererAPI::API::OpenGL:
 			ImGui_ImplOpenGL3_Shutdown();
+			break;
+			#endif
+		}
+
+		switch (Window::getAPI())
+		{
+			#ifdef MX_ENABLE_GLFW
+		case Window::API::GLFW:
 			ImGui_ImplGlfw_Shutdown();
-		#endif
+			break;
+			#endif
+			#ifdef MX_ENABLE_WIN32
+		case Window::API::Win32:
+			ImGui_ImplWin32_Shutdown();
+			break;
+			#endif
+		}
 
 		ImGui::DestroyContext();
 	}
@@ -85,13 +118,33 @@ namespace Marx
 
 	void ImGuiLayer::begin()
 	{
-		#if defined MX_ENABLE_D3D11
+		switch (RendererAPI::getAPI())
+		{
+			#ifdef MX_ENABLE_D3D11
+		case RendererAPI::API::D3D11:
 			ImGui_ImplDX11_NewFrame();
-			ImGui_ImplWin32_NewFrame();
-		#elif defined MX_ENABLE_OPENGL
+			break;
+			#endif
+			#ifdef MX_ENABLE_OPENGL
+		case RendererAPI::API::OpenGL:
 			ImGui_ImplOpenGL3_NewFrame();
+			break;
+			#endif
+		}
+
+		switch (Window::getAPI())
+		{
+			#ifdef MX_ENABLE_GLFW
+		case Window::API::GLFW:
 			ImGui_ImplGlfw_NewFrame();
-		#endif
+			break;
+			#endif
+			#ifdef MX_ENABLE_WIN32
+		case Window::API::Win32:
+			ImGui_ImplWin32_NewFrame();
+			break;
+			#endif
+		}
 
 		ImGui::NewFrame();
 	}
@@ -104,11 +157,19 @@ namespace Marx
 
 		ImGui::Render();
 
-		#if defined MX_ENABLE_D3D11
+		switch (RendererAPI::getAPI())
+		{
+			#ifdef MX_ENABLE_D3D11
+		case RendererAPI::API::D3D11:
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-		#elif defined MX_ENABLE_OPENGL
+			break;
+			#endif
+			#ifdef MX_ENABLE_OPENGL
+		case RendererAPI::API::OpenGL:
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		#endif
+			break;
+			#endif
+		}
 		
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
