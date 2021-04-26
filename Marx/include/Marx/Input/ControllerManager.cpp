@@ -35,7 +35,9 @@ namespace Marx
 	{
 		for (int i = 0; i < MX_USER_MAX_COUNT; ++i)
 		{
+			#ifdef MX_PLATFORM_WINDOWS
 			s_controller[i]->onUpdate();
+			#endif
 		}
 	}
 	const Controller& ControllerManager::getController(ControllerID id)

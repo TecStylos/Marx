@@ -59,21 +59,30 @@ namespace Marx
 		// Setup Platform/Renderer backends
 		switch (Window::getAPI())
 		{
+			#ifdef MX_ENABLE_GLFW
 		case Window::API::GLFW:
 			ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)nativeWindow, true);
 			break;
+			#endif
+			#ifdef MX_ENABLE_WIN32
 		case Window::API::Win32:
 			ImGui_ImplWin32_Init(nativeWindow);
 			break;
+			#endif
 		}
 
 		switch (RendererAPI::getAPI())
 		{
+			#ifdef MX_ENABLE_D3D11
 		case RendererAPI::API::D3D11:
 			ImGui_ImplDX11_Init(D3D11GraphicsContext::D3D11Manager::getDevice(), D3D11GraphicsContext::D3D11Manager::getContext());
 			break;
+			#endif
+			#ifdef MX_ENABLE_OPENGL
 		case RendererAPI::API::OpenGL:
 			ImGui_ImplOpenGL3_Init("#version 410");
+			break;
+			#endif
 		}
 	}
 

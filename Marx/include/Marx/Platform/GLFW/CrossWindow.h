@@ -3,7 +3,7 @@
 #include "Marx/Window.h"
 #include "Marx/Renderer/GraphicsContext.h"
 
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 namespace Marx
 {

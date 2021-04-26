@@ -16,6 +16,7 @@ set(
 	"include/Marx/LayerStack.cpp"
 	"include/Marx/Window.cpp"
 	"include/Marx/WindowAPISelector.cpp"
+	"include/Marx/Input.cpp"
 	"include/Marx/Core/Log.cpp"
 	"include/Marx/ImGui/ImGuiLayer.cpp"
 	"include/Marx/Input/ControllerManager.cpp"
@@ -35,37 +36,40 @@ set(
 	"vendor/imgui/backends/imgui_impl_opengl3.cpp"
 
 	"include/Marx/Platform/GLFW/CrossWindow.cpp"
+	"include/Marx/Platform/GLFW/CrossInput.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLGraphicsContext.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLRendererAPI.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLBuffer.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLVertexArray.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLShader.cpp"
- "include/Marx/Platform/OpenGL/OpenGLTexture.cpp")
+	"include/Marx/Platform/OpenGL/OpenGLTexture.cpp"
+)
 
 add_library(
 	Marx STATIC
 	${MARX_LIB_FILES}
 
-	"$<$<BOOL:WIN32>:"
-		"include/Marx/Platform/D3D11/D3D11Buffer.cpp"
-		"include/Marx/Platform/D3D11/D3D11GraphicsContext.cpp"
-		"include/Marx/Platform/D3D11/D3D11InfoManager.cpp"
-		"include/Marx/Platform/D3D11/D3D11RendererAPI.cpp"
-		"include/Marx/Platform/D3D11/D3D11Shader.cpp"
-		"include/Marx/Platform/D3D11/D3D11Texture.cpp"
-		"include/Marx/Platform/D3D11/D3D11VertexArray.cpp"
-		"include/Marx/Platform/Win32/Win32Input.cpp"
-		"include/Marx/Platform/Win32/Win32Window.cpp"
-		"include/Marx/Platform/XInput/XController.cpp"
-	
-		"vendor/imgui/backends/imgui_impl_win32.cpp"
-		"vendor/imgui/backends/imgui_impl_dx11.cpp"
-	">"
+	#"$<$<BOOL:WIN32>:"
+	#	"include/Marx/Platform/D3D11/D3D11Buffer.cpp"
+	#	"include/Marx/Platform/D3D11/D3D11GraphicsContext.cpp"
+	#	"include/Marx/Platform/D3D11/D3D11InfoManager.cpp"
+	#	"include/Marx/Platform/D3D11/D3D11RendererAPI.cpp"
+	#	"include/Marx/Platform/D3D11/D3D11Shader.cpp"
+	#	"include/Marx/Platform/D3D11/D3D11Texture.cpp"
+	#	"include/Marx/Platform/D3D11/D3D11VertexArray.cpp"
+	#	"include/Marx/Platform/Win32/Win32Input.cpp"
+	#	"include/Marx/Platform/Win32/Win32Window.cpp"
+	#	"include/Marx/Platform/XInput/XController.cpp"
+	#
+	#	"vendor/imgui/backends/imgui_impl_win32.cpp"
+	#	"vendor/imgui/backends/imgui_impl_dx11.cpp"
+	#">"
 )
 
 set(
 	MARX_COMPILE_OPTIONS
 	"$<$<CONFIG:DEBUG>:-DMX_ENABLE_ASSERTS>"
+	"-Wl,--no-as-needed"
 )
 
 set(

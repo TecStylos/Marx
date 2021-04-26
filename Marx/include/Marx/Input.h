@@ -7,6 +7,7 @@ namespace Marx
 	class MARX_API Input
 	{
 	public:
+		static void init();
 		inline static bool isKeyPressed(int keyCode) { return s_pInstance->isKeyPressedImpl(keyCode); }
 		inline static bool isMouseButtonPressed(int button) { return s_pInstance->isMouseButtonPressedImpl(button); }
 		inline static std::pair<float, float> getMousePos() { return s_pInstance->getMousePosImpl(); }

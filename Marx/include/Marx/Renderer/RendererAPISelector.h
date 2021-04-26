@@ -2,6 +2,6 @@
 
 namespace Marx
 {
-	void selectRendererAPIFromCmdLine(int argc, const char* argv[]);
+	void selectRendererAPIFromCmdLine(int argc, char* argv[]);
 	void printSupportedRendererAPIs();
 }

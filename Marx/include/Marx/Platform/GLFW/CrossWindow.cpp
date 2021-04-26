@@ -49,6 +49,10 @@ namespace Marx
 			s_glfwInitialized = true;
 		}
 
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 		m_wnd = glfwCreateWindow(m_data.width, m_data.height, m_data.title.c_str(), nullptr, nullptr);
 
 		m_pContext = new OpenGLGraphicsContext(m_wnd);
@@ -64,7 +68,8 @@ namespace Marx
 				WndData& data = *(WndData*)glfwGetWindowUserPointer(wnd);
 				data.width = width;
 				data.height = height;
-				data.eventCallback(WindowResizeEvent(data.pWnd, width, height));
+				WindowResizeEvent event(data.pWnd, width, height);
+				data.eventCallback(event);
 			}
 		);
 
@@ -73,7 +78,8 @@ namespace Marx
 			[](GLFWwindow* wnd)
 			{
 				WndData& data = *(WndData*)glfwGetWindowUserPointer(wnd);
-				data.eventCallback(WindowCloseEvent(data.pWnd));
+				WindowCloseEvent event(data.pWnd);
+				data.eventCallback(event);
 				data.wndClosed = true;
 			}
 		);
@@ -87,14 +93,23 @@ namespace Marx
 				switch (action)
 				{
 				case GLFW_PRESS:
-					data.eventCallback(KeyPressEvent(data.pWnd, key, 0));
+				{
+					KeyPressEvent event(data.pWnd, key, 0);
+					data.eventCallback(event);
 					break;
+				}
 				case GLFW_RELEASE:
-					data.eventCallback(KeyReleaseEvent(data.pWnd, key));
+				{
+					KeyReleaseEvent event(data.pWnd, key);
+					data.eventCallback(event);
 					break;
+				}
 				case GLFW_REPEAT:
-					data.eventCallback(KeyPressEvent(data.pWnd, key, 1));
+				{
+					KeyPressEvent event(data.pWnd, key, 1);
+					data.eventCallback(event);
 					break;
+				}
 				}
 			}
 		);
@@ -104,7 +119,8 @@ namespace Marx
 			[](GLFWwindow* wnd, unsigned int key)
 			{
 				WndData& data = *(WndData*)glfwGetWindowUserPointer(wnd);
-				data.eventCallback(KeyTypeEvent(data.pWnd, key));
+				KeyTypeEvent event(data.pWnd, key);
+				data.eventCallback(event);
 			}
 		);
 
@@ -117,11 +133,17 @@ namespace Marx
 				switch (action)
 				{
 				case GLFW_PRESS:
-					data.eventCallback(MouseButtonPressEvent(data.pWnd, btn));
+				{
+					MouseButtonPressEvent event(data.pWnd, btn);
+					data.eventCallback(event);
 					break;
+				}
 				case GLFW_RELEASE:
-					data.eventCallback(MouseButtonReleaseEvent(data.pWnd, btn));
+				{
+					MouseButtonReleaseEvent event(data.pWnd, btn);
+					data.eventCallback(event);
 					break;
+				}
 				}
 			}
 		);
@@ -132,9 +154,15 @@ namespace Marx
 			{
 				WndData& data = *(WndData*)glfwGetWindowUserPointer(wnd);
 				if (xOffset != 0.0)
-					data.eventCallback(MouseScrollEvent(data.pWnd, (float)xOffset));
+				{
+					MouseScrollEvent event(data.pWnd, (float)xOffset);
+					data.eventCallback(event);
+				}
 				if (yOffset != 0.0)
-					data.eventCallback(MouseHScrollEvent(data.pWnd, (float)yOffset));
+				{
+					MouseHScrollEvent event(data.pWnd, (float)yOffset);
+					data.eventCallback(event);
+				}
 			}
 		);
 
@@ -143,7 +171,8 @@ namespace Marx
 			[](GLFWwindow* wnd, double xPos, double yPos)
 			{
 				WndData& data = *(WndData*)glfwGetWindowUserPointer(wnd);
-				data.eventCallback(MouseMoveEvent(data.pWnd, (float)xPos, (float)yPos));
+				MouseMoveEvent event(data.pWnd, (float)xPos, (float)yPos);
+				data.eventCallback(event);
 			}
 		);
 	}

@@ -11,6 +11,7 @@ extern Marx::Application* Marx::createApplication();
 
 int main(int argc, char* argv[], char* env[])
 {
+	//MX_CORE_INFO("First arg: '{0}'", argv[0]);
 	for (int i = 1; i < argc; ++i)
 	{
 		std::string arg = argv[i];
@@ -43,6 +44,9 @@ int main(int argc, char* argv[], char* env[])
 				),
 			"The selected API combination is not supported!"
 		);
+
+		Marx::Input::init();
+		MX_CORE_INFO("Initialized input!");
 
 		Marx::Scope<Marx::Application> app;
 

@@ -5,7 +5,7 @@
 	#include "Marx/Platform/D3D11/D3D11RendererAPI.h"
 #endif
 #ifdef MX_ENABLE_OPENGL
-#include "Marx/Platform/OpenGL/OpenGLRendererAPI.h""
+#include "Marx/Platform/OpenGL/OpenGLRendererAPI.h"
 #endif
 
 namespace Marx

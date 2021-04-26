@@ -2,12 +2,15 @@
 
 #include "Marx/Core.h"
 
+typedef uint32_t DWORD;
+
 namespace Marx
 {
 	#define MX_EXCEPT_AUTOLOG() { if (autoLog) MX_CORE_CRITICAL(what()); }
 
 	inline std::string getErrString(DWORD errCode)
 	{
+		#ifdef MX_PLATFORM_WINDOWS
 		LPSTR pBuffer = 0;
 		size_t buffSize = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL, errCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&pBuffer, 0, NULL);
@@ -15,6 +18,9 @@ namespace Marx
 		std::string errString(pBuffer, buffSize);
 		LocalFree(pBuffer);
 		return errString;
+		#else
+		return "Not supported";
+		#endif
 	}
 
 	class MarxException
