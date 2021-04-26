@@ -10,6 +10,9 @@ namespace Marx
 	void OpenGLRendererAPI::init()
 	{
 		enableBlending(true);
+
+		glFrontFace(GL_CW);
+		glEnable(GL_CULL_FACE);
 	}
 
 	void OpenGLRendererAPI::setClearColor(float r, float g, float b, float a)
