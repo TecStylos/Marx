@@ -9,8 +9,6 @@
       "name": "Sandbox.exe (Sandbox\\Sandbox.exe)",
       "currentDir": "${workspaceRoot}\\Sandbox",
       "args": [
-        "--glfw",
-        "--opengl"
       ]
     },
     {

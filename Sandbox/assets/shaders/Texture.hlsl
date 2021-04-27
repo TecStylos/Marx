@@ -1,14 +1,7 @@
 #type vertex
 
-cbuffer sceneData : register(b0)
-{
-	matrix c_viewProjection;
-};
-
-cbuffer modelData : register(b1)
-{
-	matrix c_modelTransform;
-}
+@cbuff 0 float4x4 c_viewProjection;
+@cbuff 1 float4x4 c_modelTransform;
 
 struct VS_INPUT
 {

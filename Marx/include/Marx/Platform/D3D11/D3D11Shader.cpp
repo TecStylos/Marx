@@ -8,6 +8,8 @@
 
 #include "Marx/Platform/D3D11/D3D11GraphicsContext.h"
 
+#include "D3D11Conversions.h"
+
 namespace Marx
 {
 	D3D11Shader::D3D11Shader(const std::string& filepath, const std::string& name)
@@ -15,6 +17,7 @@ namespace Marx
 	{
 		auto shaderSrc = readFile(filepath);
 		auto sources = preprocess(shaderSrc);
+		detectConstBuffers(sources);
 		compile(sources);
 	}
 
@@ -23,11 +26,11 @@ namespace Marx
 	{
 		MX_DEBUG_HR_DECL;
 
-		ComPtr<ID3DBlob> pVSCode, pPSCode;
-		MX_VERIFY_THROW_HR_INFO(compileSrc(vertexSrc, getTargetStringFromType(ShaderType::Vertex), pVSCode.GetAddressOf()));
-		MX_VERIFY_THROW_HR_INFO(compileSrc(pixelSrc, getTargetStringFromType(ShaderType::Pixel), pPSCode.GetAddressOf()));
-		MX_VERIFY_THROW_HR_INFO(D3D11GraphicsContext::D3D11Manager::getDevice()->CreateVertexShader(pVSCode->GetBufferPointer(), pVSCode->GetBufferSize(), NULL, m_pVertexShader.GetAddressOf()));
-		MX_VERIFY_THROW_HR_INFO(D3D11GraphicsContext::D3D11Manager::getDevice()->CreatePixelShader(pPSCode->GetBufferPointer(), pPSCode->GetBufferSize(), NULL, m_pPixelShader.GetAddressOf()));
+		ShaderSources sources;
+		sources[ShaderType::Vertex] = vertexSrc;
+		sources[ShaderType::Pixel] = pixelSrc;
+		detectConstBuffers(sources);
+		compile(sources);
 	}
 
 	D3D11Shader::~D3D11Shader()
@@ -37,21 +40,30 @@ namespace Marx
 	{
 		D3D11GraphicsContext::D3D11Manager::getContext()->VSSetShader(m_pVertexShader.Get(), 0, 0);
 		D3D11GraphicsContext::D3D11Manager::getContext()->PSSetShader(m_pPixelShader.Get(), 0, 0);
+
+		for (auto& elem : m_constBuffers)
+			elem->bind();
 	}
 
-	void D3D11Shader::updateConstBuff(ShaderDataType sdt, const void* data, const std::string& name)
+	void D3D11Shader::updateUniform(const std::string& name, const void* data, ShaderDataType sdt)
 	{
-		; // TODO: Implement constant buffer update (d3d11)
+		auto elem = m_uniforms.find(name);
+		MX_CORE_ASSERT(elem != m_uniforms.end(), "Unknown constant buffer name!");
+		m_constBuffers[elem->second.bufferIndex]->updatePartialStaged(data, elem->second.offset, elem->second.size);
 	}
 
 	const char* D3D11Shader::getTargetStringFromType(ShaderType type)
 	{
 		switch (type)
 		{
-		case ShaderType::Vertex: return "vs_5_0";
-		case ShaderType::Pixel: return "ps_5_0";
-		default: return "Unknown Shader";
+		case ShaderType::Vertex:
+			return "vs_5_0";
+		case ShaderType::Pixel:
+			return "ps_5_0";
 		}
+
+		MX_CORE_ASSERT(false, "Unknown ShaderType!");
+		return "";
 	}
 
 	
@@ -76,7 +88,7 @@ namespace Marx
 		return hr;
 	}
 
-	void D3D11Shader::compile(const std::unordered_map<ShaderType, std::string>& shaderSources)
+	void D3D11Shader::compile(const ShaderSources& shaderSources)
 	{
 		MX_DEBUG_HR_DECL;
 
@@ -96,6 +108,104 @@ namespace Marx
 			default:
 				MX_CORE_ASSERT(false, "Unknown shader type");
 			}
+		}
+	}
+
+	void D3D11Shader::detectConstBuffers(ShaderSources& shaderSources)
+	{
+		const char* buffToken = "@cbuff ";
+		size_t buffTokenLength = strlen(buffToken);
+
+		uint32_t lastSlot = -1;
+		uint32_t currIndex = -1;
+
+		for (auto& shader : shaderSources)
+		{
+			bool cbuffOpen = false;
+			uint32_t currOffset = 0;
+
+			ShaderType type = shader.first;
+			const std::string& source = shader.second;
+			std::string constBuffStr;
+			std::string outStr;
+
+			size_t lineBegin = source.find_first_not_of("\r\n", 0);
+			while (lineBegin != std::string::npos)
+			{
+				size_t lineEnd = source.find_first_of("\r\n", lineBegin);
+				std::string line = source.substr(lineBegin, lineEnd - lineBegin);
+
+				if (line.find(buffToken) != 0)
+				{
+					if (cbuffOpen)
+					{
+						cbuffOpen = false;
+						outStr.append("}\n");
+						m_constBuffers.push_back(std::make_shared<D3D11ConstantBuffer>(type, currOffset, lastSlot));
+					}
+
+					outStr.append(line);
+					outStr.append("\r\n");
+				}
+				else
+				{
+					size_t slotBegin = buffTokenLength;
+					size_t slotEnd = line.find_first_of(" ", slotBegin);
+					size_t typeBegin = slotEnd + 1;
+					size_t typeEnd = line.find_first_of(" ", typeBegin);
+					size_t nameBegin = typeEnd + 1;
+					size_t nameEnd = line.find_first_of(";", nameBegin);
+					MX_CORE_ASSERT(
+						slotEnd != std::string::npos &&
+						typeEnd != std::string::npos &&
+						nameEnd != std::string::npos,
+						"Syntax error!"
+					);
+
+					std::string slotStr = line.substr(slotBegin, slotEnd - slotBegin);
+					std::string typeStr = line.substr(typeBegin, typeEnd - typeBegin);
+					std::string nameStr = line.substr(nameBegin, nameEnd - nameBegin);
+
+					uint32_t slot = std::stoi(slotStr);
+
+					if (slot != lastSlot)
+					{
+						++currIndex;
+
+						if (cbuffOpen)
+						{
+							outStr.append("}\n");
+							m_constBuffers.push_back(std::make_shared<D3D11ConstantBuffer>(type, currOffset, lastSlot));
+						}
+
+						lastSlot = slot;
+						
+						outStr.append(
+							"cbuffer _CONSTANT_BUFFER_" + slotStr +
+							" : register(b" + slotStr + ")\n{\n"
+						);
+
+						cbuffOpen = true;
+
+						currOffset = 0;
+					}
+
+					outStr.push_back('\t');
+					outStr.append(typeStr + " " + nameStr + ";\n");
+
+					ConstBufferElement element;
+					element.bufferIndex = currIndex;
+					element.offset = currOffset;
+					element.size = ShaderDataTypeSize(hlslStringToShaderDataType(typeStr));
+					m_uniforms[nameStr] = element;
+
+					currOffset += element.size;
+				}
+
+				lineBegin = source.find_first_not_of("\r\n", lineEnd);
+			}
+
+			shader.second = outStr;
 		}
 	}
 }

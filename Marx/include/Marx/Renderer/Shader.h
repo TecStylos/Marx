@@ -4,8 +4,9 @@ namespace Marx
 {
 	enum class ShaderType : uint32_t
 	{
+		None,
 		Vertex,
-		Pixel,
+		Pixel
 	};
 
 	enum class ShaderDataType
@@ -54,7 +55,7 @@ namespace Marx
 
 		virtual const std::string& getName() const = 0;
 
-		virtual void updateConstBuff(ShaderDataType sdt, const void* data, const std::string& name) = 0;
+		virtual void updateUniform(const std::string& name, const void* data, ShaderDataType sdt) = 0;
 	public:
 		static std::string readFile(const std::string& filepath);
 		static std::string extractNameFromFilepath(const std::string& filepath);

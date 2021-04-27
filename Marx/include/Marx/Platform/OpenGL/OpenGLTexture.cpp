@@ -16,16 +16,13 @@ namespace Marx
 		m_width = width;
 		m_height = height;
 
-		GLenum internalFormat = GL_RGBA8;
-		GLenum dataFormat = GL_RGBA;
-
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
-		glTextureStorage2D(m_texture, 1, internalFormat, m_width, m_height);
+		glTextureStorage2D(m_texture, 1, GL_RGBA8, m_width, m_height);
 
 		glTextureParameteri(m_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		glTextureSubImage2D(m_texture, 0, 0, 0, m_width, m_height, dataFormat, GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(m_texture, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
 	}
@@ -42,11 +39,26 @@ namespace Marx
 
 	void OpenGLTexture2D::update(const uint8_t* pData)
 	{
-		; // TODO: Implement texture update (OpenGL)
+		glTextureSubImage2D(
+			m_texture, 0,
+			0, 0,
+			m_width, m_height,
+			GL_RGBA, GL_UNSIGNED_BYTE,
+			pData
+		);
 	}
 
 	void OpenGLTexture2D::updatePartial(const uint8_t* const* pData, const uint32_t* pOffsetX, const uint32_t* pOffsetY, const uint32_t* pWidth, const uint32_t* pHeight, uint32_t nBuffers)
 	{
-		; // TODO: Implement partial texture update (OpenGL)
+		for (uint32_t i = 0; i < nBuffers; ++i)
+		{
+			glTextureSubImage2D(
+				m_texture, 0,
+				pOffsetX[i], pOffsetY[i],
+				pWidth[i], pHeight[i],
+				GL_RGBA, GL_UNSIGNED_BYTE,
+				pData[i]
+			);
+		}
 	}
 }

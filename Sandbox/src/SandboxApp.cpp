@@ -10,7 +10,7 @@ class ExampleLayer : public Marx::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_orthographicCam(-1.6f, 1.6f, -0.9f, 0.9f), m_position(0.0f, 0.0f, 0.0f)
+		: Layer("Example"), m_orthographicCam(-1.6f, 1.6f, -0.9f, 0.9f), m_position(0.0f, 0.0f, -1.0f)
 	{
 		// Vertex Buffer
 		Vertex vertices[] =

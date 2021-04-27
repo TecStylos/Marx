@@ -120,29 +120,4 @@ namespace Marx
 	public:
 		static Reference<IndexBuffer> create(const uint32_t* indices, uint32_t count, PrimitiveType primType);
 	};
-
-	//////////////////////////////////////////
-	// ---------- ConstantBuffer ---------- //
-	//////////////////////////////////////////
-
-	class ConstantBuffer
-	{
-	public:
-		virtual ~ConstantBuffer() {}
-	public:
-		virtual void bind(uint32_t slot = 0) const = 0;
-		// Updates the whole constant buffer
-		//
-		// @param data Buffer of typeless data (The size of the buffer must be equal to the size specified on creation)
-		virtual void update(const void* data) = 0;
-	};
-
-	namespace VSConstantBuffer
-	{
-		Reference<ConstantBuffer> create(const void* data, uint32_t size);
-	}
-	namespace PSConstantBuffer
-	{
-		Reference<ConstantBuffer> create(const void* data, uint32_t size);
-	}
 }

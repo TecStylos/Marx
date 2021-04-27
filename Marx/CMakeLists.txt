@@ -64,7 +64,7 @@ add_library(
 		"vendor/imgui/backends/imgui_impl_win32.cpp"
 		"vendor/imgui/backends/imgui_impl_dx11.cpp"
 	">"
-)
+ "include/Marx/Platform/D3D11/D3D11ConstantBuffers.cpp")
 
 set(
 	MARX_COMPILE_OPTIONS

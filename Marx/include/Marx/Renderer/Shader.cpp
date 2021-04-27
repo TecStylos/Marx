@@ -128,10 +128,10 @@ namespace Marx
 		while (pos != std::string::npos)
 		{
 			size_t eol = shaderSrc.find_first_of("\r\n", pos);
-			MX_CORE_ASSERT(eol != std::string::npos, "Syntax error");
+			MX_CORE_ASSERT(eol != std::string::npos, "Syntax error!");
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = shaderSrc.substr(begin, eol - begin);
-			MX_CORE_ASSERT(type == "vertex" || type == "pixel", "Invalid shader type");
+			MX_CORE_ASSERT(type == "vertex" || type == "pixel", "Invalid shader type!");
 
 			size_t nextLinePos = shaderSrc.find_first_not_of("\r\n", eol);
 			pos = shaderSrc.find(typeToken, nextLinePos);

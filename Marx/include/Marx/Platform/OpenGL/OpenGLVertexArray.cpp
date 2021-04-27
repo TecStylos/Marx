@@ -56,7 +56,7 @@ namespace Marx
 		bind();
 		vertexBuffer->bind();
 
-		for (int i = 0; i < m_vertexBufferIndex; ++i)
+		for (uint32_t i = 0; i < m_vertexBufferIndex; ++i)
 			glDisableVertexAttribArray(i);
 		m_vertexBufferIndex = 0;
 		

@@ -113,7 +113,7 @@ namespace Marx
 		glUseProgram(m_shader);
 	}
 
-	void OpenGLShader::updateConstBuff(ShaderDataType sdt, const void* data, const std::string& name)
+	void OpenGLShader::updateUniform(const std::string& name, const void* data, ShaderDataType sdt)
 	{
 		GLint location = glGetUniformLocation(m_shader, name.c_str());
 

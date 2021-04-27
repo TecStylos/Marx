@@ -15,7 +15,7 @@ namespace Marx
 	public:
 		virtual void bind() const override;
 		virtual const std::string& getName() const override { return m_name; }
-		virtual void updateConstBuff(ShaderDataType sdt, const void* data, const std::string& name) override;
+		virtual void updateUniform(const std::string& name, const void* data, ShaderDataType sdt) override;
 	private:
 		void compile(const std::unordered_map<ShaderType, std::string>& shaderSources);
 	private:
