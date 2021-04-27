@@ -5,8 +5,6 @@
 
 namespace Marx
 {
-	Input* Input::s_pInstance = new WindowsInput;
-
 	bool WindowsInput::isKeyPressedImpl(int keyCode) const
 	{
 		SHORT state = GetKeyState(keyCode);

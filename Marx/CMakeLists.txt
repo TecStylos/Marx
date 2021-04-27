@@ -49,27 +49,26 @@ add_library(
 	Marx STATIC
 	${MARX_LIB_FILES}
 
-	#"$<$<BOOL:WIN32>:"
-	#	"include/Marx/Platform/D3D11/D3D11Buffer.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11GraphicsContext.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11InfoManager.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11RendererAPI.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11Shader.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11Texture.cpp"
-	#	"include/Marx/Platform/D3D11/D3D11VertexArray.cpp"
-	#	"include/Marx/Platform/Win32/Win32Input.cpp"
-	#	"include/Marx/Platform/Win32/Win32Window.cpp"
-	#	"include/Marx/Platform/XInput/XController.cpp"
-	#
-	#	"vendor/imgui/backends/imgui_impl_win32.cpp"
-	#	"vendor/imgui/backends/imgui_impl_dx11.cpp"
-	#">"
+	"$<$<BOOL:WIN32>:"
+		"include/Marx/Platform/D3D11/D3D11Buffer.cpp"
+		"include/Marx/Platform/D3D11/D3D11GraphicsContext.cpp"
+		"include/Marx/Platform/D3D11/D3D11InfoManager.cpp"
+		"include/Marx/Platform/D3D11/D3D11RendererAPI.cpp"
+		"include/Marx/Platform/D3D11/D3D11Shader.cpp"
+		"include/Marx/Platform/D3D11/D3D11Texture.cpp"
+		"include/Marx/Platform/D3D11/D3D11VertexArray.cpp"
+		"include/Marx/Platform/Win32/Win32Input.cpp"
+		"include/Marx/Platform/Win32/Win32Window.cpp"
+		"include/Marx/Platform/XInput/XController.cpp"
+	
+		"vendor/imgui/backends/imgui_impl_win32.cpp"
+		"vendor/imgui/backends/imgui_impl_dx11.cpp"
+	">"
 )
 
 set(
 	MARX_COMPILE_OPTIONS
 	"$<$<CONFIG:DEBUG>:-DMX_ENABLE_ASSERTS>"
-	"-Wl,--no-as-needed"
 )
 
 set(
@@ -105,6 +104,7 @@ elseif(UNIX)
 		MARX_COMPILE_OPTIONS
 		${MARX_COMPILE_OPTIONS}
 		"-DMX_PLATFORM_UNIX"
+		"-Wl,--no-as-needed"
 	)
 endif()
 

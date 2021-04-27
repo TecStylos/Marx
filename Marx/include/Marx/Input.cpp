@@ -23,7 +23,7 @@ namespace Marx{
             return;
         case Window::API::Win32:
             #ifdef MX_ENABLE_WIN32
-            s_pInstance = new Win32Input();
+            s_pInstance = new WindowsInput();
             #else
             MX_CORE_ASSERT(false, "Win32Input is not supported!");
             #endif

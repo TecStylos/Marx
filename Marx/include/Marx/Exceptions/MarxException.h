@@ -2,7 +2,9 @@
 
 #include "Marx/Core.h"
 
+#if !defined(MX_PLATFORM_WINDOWS)
 typedef uint32_t DWORD;
+#endif
 
 namespace Marx
 {
