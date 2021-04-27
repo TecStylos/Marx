@@ -30,12 +30,14 @@ namespace Marx
 		inline Window* getWindow() { return m_pWindow.get(); }
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
+		bool onWindowResize(WindowResizeEvent& e);
 	private:
 		ImGuiLayer* m_pImGuiLayer;
 		DISABLE_DLL_INTERFACE_WARN;
 		Scope<Window> m_pWindow;
 		REENABLE_DLL_INTERFACE_WARN;
 		bool m_running = true;
+		bool m_isMinimized = false;
 		LayerStack m_layerStack;
 		Timestep m_timestep;
 	private:

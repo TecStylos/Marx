@@ -42,8 +42,11 @@ namespace Marx
 		{
 			m_timestep.update(Timestep::secondsSinceProgramStartup());
 
-			for (Layer* layer : m_layerStack)
-				layer->onUpdate(m_timestep);
+			if (!m_isMinimized)
+			{
+				for (Layer* layer : m_layerStack)
+					layer->onUpdate(m_timestep);
+			}
 
 			m_pImGuiLayer->begin();
 			for (Layer* layer : m_layerStack)
@@ -60,6 +63,7 @@ namespace Marx
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<WindowCloseEvent>(MX_BIND_EVENT_METHOD(Application::onWindowClose));
+		dispatcher.dispatch<WindowResizeEvent>(MX_BIND_EVENT_METHOD(Application::onWindowResize));
 
 		for (auto it = m_layerStack.end(); it != m_layerStack.begin(); )
 		{
@@ -87,5 +91,20 @@ namespace Marx
 			m_running = false;
 		}
 		return true;
+	}
+
+	bool Application::onWindowResize(WindowResizeEvent& e)
+	{
+		if (e.getWidth() == 0 || e.getHeight() == 0)
+		{
+			m_isMinimized = true;
+			return false;
+		}
+
+		m_isMinimized = false;
+
+		Renderer::onWindowResize(e.getWidth(), e.getHeight());
+
+		return false;
 	}
 }

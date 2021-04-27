@@ -10,7 +10,7 @@ class ExampleLayer : public Marx::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_orthographicCam(-1.6f, 1.6f, -0.9f, 0.9f), m_position(0.0f, 0.0f, -1.0f)
+		: Layer("Example"), m_orthographicCam(-1.6f, 1.6f, -0.9f, 0.9f), m_position(0.0f, 0.0f, 0.0f)
 	{
 		// Vertex Buffer
 		Vertex vertices[] =
@@ -105,10 +105,6 @@ public:
 
 		m_pCubeVertexArray = Marx::VertexArray::create(pCubeVertexBuffer, pCubeIndexBuffer);
 
-
-
-
-
 		// Vertex Array
 		m_pVertexArray = Marx::VertexArray::create(pVertexBuffer, pIndexBuffer);
 
@@ -121,6 +117,7 @@ public:
 		Marx::RenderCommand::enableBlending(true);
 
 		m_perspectiveCam.setProperties(90.0f, 16.0f / 9.0f, 0.001f, 1000.0f);
+		m_orthographicCam.setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 public:
 	virtual void onUpdate(Marx::Timestep ts) override
@@ -225,7 +222,6 @@ public:
 	{
 		Marx::EventDispatcher dispatcher(event);
 		dispatcher.dispatch<Marx::MouseMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseMove));
-		dispatcher.dispatch<Marx::MouseButtonPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseButtonPress));
 		dispatcher.dispatch<Marx::KeyPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onKeyPress));
 		dispatcher.dispatch<Marx::WindowResizeEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onWindowResize));
 	}
@@ -233,11 +229,6 @@ public:
 	{
 		m_mouseX = -(e.getX() / (Marx::Application::get()->getWindow()->getWidth() / 2) - 1.0f) * 1.6f;
 		m_mouseY = e.getY() / (Marx::Application::get()->getWindow()->getHeight() / 2) - 1.0f;
-		return true;
-	}
-	bool onMouseButtonPress(Marx::MouseButtonPressEvent& e)
-	{
-		MX_TRACE("MouseButtonPress: {0}", e.getButton());
 		return true;
 	}
 	bool onKeyPress(Marx::KeyPressEvent& e)

@@ -22,6 +22,7 @@ namespace Marx
 		static void beginScene(const OrthographicCamera& camera);
 		static void beginScene(const PerspectiveCamera& camera);
 		static void endScene();
+		static void onWindowResize(uint32_t width, uint32_t height);
 	public:
 		static void submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, glm::mat4 transform, const Reference<Texture2D> texture);
 	public:

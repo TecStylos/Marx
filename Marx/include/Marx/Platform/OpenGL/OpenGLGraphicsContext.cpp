@@ -32,14 +32,15 @@ namespace Marx
 	void OpenGLGraphicsContext::init()
 	{
 		glfwMakeContextCurrent(m_wnd);
+		int success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		MX_CORE_ASSERT(
-			gladLoadGLLoader((GLADloadproc)glfwGetProcAddress),
+			success,
 			"Failed to initialize GLAD!"
 		);
 
-		MX_CORE_INFO("OpenGL Renderer: {0}", glGetString(GL_RENDERER));
-		MX_CORE_INFO("       Vendor:   {0}", glGetString(GL_VENDOR));
-		MX_CORE_INFO("       Version:  {0}", glGetString(GL_VERSION));
+		MX_CORE_TRACE("OpenGL Renderer: {0}", glGetString(GL_RENDERER));
+		MX_CORE_TRACE("       Vendor:   {0}", glGetString(GL_VENDOR));
+		MX_CORE_TRACE("       Version:  {0}", glGetString(GL_VERSION));
 	}
 
 	void OpenGLGraphicsContext::shutdown()
@@ -49,7 +50,7 @@ namespace Marx
 
 	void OpenGLGraphicsContext::clear(float color[4])
 	{
-		; // Nothing to do here, see OpenGLRendererAPI
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void OpenGLGraphicsContext::swapBuffers()
@@ -57,9 +58,9 @@ namespace Marx
 		glfwSwapBuffers(m_wnd);
 	}
 
-	void OpenGLGraphicsContext::onResize(uint32_t width, uint32_t height)
+	void OpenGLGraphicsContext::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
-		; // Nothing to do here
+		glViewport(x, y, width, height);
 	}
 
 	void OpenGLGraphicsContext::enableDepthTest(bool enabled)

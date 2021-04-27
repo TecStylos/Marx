@@ -22,7 +22,7 @@ namespace Marx
 
 	void OpenGLRendererAPI::clear()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		OpenGLGraphicsContext::get()->clear(nullptr);
 	}
 
 	void OpenGLRendererAPI::drawIndexed(const Reference<VertexArray>& vertexArray)
@@ -43,5 +43,10 @@ namespace Marx
 	void OpenGLRendererAPI::enableBlending(bool enabled)
 	{
 		OpenGLGraphicsContext::get()->enableBlending(enabled);
+	}
+
+	void OpenGLRendererAPI::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	{
+		OpenGLGraphicsContext::get()->setViewport(x, y, width, height);
 	}
 }

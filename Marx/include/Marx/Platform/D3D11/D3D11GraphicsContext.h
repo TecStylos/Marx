@@ -17,7 +17,7 @@ namespace Marx
 		virtual void shutdown() override;
 		virtual void clear(float color[4]) override;
 		virtual void swapBuffers() override;
-		virtual void onResize(unsigned int width, unsigned int height) override;
+		virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 		virtual void enableDepthTest(bool enabled) override { m_depthEnabled = enabled ? 1 : 0; }
 		virtual void enableBlending(bool enabled) override { m_blendEnabled = enabled ? 1 : 0; }
 		virtual void enableVSync(bool enabled) override { m_vSyncEnabled = enabled; }
@@ -32,8 +32,8 @@ namespace Marx
 		void createDepthStencilView();
 		void createDepthStencilStates();
 		void createBlendStates();
-		void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
-		inline void setViewport() { D3D11Manager::getContext()->RSSetViewports(1, &m_viewport); }
+		void setViewportInternal(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+		inline void setViewportInternal() { D3D11Manager::getContext()->RSSetViewports(1, &m_viewport); }
 		inline void unsetRenderTarget() { ID3D11RenderTargetView* nullViews[] = { nullptr }; D3D11Manager::getContext()->OMSetRenderTargets(1, nullViews, NULL); }
 		inline void setRenderTarget() { D3D11Manager::getContext()->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get()); }
 	private:

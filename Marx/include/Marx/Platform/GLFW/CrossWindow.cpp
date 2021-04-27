@@ -39,7 +39,8 @@ namespace Marx
 	
 		if (!s_glfwInitialized)
 		{
-			MX_CORE_ASSERT(glfwInit(), "Could not initialize GLFW!");
+			int success = glfwInit();
+			MX_CORE_ASSERT(success, "Could not initialize GLFW!");
 			glfwSetErrorCallback(
 				[](int error, const char* description)
 				{

@@ -37,4 +37,9 @@ namespace Marx
 	{
 		D3D11GraphicsContext::get()->enableBlending(enabled);
 	}
+
+	void D3D11RendererAPI::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	{
+		D3D11GraphicsContext::get()->setViewport(x, y, width, height);
+	}
 }

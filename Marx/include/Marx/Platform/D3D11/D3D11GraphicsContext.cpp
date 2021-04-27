@@ -87,7 +87,7 @@ namespace Marx
 		present(m_vSyncEnabled);
 	}
 
-	void D3D11GraphicsContext::onResize(unsigned int width, unsigned int height)
+	void D3D11GraphicsContext::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
 		m_width = width;
 		m_height = height;
@@ -112,7 +112,7 @@ namespace Marx
 		createDepthStencil();
 		createDepthStencilView();
 
-		setViewport(0, 0, m_width, m_height);
+		setViewportInternal(0, 0, m_width, m_height);
 		setRenderTarget();
 	}
 
@@ -301,7 +301,7 @@ namespace Marx
 		);
 	}
 
-	void D3D11GraphicsContext::setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height)
+	void D3D11GraphicsContext::setViewportInternal(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
 		m_viewport.Width = (float)width;
 		m_viewport.Height = (float)height;
@@ -310,7 +310,7 @@ namespace Marx
 		m_viewport.TopLeftX = (float)x;
 		m_viewport.TopLeftY = (float)y;
 
-		setViewport();
+		setViewportInternal();
 	}
 
 	void D3D11GraphicsContext::D3D11Manager::init()

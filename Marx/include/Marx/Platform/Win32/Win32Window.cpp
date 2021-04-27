@@ -133,19 +133,16 @@ namespace Marx
 		}
 		case WM_SIZE:
 		{
-			if (wParam != SIZE_MINIMIZED)
+			bool minimized = (wParam == SIZE_MINIMIZED);
+			UINT width = minimized ? 0 : LOWORD(lParam);
+			UINT height = minimized ? 0 : HIWORD(lParam);
+			if (minimized)
 			{
-				UINT width = LOWORD(lParam);
-				UINT height = HIWORD(lParam);
-
 				m_width = width;
 				m_height = height;
-
-				m_pContext->onResize(width, height);
-
-				WindowResizeEvent event(this, width, height);
-				m_eventCallback(event);
 			}
+			WindowResizeEvent event(this, width, height);
+			m_eventCallback(event);
 			return 0;
 		}
 		case WM_SETFOCUS:

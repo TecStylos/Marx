@@ -16,7 +16,7 @@ namespace Marx
 		virtual void shutdown() override;
 		virtual void clear(float color[4]) override;
 		virtual void swapBuffers() override;
-		virtual void onResize(uint32_t width, uint32_t height) override;
+		virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 		virtual void enableDepthTest(bool enabled) override;
 		virtual void enableBlending(bool enabled) override;
 		virtual void enableVSync(bool enabled) override;

@@ -13,6 +13,7 @@ namespace Marx
 		virtual void drawIndexed(const Reference<VertexArray>& vertexArray) override;
 		virtual void enableDepthTest(bool enabled) override;
 		virtual void enableBlending(bool enabled) override;
+		virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 	private:
 		float m_clearColor[4];
 	};
