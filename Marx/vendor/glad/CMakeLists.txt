@@ -20,6 +20,10 @@ add_library(
 	${GLAD_LIB_FILES}
 )
 
+target_link_libraries(
+	GLAD PUBLIC
+)
+
 target_include_directories(
 	GLAD PUBLIC 
 	${GLAD_INCLUDE_DIRECTORIES}
