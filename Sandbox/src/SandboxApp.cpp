@@ -4,6 +4,7 @@ struct Vertex
 {
 	float x, y, z;
 	float u, v;
+	float l, m, n;
 };
 
 class ExampleLayer : public Marx::Layer
@@ -15,17 +16,18 @@ public:
 		// Vertex Buffer
 		Vertex vertices[] =
 		{
-			{ -0.5f, -0.5f, 0.0f, 0.0f, 0.0f },
-			{ -0.5f,  0.5f, 0.0f, 0.0f, 1.0f },
-			{  0.5f,  0.5f, 0.0f, 1.0f, 1.0f },
-			{  0.5f, -0.5f, 0.0f, 1.0f, 0.0f }
+			{ -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f },
+			{ -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+			{  0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+			{  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f }
 		};
 		Marx::Reference<Marx::VertexBuffer> pVertexBuffer(Marx::VertexBuffer::create(vertices, sizeof(vertices)));
 
 		// Vertex Layout
 		pVertexBuffer->setLayout({
 			{ Marx::ShaderDataType::Float3, "A_POSITION" },
-			{ Marx::ShaderDataType::Float2, "A_TEXCOORD" }
+			{ Marx::ShaderDataType::Float2, "A_TEXCOORD" },
+			{ Marx::ShaderDataType::Float3, "A_NORMAL" }
 		});
 
 		// Index Buffer
@@ -45,46 +47,47 @@ public:
 		Vertex cubeVertices[] =
 		{
 			// Front
-			{ -0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
-			{ -0.5f,  0.5f,  0.5f, 0.0f, 1.0f },
-			{  0.5f,  0.5f,  0.5f, 1.0f, 1.0f },
-			{  0.5f, -0.5f,  0.5f, 1.0f, 0.0f },
+			{ -0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f },
+			{ -0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+			{  0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+			{  0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f },
 
 			// Back
-			{  0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
-			{  0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
-			{ -0.5f,  0.5f, -0.5f, 1.0f, 1.0f },
-			{ -0.5f, -0.5f, -0.5f, 1.0f, 0.0f },
+			{  0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f },
+			{  0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f },
+			{ -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f },
+			{ -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f },
 
 			// Top
-			{ -0.5f,  0.5f,  0.5f, 0.0f, 0.0f },
-			{ -0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
-			{  0.5f,  0.5f, -0.5f, 1.0f, 1.0f },
-			{  0.5f,  0.5f,  0.5f, 1.0f, 0.0f },
+			{ -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f },
+			{ -0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f },
+			{  0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f },
+			{  0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
 
 			// Bottom
-			{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
-			{ -0.5f, -0.5f,  0.5f, 0.0f, 1.0f },
-			{  0.5f, -0.5f,  0.5f, 1.0f, 1.0f },
-			{  0.5f, -0.5f, -0.5f, 1.0f, 0.0f },
+			{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f },
+			{ -0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f },
+			{  0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f },
+			{  0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f },
 
 			// Left
-			{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f },
-			{ -0.5f,  0.5f, -0.5f, 0.0f, 1.0f },
-			{ -0.5f,  0.5f,  0.5f, 1.0f, 1.0f },
-			{ -0.5f, -0.5f,  0.5f, 1.0f, 0.0f },
+			{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f },
+			{ -0.5f,  0.5f, -0.5f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f },
+			{ -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f },
+			{ -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f },
 
 			// Right
-			{  0.5f, -0.5f,  0.5f, 0.0f, 0.0f },
-			{  0.5f,  0.5f,  0.5f, 0.0f, 1.0f },
-			{  0.5f,  0.5f, -0.5f, 1.0f, 1.0f },
-			{  0.5f, -0.5f, -0.5f, 1.0f, 0.0f },
+			{  0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
+			{  0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f },
+			{  0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f },
+			{  0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f },
 		};
 		Marx::Reference<Marx::VertexBuffer> pCubeVertexBuffer(Marx::VertexBuffer::create(cubeVertices, sizeof(cubeVertices)));
 
 		pCubeVertexBuffer->setLayout({
 			{ Marx::ShaderDataType::Float3, "A_POSITION" },
-			{ Marx::ShaderDataType::Float2, "A_TEXCOORD" }
+			{ Marx::ShaderDataType::Float2, "A_TEXCOORD" },
+			{ Marx::ShaderDataType::Float3, "A_NORMAL" }
 		});
 
 		uint32_t cubeIndices[] = {
@@ -109,7 +112,7 @@ public:
 		m_pVertexArray = Marx::VertexArray::create(pVertexBuffer, pIndexBuffer);
 
 		// Shader
-		m_shaderLib.load("assets/shaders/Texture", true);
+		m_shaderLib.load("assets/shaders/PhongTexture", true);
 
 		m_pTexture = Marx::Texture2D::create("assets/textures/testLow.png");
 		m_pAlphaTexture = Marx::Texture2D::create("assets/textures/testAlpha.png");
@@ -203,7 +206,7 @@ public:
 			Marx::Renderer::beginScene(m_orthographicCam);
 		Marx::RenderCommand::enableDepthTest(m_usePerspective);
 
-		auto texShader = m_shaderLib.get("Texture");
+		auto texShader = m_shaderLib.get("PhongTexture");
 
 		glm::mat4 transformMat = glm::translate(glm::mat4(1.0f), m_position) * rotationMat * scaleMat;
 		Marx::Renderer::submit(texShader, m_pCubeVertexArray, transformMat, m_pTexture);
