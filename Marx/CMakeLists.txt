@@ -32,9 +32,6 @@ set(
 
 	"vendor/stb_image/stb_image.cpp"
 
-	"vendor/imgui/backends/imgui_impl_glfw.cpp"
-	"vendor/imgui/backends/imgui_impl_opengl3.cpp"
-
 	"include/Marx/Platform/GLFW/CrossWindow.cpp"
 	"include/Marx/Platform/GLFW/CrossInput.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLGraphicsContext.cpp"
@@ -43,37 +40,19 @@ set(
 	"include/Marx/Platform/OpenGL/OpenGLVertexArray.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLShader.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLTexture.cpp"
+
+	"vendor/imgui/backends/imgui_impl_glfw.cpp"
+	"vendor/imgui/backends/imgui_impl_opengl3.cpp"
 )
-
-add_library(
-	Marx STATIC
-	${MARX_LIB_FILES}
-
-	"$<$<BOOL:WIN32>:"
-		"include/Marx/Platform/D3D11/D3D11Buffer.cpp"
-		"include/Marx/Platform/D3D11/D3D11GraphicsContext.cpp"
-		"include/Marx/Platform/D3D11/D3D11InfoManager.cpp"
-		"include/Marx/Platform/D3D11/D3D11RendererAPI.cpp"
-		"include/Marx/Platform/D3D11/D3D11Shader.cpp"
-		"include/Marx/Platform/D3D11/D3D11Texture.cpp"
-		"include/Marx/Platform/D3D11/D3D11VertexArray.cpp"
-		"include/Marx/Platform/Win32/Win32Input.cpp"
-		"include/Marx/Platform/Win32/Win32Window.cpp"
-		"include/Marx/Platform/XInput/XController.cpp"
-	
-		"vendor/imgui/backends/imgui_impl_win32.cpp"
-		"vendor/imgui/backends/imgui_impl_dx11.cpp"
-	">"
- "include/Marx/Platform/D3D11/D3D11ConstantBuffers.cpp")
 
 set(
 	MARX_COMPILE_OPTIONS
-	"$<$<CONFIG:DEBUG>:-DMX_ENABLE_ASSERTS>"
+	"$<$<CONFIG:DEBUG>:-DMX_ENABLE_ASSERTS MX_DEBUG>"
 )
 
 set(
 	MARX_LINK_LIBRARIES
-	imgui GLFW GLAD
+	GLAD imgui
 )
 
 set(
@@ -90,6 +69,24 @@ set(
 
 if (WIN32)
 	set(
+		MARX_LIB_FILES
+		${MARX_LIB_FILES}
+		"include/Marx/Platform/D3D11/D3D11Buffer.cpp"
+		"include/Marx/Platform/D3D11/D3D11GraphicsContext.cpp"
+		"include/Marx/Platform/D3D11/D3D11InfoManager.cpp"
+		"include/Marx/Platform/D3D11/D3D11RendererAPI.cpp"
+		"include/Marx/Platform/D3D11/D3D11Shader.cpp"
+		"include/Marx/Platform/D3D11/D3D11Texture.cpp"
+		"include/Marx/Platform/D3D11/D3D11VertexArray.cpp"
+		"include/Marx/Platform/D3D11/D3D11ConstantBuffers.cpp"
+		"include/Marx/Platform/Win32/Win32Input.cpp"
+		"include/Marx/Platform/Win32/Win32Window.cpp"
+		"include/Marx/Platform/XInput/XController.cpp"
+
+		"vendor/imgui/backends/imgui_impl_win32.cpp"
+		"vendor/imgui/backends/imgui_impl_dx11.cpp"
+	)
+	set(
 		MARX_COMPILE_OPTIONS
 		${MARX_COMPILE_OPTIONS}
 		"-DMX_PLATFORM_WINDOWS"
@@ -104,9 +101,18 @@ elseif(UNIX)
 		MARX_COMPILE_OPTIONS
 		${MARX_COMPILE_OPTIONS}
 		"-DMX_PLATFORM_UNIX"
-		"-Wl,--no-as-needed"
+	)
+	set(
+		MARX_LINK_LIBRARIES
+		${MARX_LINK_LIBRARIES}
+		dl GLFW GL
 	)
 endif()
+
+add_library(
+	Marx STATIC
+	${MARX_LIB_FILES}
+)
 
 target_include_directories(
 	Marx PUBLIC 

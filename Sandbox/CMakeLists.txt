@@ -27,4 +27,16 @@ if (WIN32)
 		Sandbox PUBLIC 
 		"-DMX_PLATFORM_WINDOWS"
 	)
+elseif(UNIX)
+	set(
+		SANDBOX_COMPILE_OPTIONS
+		${SANDBOX_COMPILE_OPTIONS}
+		"-DMX_PLATFORM_UNIX"
+		"-DGLFW_INCLUDE_VULKAN"
+	)
 endif()
+
+target_compile_options(
+	Sandbox PUBLIC 
+	${SANDBOX_COMPILE_OPTIONS}
+)
