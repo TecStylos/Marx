@@ -11,49 +11,63 @@ extern Marx::Application* Marx::createApplication();
 
 int main(int argc, char* argv[], char* env[])
 {
-	//MX_CORE_INFO("First arg: '{0}'", argv[0]);
-	for (int i = 1; i < argc; ++i)
+	MX_PROFILER_BEGIN_SESSION("results.json");
 	{
-		std::string arg = argv[i];
+		MX_PROFILE_SCOPE("API Selection");
 
-		if ("--supported-renderer-apis" == arg)
+		for (int i = 1; i < argc; ++i)
 		{
-			Marx::printSupportedRendererAPIs();
-			exit(0);
+			std::string arg = argv[i];
+
+			if ("--supported-renderer-apis" == arg)
+			{
+				Marx::printSupportedRendererAPIs();
+				exit(0);
+			}
+			else if ("--supported-window-apis" == arg)
+			{
+				Marx::printSupportedWindowAPIs();
+				exit(0);
+			}
 		}
-		else if ("--supported-window-apis" == arg)
-		{
-			Marx::printSupportedWindowAPIs();
-			exit(0);
-		}
+		Marx::selectRendererAPIFromCmdLine(argc, argv);
+		Marx::selectWindowAPIFromCmdLine(argc, argv);
+
+		auto wndAPI = Marx::Window::getAPI();
+		auto rndAPI = Marx::RendererAPI::getAPI();
 	}
-	Marx::selectRendererAPIFromCmdLine(argc, argv);
-	Marx::selectWindowAPIFromCmdLine(argc, argv);
-
-	auto wndAPI = Marx::Window::getAPI();
-	auto rndAPI = Marx::RendererAPI::getAPI();
 
 	{
-		Marx::Log::init();
-		MX_CORE_INFO("Initialized Log!");
+		{
+			MX_PROFILE_SCOPE("Initialization");
 
-		MX_CORE_ASSERT(
-			!(
-				(wndAPI == Marx::Window::API::GLFW && rndAPI == Marx::RendererAPI::API::D3D11) ||
-				(wndAPI == Marx::Window::API::Win32 && rndAPI == Marx::RendererAPI::API::OpenGL)
-				),
-			"The selected API combination is not supported!"
-		);
+			Marx::Log::init();
+			MX_CORE_INFO("Initialized Log!");
 
-		Marx::Input::init();
-		MX_CORE_INFO("Initialized input!");
+			MX_CORE_ASSERT(
+				!(
+					(wndAPI == Marx::Window::API::GLFW && rndAPI == Marx::RendererAPI::API::D3D11) ||
+					(wndAPI == Marx::Window::API::Win32 && rndAPI == Marx::RendererAPI::API::OpenGL)
+					),
+				"The selected API combination is not supported!"
+			);
+
+			Marx::Input::init();
+			MX_CORE_INFO("Initialized input!");
+		}
 
 		Marx::Scope<Marx::Application> app;
 
 		try
 		{
-			app.reset(Marx::createApplication());
-			app->run();
+			{
+				MX_PROFILE_SCOPE("Application Creation");
+				app.reset(Marx::createApplication());
+			}
+			{
+				MX_PROFILE_SCOPE("Application Run");
+				app->run();
+			}
 		}
 		catch (const Marx::MarxException& except) { MX_EXCEPT_LOG(except); MX_DEBUG_BREAK(); }
 		catch (const std::exception& except) { MX_STD_EXCEPT_LOG(except); MX_DEBUG_BREAK(); }

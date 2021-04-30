@@ -1,3 +1,4 @@
+#define MX_ENABLE_PROFILING
 #include <Marx.h>
 
 struct Vertex
@@ -13,6 +14,8 @@ public:
 	ExampleLayer()
 		: Layer("Example"), m_orthographicCam(-1.6f, 1.6f, -0.9f, 0.9f), m_position(0.0f, 0.0f, 0.0f)
 	{
+		MX_PROFILE_FUNCTION();
+
 		// Vertex Buffer
 		Vertex vertices[] =
 		{
@@ -122,9 +125,15 @@ public:
 		m_perspectiveCam.setProperties(90.0f, 16.0f / 9.0f, 0.001f, 1000.0f);
 		m_orthographicCam.setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
 	}
+	~ExampleLayer()
+	{
+		MX_PROFILER_END_SESSION();
+	}
 public:
 	virtual void onUpdate(Marx::Timestep ts) override
 	{
+		MX_PROFILE_FUNCTION();
+
 		static constexpr float moveSpeed = 1.0f;
 		static constexpr float rotSpeed = 90.0f;
 		static float rotation = 0.0f;
@@ -208,14 +217,25 @@ public:
 
 		auto texShader = m_shaderLib.get("PhongTexture");
 
-		glm::mat4 transformMat = glm::translate(glm::mat4(1.0f), m_position) * rotationMat * scaleMat;
-		Marx::Renderer::submit(texShader, m_pCubeVertexArray, transformMat, m_pTexture);
+		for (uint32_t x = 0; x < 10; ++x)
+		{
+			for (uint32_t y = 0; y < 10; ++y)
+			{
+				glm::vec3 pos = m_position;
+				pos.x += (float)x;
+				pos.y += (float)y;
+				glm::mat4 transformMat = glm::translate(glm::mat4(1.0f), pos) * rotationMat * scaleMat;
+				Marx::Renderer::submit(texShader, m_pCubeVertexArray, transformMat, m_pTexture);
+			}
+		}
 		Marx::Renderer::submit(texShader, m_pVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.5f, 1.5f)), m_pAlphaTexture);
 
 		Marx::Renderer::endScene();
 	}
 	virtual void onImGuiRender() override
 	{
+		MX_PROFILE_FUNCTION();
+
 		ImGui::Begin("Color");
 		ImGui::ColorEdit3("Color1", &m_color[0].x);
 		ImGui::ColorEdit3("Color2", &m_color[1].x);

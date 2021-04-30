@@ -7,6 +7,7 @@
 
 // Core
 #include "Marx/Core/Log.h"
+#include "Marx/Core/Profiler.h"
 #include "Marx/Core/Timestep.h"
 
 // Input

@@ -3,6 +3,7 @@
 #include "Application.h"
 
 #include "Marx/Core/Log.h"
+#include "Marx/Core/Profiler.h"
 #include "Marx/Renderer/Renderer.h"
 #include "Marx/Input/ControllerManager.h"
 
@@ -40,6 +41,7 @@ namespace Marx
 
 		while (m_running)
 		{
+			MX_PROFILE_SCOPE("Frame");
 			m_timestep.update(Timestep::secondsSinceProgramStartup());
 
 			if (!m_isMinimized)
