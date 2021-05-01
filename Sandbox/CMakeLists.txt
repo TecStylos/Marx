@@ -22,9 +22,14 @@ target_link_libraries(
 	Marx
 )
 
+set(
+	SANDBOX_COMPILE_OPTIONS
+)
+
 if (WIN32)
-	target_compile_options(
-		Sandbox PUBLIC 
+	set(
+		SANDBOX_COMPILE_OPTIONS
+		${SANDBOX_COMPILE_OPTIONS}
 		"-DMX_PLATFORM_WINDOWS"
 	)
 elseif(UNIX)

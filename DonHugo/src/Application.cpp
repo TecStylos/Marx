@@ -251,8 +251,6 @@ public:
 			auto pIndexBuffer = Marx::IndexBuffer::create(pIndices, sizeof(pIndices) / sizeof(uint32_t), Marx::IndexBuffer::PrimitiveType::TriangleList);
 
 			m_background.pVertexArray = Marx::VertexArray::create(pVertexBuffer, pIndexBuffer);
-
-			m_background.pCBuffBrightness = Marx::PSConstantBuffer::create(&m_background.brightness, sizeof(float[4]));
 		}
 
 		{
@@ -431,8 +429,6 @@ public:
 		{
 			Marx::Renderer::beginScene(m_background.camera);
 
-			m_background.pCBuffBrightness->bind(2);
-
 			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 			Marx::Renderer::submit(m_background.pShader, m_background.pVertexArray, transform, m_background.pImage);
 
@@ -529,7 +525,7 @@ public:
 		m_background.brightness[1] = brightness;
 		m_background.brightness[2] = brightness;
 		m_background.brightness[3] = 1.0f;
-		m_background.pCBuffBrightness->update(&m_background.brightness[0]);
+		m_background.pShader->updateUniform("c_brightness", &m_background.brightness[0], Marx::ShaderDataType::Float4);
 	}
 private:
 	void updateBackgroundColor()
@@ -1264,7 +1260,6 @@ private:
 		Marx::Reference<Marx::Texture2D> pImage;
 		Marx::Reference<Marx::Shader> pShader;
 		Marx::Reference<Marx::VertexArray> pVertexArray;
-		Marx::Reference<Marx::ConstantBuffer> pCBuffBrightness;
 		Marx::OrthographicCamera camera = Marx::OrthographicCamera(-1.0f, 1.0f, -1.0f, 1.0f);
 		std::string imagePath;
 	} m_background;

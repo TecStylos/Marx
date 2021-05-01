@@ -13,6 +13,12 @@ namespace Marx
 {
 	class D3D11Shader : public Shader
 	{
+		struct InternalConstBuffElement
+		{
+			uint32_t slot;
+			ShaderDataType type;
+			std::string name;
+		};
 	private:
 		typedef std::unordered_map<ShaderType, std::string> ShaderSources;
 	public:
@@ -28,6 +34,7 @@ namespace Marx
 	private:
 		void compile(const ShaderSources& shaderSources);
 		void detectConstBuffers(ShaderSources& shaderSources);
+		InternalConstBuffElement extractElementFromLine(const std::string& line);
 	private:
 		static const char* getTargetStringFromType(ShaderType type);
 	private:

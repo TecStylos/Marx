@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Marx/Core/Profiler.h"
 #include "Marx/Exceptions/MarxException.h"
 #include "Marx/Renderer/RendererAPISelector.h"
 #include "Marx/WindowAPISelector.h"
@@ -32,9 +33,6 @@ int main(int argc, char* argv[], char* env[])
 		}
 		Marx::selectRendererAPIFromCmdLine(argc, argv);
 		Marx::selectWindowAPIFromCmdLine(argc, argv);
-
-		auto wndAPI = Marx::Window::getAPI();
-		auto rndAPI = Marx::RendererAPI::getAPI();
 	}
 
 	{
@@ -43,6 +41,9 @@ int main(int argc, char* argv[], char* env[])
 
 			Marx::Log::init();
 			MX_CORE_INFO("Initialized Log!");
+
+			auto wndAPI = Marx::Window::getAPI();
+			auto rndAPI = Marx::RendererAPI::getAPI();
 
 			MX_CORE_ASSERT(
 				!(

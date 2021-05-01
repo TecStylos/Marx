@@ -47,7 +47,6 @@ set(
 
 set(
 	MARX_COMPILE_OPTIONS
-	"$<$<CONFIG:DEBUG>:-DMX_ENABLE_ASSERTS -DMX_DEBUG -DMX_ENABLE_PROFILING>"
 )
 
 set(
@@ -66,6 +65,16 @@ set(
 	"vendor/glfw/include"
 	"vendor/glad/include"
 )
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(
+		MARX_COMPILE_OPTIONS
+		${MARX_COMPILE_OPTIONS}
+		"-DMX_ENABLE_ASSERTS"
+		"-DMX_DEBUG"
+		"-DMX_ENABLE_PROFILING"
+	)
+endif()
 
 if (WIN32)
 	set(
@@ -122,6 +131,11 @@ target_include_directories(
 target_compile_options(
 	Marx PUBLIC 
 	${MARX_COMPILE_OPTIONS}
+)
+
+target_compile_definitions(
+	Marx PUBLIC
+	${MARX_COMPILE_DEFS}
 )
 
 target_link_libraries(

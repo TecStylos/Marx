@@ -1,4 +1,7 @@
+
+#ifdef MX_DEBUG
 #define MX_ENABLE_PROFILING
+#endif
 #include <Marx.h>
 
 struct Vertex
@@ -222,8 +225,8 @@ public:
 			for (uint32_t y = 0; y < 10; ++y)
 			{
 				glm::vec3 pos = m_position;
-				pos.x += (float)x;
-				pos.y += (float)y;
+				pos.x += (float)x * 0.75;
+				pos.y += (float)y * 0.75;
 				glm::mat4 transformMat = glm::translate(glm::mat4(1.0f), pos) * rotationMat * scaleMat;
 				Marx::Renderer::submit(texShader, m_pCubeVertexArray, transformMat, m_pTexture);
 			}

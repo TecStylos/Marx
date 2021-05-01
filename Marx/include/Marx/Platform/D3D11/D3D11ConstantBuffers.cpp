@@ -82,7 +82,8 @@ namespace Marx
 
 	void D3D11ConstantBuffer::copyStaged() const
 	{
-		D3D11GraphicsContext::D3D11Manager::getContext()->UpdateSubresource(m_pBuffer.Get(), 0, NULL, m_stagedData, 0, 0);
+		auto context = D3D11GraphicsContext::D3D11Manager::getContext();
+		context->UpdateSubresource(m_pBuffer.Get(), 0, NULL, m_stagedData, 0, 0);
 		m_staged = false;
 	}
 }

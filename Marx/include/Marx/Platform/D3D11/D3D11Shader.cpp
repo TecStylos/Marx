@@ -111,101 +111,103 @@ namespace Marx
 		}
 	}
 
-	void D3D11Shader::detectConstBuffers(ShaderSources& shaderSources)
+	D3D11Shader::InternalConstBuffElement D3D11Shader::extractElementFromLine(const std::string& line)
 	{
 		const char* buffToken = "@cbuff ";
 		size_t buffTokenLength = strlen(buffToken);
 
-		uint32_t lastSlot = -1;
-		uint32_t currIndex = -1;
+		size_t slotBegin = buffTokenLength;
+		size_t slotEnd = line.find_first_of(" ", slotBegin);
+		size_t typeBegin = slotEnd + 1;
+		size_t typeEnd = line.find_first_of(" ", typeBegin);
+		size_t nameBegin = typeEnd + 1;
+		size_t nameEnd = line.find_first_of(";", nameBegin);
+		MX_CORE_ASSERT(
+			slotEnd != std::string::npos &&
+			typeEnd != std::string::npos &&
+			nameEnd != std::string::npos,
+			"Syntax error!"
+		);
+
+		InternalConstBuffElement elem;
+		elem.slot = std::stoi(line.substr(slotBegin, slotEnd - slotBegin));
+		elem.type = hlslStringToShaderDataType(line.substr(typeBegin, typeEnd - typeBegin));
+		elem.name = line.substr(nameBegin, nameEnd - nameBegin);
+
+		return elem;
+	}
+
+	void D3D11Shader::detectConstBuffers(ShaderSources& shaderSources)
+	{
+		const char* buffToken = "@cbuff ";
+
+		uint32_t buffIndex = 0;
 
 		for (auto& shader : shaderSources)
 		{
-			bool cbuffOpen = false;
-			uint32_t currOffset = 0;
+			std::unordered_map<uint32_t, std::vector<InternalConstBuffElement>> buffers;
 
 			ShaderType type = shader.first;
-			const std::string& source = shader.second;
-			std::string constBuffStr;
+			std::istringstream stream(shader.second);
+
 			std::string outStr;
 
-			size_t lineBegin = source.find_first_not_of("\r\n", 0);
-			while (lineBegin != std::string::npos)
+			std::string line;
+			while (std::getline(stream, line))
 			{
-				size_t lineEnd = source.find_first_of("\r\n", lineBegin);
-				std::string line = source.substr(lineBegin, lineEnd - lineBegin);
-
-				if (line.find(buffToken) != 0)
+				if (line.find(buffToken) == 0)
 				{
-					if (cbuffOpen)
-					{
-						cbuffOpen = false;
-						outStr.append("}\n");
-						m_constBuffers.push_back(std::make_shared<D3D11ConstantBuffer>(type, currOffset, lastSlot));
-					}
-
-					outStr.append(line);
-					outStr.append("\r\n");
+					auto elem = extractElementFromLine(line);
+					buffers[elem.slot].push_back(elem);
 				}
 				else
 				{
-					size_t slotBegin = buffTokenLength;
-					size_t slotEnd = line.find_first_of(" ", slotBegin);
-					size_t typeBegin = slotEnd + 1;
-					size_t typeEnd = line.find_first_of(" ", typeBegin);
-					size_t nameBegin = typeEnd + 1;
-					size_t nameEnd = line.find_first_of(";", nameBegin);
-					MX_CORE_ASSERT(
-						slotEnd != std::string::npos &&
-						typeEnd != std::string::npos &&
-						nameEnd != std::string::npos,
-						"Syntax error!"
-					);
-
-					std::string slotStr = line.substr(slotBegin, slotEnd - slotBegin);
-					std::string typeStr = line.substr(typeBegin, typeEnd - typeBegin);
-					std::string nameStr = line.substr(nameBegin, nameEnd - nameBegin);
-
-					uint32_t slot = std::stoi(slotStr);
-
-					if (slot != lastSlot)
-					{
-						++currIndex;
-
-						if (cbuffOpen)
-						{
-							outStr.append("}\n");
-							m_constBuffers.push_back(std::make_shared<D3D11ConstantBuffer>(type, currOffset, lastSlot));
-						}
-
-						lastSlot = slot;
-						
-						outStr.append(
-							"cbuffer _CONSTANT_BUFFER_" + slotStr +
-							" : register(b" + slotStr + ")\n{\n"
-						);
-
-						cbuffOpen = true;
-
-						currOffset = 0;
-					}
-
-					outStr.push_back('\t');
-					outStr.append(typeStr + " " + nameStr + ";\n");
-
-					ConstBufferElement element;
-					element.bufferIndex = currIndex;
-					element.offset = currOffset;
-					element.size = ShaderDataTypeSize(hlslStringToShaderDataType(typeStr));
-					m_uniforms[nameStr] = element;
-
-					currOffset += element.size;
+					outStr.append(line);
+					outStr.push_back('\n');
 				}
-
-				lineBegin = source.find_first_not_of("\r\n", lineEnd);
 			}
 
-			shader.second = outStr;
+			std::string cbuffStr;
+
+			for (auto& buff : buffers)
+			{
+				cbuffStr.append(
+					"cbuffer _CONSTANT_BUFFER_" + std::to_string(buff.first) +
+					" : register(b" + std::to_string(buff.first) + ")\n{\n"
+				);
+
+				for (auto& elem : buff.second)
+				{
+					cbuffStr.append(
+						"\t" + shaderDataTypeToHLSL_String(elem.type) + " " + elem.name + ";\n"
+					);
+				}
+
+				cbuffStr.append("}\n");
+			}
+
+			for (auto& buff : buffers)
+			{
+
+				uint32_t offset = 0;
+
+				for (auto& elem : buff.second)
+				{
+					ConstBufferElement cbelem;
+					cbelem.bufferIndex = buffIndex;
+					cbelem.offset = offset;
+					cbelem.size = ShaderDataTypeSize(elem.type);
+					m_uniforms[elem.name] = cbelem;
+
+					offset += cbelem.size;
+				}
+
+				m_constBuffers.push_back(std::make_shared<D3D11ConstantBuffer>(type, offset, buff.first));
+
+				++buffIndex;
+			}
+
+			shader.second = cbuffStr + outStr;
 		}
 	}
 }
