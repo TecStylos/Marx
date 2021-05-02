@@ -7,7 +7,3 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 add_subdirectory("Marx")
 add_subdirectory("Sandbox")
-
-if(WIN32)
-    add_subdirectory("DonHugo")
-endif()
