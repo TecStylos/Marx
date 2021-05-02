@@ -57,7 +57,7 @@ set(
 set(
 	MARX_INCLUDE_DIRECTORIES
 	"include"
-
+	"vendor"
 	"vendor/imgui"
 	"vendor/spdlog/include"
 	"vendor/stb_image"
