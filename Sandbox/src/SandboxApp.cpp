@@ -220,6 +220,18 @@ public:
 
 		auto texShader = m_shaderLib.get("PhongTexture");
 
+		glm::vec3 lightPos(0.0f, 0.0f, 2.0f);
+
+		texShader->updateUniform("c_ambientColor", &m_ambientColor, Marx::ShaderDataType::Float3);
+		texShader->updateUniform("c_lightPos", &lightPos, Marx::ShaderDataType::Float3);
+		texShader->updateUniform("c_diffuseColor", &m_diffuseColor, Marx::ShaderDataType::Float3);
+		texShader->updateUniform("c_diffuseIntensity", &m_diffuseIntensity, Marx::ShaderDataType::Float1);
+		texShader->updateUniform("c_attConst", &m_attConst, Marx::ShaderDataType::Float1);
+		texShader->updateUniform("c_attLin", &m_attLin, Marx::ShaderDataType::Float1);
+		texShader->updateUniform("c_attQuad", &m_attQuad, Marx::ShaderDataType::Float1);
+		texShader->updateUniform("c_specularIntensity", &m_specularIntensity, Marx::ShaderDataType::Float1);
+		texShader->updateUniform("c_specularPower", &m_specularPower, Marx::ShaderDataType::Float1);
+
 		for (uint32_t x = 0; x < 10; ++x)
 		{
 			for (uint32_t y = 0; y < 10; ++y)
@@ -240,8 +252,8 @@ public:
 		MX_PROFILE_FUNCTION();
 
 		ImGui::Begin("Color");
-		ImGui::ColorEdit3("Color1", &m_color[0].x);
-		ImGui::ColorEdit3("Color2", &m_color[1].x);
+		ImGui::ColorEdit3("Ambient", &m_ambientColor.r);
+		ImGui::ColorEdit3("Light", &m_diffuseColor.r);
 		ImGui::End();
 	}
 	virtual void onEvent(Marx::Event& event) override
@@ -274,6 +286,16 @@ private:
 	Marx::Reference<Marx::VertexArray> m_pCubeVertexArray;
 	Marx::Reference<Marx::Texture2D> m_pTexture, m_pAlphaTexture;
 	glm::vec3 m_position;
+
+	glm::vec3 m_diffuseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 m_ambientColor = glm::vec3(0.05f, 0.05f, 0.05f);
+	float m_diffuseIntensity = 0.1f;
+	float m_attConst = 1.0f;
+	float m_attLin = 0.045f;
+	float m_attQuad = 0.0075f;
+	float m_specularIntensity = 1.0f;
+	float m_specularPower = 0.9f;
+
 	Marx::OrthographicCamera m_orthographicCam;
 	Marx::PerspectiveCamera m_perspectiveCam;
 	float m_mouseX = 0.0f;

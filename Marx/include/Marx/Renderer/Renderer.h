@@ -30,6 +30,7 @@ namespace Marx
 	private:
 		struct SceneData
 		{
+			glm::vec3 camWorldPos;
 			glm::mat4 viewProjectionMatrix;
 		};
 		static SceneData* s_sceneData;

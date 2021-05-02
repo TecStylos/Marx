@@ -32,9 +32,8 @@ namespace Marx
 	void Renderer::submit(const Reference<Shader>& shader, const Reference<VertexArray>& vertexArray, glm::mat4 transform, const Reference<Texture2D> texture)
 	{
 		transform = glm::transpose(transform);
-		shader->updateUniform("c_modelTransform", &transform, Marx::ShaderDataType::Mat4);
 		shader->updateUniform("c_viewProjection", &s_sceneData->viewProjectionMatrix, Marx::ShaderDataType::Mat4);
-
+		shader->updateUniform("c_modelTransform", &transform, Marx::ShaderDataType::Mat4);
 		shader->bind();
 		vertexArray->bind();
 		texture->bind();
