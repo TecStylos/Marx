@@ -7,7 +7,7 @@ namespace Marx
 {
 	OpenGLVertexBuffer::OpenGLVertexBuffer(const void* vertices, uint32_t size)
 	{
-		glCreateBuffers(1, &m_buffer);
+		glGenBuffers(1, &m_buffer);
 		bind();
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
 	}
@@ -46,7 +46,7 @@ namespace Marx
 	OpenGLIndexBuffer::OpenGLIndexBuffer(const uint32_t* indices, uint32_t count, PrimitiveType primType)
 		: m_count(count), m_maxCount(count)
 	{
-		glCreateBuffers(1, &m_buffer);
+		glGenBuffers(1, &m_buffer);
 		bind();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_DYNAMIC_DRAW);
 	}

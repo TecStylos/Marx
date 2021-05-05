@@ -29,7 +29,7 @@ namespace Marx
 
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
-		glCreateVertexArrays(1, &m_array);
+		glGenVertexArrays(1, &m_array);
 	}
 
 	OpenGLVertexArray::OpenGLVertexArray(const Reference<VertexBuffer>& pVertexBuffer, const Reference<IndexBuffer>& pIndexBuffer)

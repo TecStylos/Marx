@@ -16,13 +16,14 @@ namespace Marx
 		m_width = width;
 		m_height = height;
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
-		glTextureStorage2D(m_texture, 1, GL_RGBA8, m_width, m_height);
+		glGenTextures(1, &m_texture);
+		glTexStorage2D(m_texture, 1, GL_RGBA8, m_width, m_height);
+		//glTextureStorage2D(m_texture, 1, GL_RGBA8, m_width, m_height);
 
-		glTextureParameteri(m_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(m_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		glTextureSubImage2D(m_texture, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexSubImage2D(m_texture, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
 	}
@@ -34,12 +35,12 @@ namespace Marx
 
 	void OpenGLTexture2D::bind(uint32_t slot) const
 	{
-		glBindTextureUnit(slot, m_texture);
+		glBindTexture(slot, m_texture);
 	}
 
 	void OpenGLTexture2D::update(const uint8_t* pData)
 	{
-		glTextureSubImage2D(
+		glTexSubImage2D(
 			m_texture, 0,
 			0, 0,
 			m_width, m_height,
@@ -52,7 +53,7 @@ namespace Marx
 	{
 		for (uint32_t i = 0; i < nBuffers; ++i)
 		{
-			glTextureSubImage2D(
+			glTexSubImage2D(
 				m_texture, 0,
 				pOffsetX[i], pOffsetY[i],
 				pWidth[i], pHeight[i],
