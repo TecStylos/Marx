@@ -17,13 +17,20 @@ namespace Marx
 		m_height = height;
 
 		glGenTextures(1, &m_texture);
-		glTexStorage2D(m_texture, 1, GL_RGBA8, m_width, m_height);
-		//glTextureStorage2D(m_texture, 1, GL_RGBA8, m_width, m_height);
 
-		glTexParameteri(m_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(m_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glBindTexture(GL_TEXTURE_2D, m_texture);
+		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, m_width, m_height);
 
-		glTexSubImage2D(m_texture, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+   		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+		update(data);
 
 		stbi_image_free(data);
 	}
@@ -35,13 +42,15 @@ namespace Marx
 
 	void OpenGLTexture2D::bind(uint32_t slot) const
 	{
-		glBindTexture(slot, m_texture);
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_2D, m_texture);
 	}
 
 	void OpenGLTexture2D::update(const uint8_t* pData)
 	{
+		bind(0);
 		glTexSubImage2D(
-			m_texture, 0,
+			GL_TEXTURE_2D, 0,
 			0, 0,
 			m_width, m_height,
 			GL_RGBA, GL_UNSIGNED_BYTE,
@@ -51,10 +60,11 @@ namespace Marx
 
 	void OpenGLTexture2D::updatePartial(const uint8_t* const* pData, const uint32_t* pOffsetX, const uint32_t* pOffsetY, const uint32_t* pWidth, const uint32_t* pHeight, uint32_t nBuffers)
 	{
+		bind(0);
 		for (uint32_t i = 0; i < nBuffers; ++i)
 		{
 			glTexSubImage2D(
-				m_texture, 0,
+				GL_TEXTURE_2D, 0,
 				pOffsetX[i], pOffsetY[i],
 				pWidth[i], pHeight[i],
 				GL_RGBA, GL_UNSIGNED_BYTE,

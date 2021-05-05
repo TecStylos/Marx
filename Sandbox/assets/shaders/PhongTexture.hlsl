@@ -73,7 +73,7 @@ float4 main(VS_OUTPUT inp) : SV_TARGET
 
 	const float4 materialColor = g_tex.Sample(g_sState, inp.texCoord);
 
-	const float4 color = float4(saturate((diffuse + c_ambientColor + specular)), 1.0f) * materialColor;
+	const float4 color = float4(saturate(diffuse + c_ambientColor + specular), 1.0f) * materialColor;
 
 	return color;
 }
