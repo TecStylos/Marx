@@ -3,7 +3,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <GL/gl.h>
+#include MX_OPENGL_HEADER
 
 namespace Marx
 {

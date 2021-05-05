@@ -59,30 +59,44 @@ namespace Marx
 		// Setup Platform/Renderer backends
 		switch (Window::getAPI())
 		{
-			#ifdef MX_ENABLE_GLFW
+		case Window::API::None:
+			MX_CORE_ASSERT(false, "Window::API::None is not supported!");
+			break;
 		case Window::API::GLFW:
+			#ifdef MX_ENABLE_GLFW
 			ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)nativeWindow, true);
-			break;
+			#else
+			MX_CORE_ASSERT(false, "Window::API::GLFW is not supported!");
 			#endif
-			#ifdef MX_ENABLE_WIN32
+			break;
 		case Window::API::Win32:
+			#ifdef MX_ENABLE_WIN32
 			ImGui_ImplWin32_Init(nativeWindow);
-			break;
+			#else
+			MX_CORE_ASSERT(false, "Window::API::Win32 is not supported!");
 			#endif
+			break;
 		}
 
 		switch (RendererAPI::getAPI())
 		{
-			#ifdef MX_ENABLE_D3D11
+		case RendererAPI::API::None:
+			MX_CORE_ASSERT(false, "RendererAPI::API::None is not supported!");
+			break;
 		case RendererAPI::API::D3D11:
+			#ifdef MX_ENABLE_D3D11
 			ImGui_ImplDX11_Init(D3D11GraphicsContext::D3D11Manager::getDevice(), D3D11GraphicsContext::D3D11Manager::getContext());
-			break;
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::API::D3D11 is not supported!");
 			#endif
-			#ifdef MX_ENABLE_OPENGL
+			break;
 		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
 			ImGui_ImplOpenGL3_Init("#version 410");
-			break;
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::API::OpenGL is not supported!");
 			#endif
+			break;
 		}
 	}
 
@@ -90,30 +104,44 @@ namespace Marx
 	{
 		switch (RendererAPI::getAPI())
 		{
-			#ifdef MX_ENABLE_D3D11
+		case RendererAPI::API::None:
+			MX_CORE_ASSERT(false, "RendererAPI::API::None is not supported!");
+			break;
 		case RendererAPI::API::D3D11:
+			#ifdef MX_ENABLE_D3D11
 			ImGui_ImplDX11_Shutdown();
-			break;
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::API::D3D11 is not supported!");
 			#endif
-			#ifdef MX_ENABLE_OPENGL
+			break;
 		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
 			ImGui_ImplOpenGL3_Shutdown();
-			break;
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::API::OpenGL is not supported!");
 			#endif
+			break;
 		}
 
 		switch (Window::getAPI())
 		{
-			#ifdef MX_ENABLE_GLFW
+		case Window::API::None:
+			MX_CORE_ASSERT(false, "Window::API::None is not supported!");
+			break;
 		case Window::API::GLFW:
+			#ifdef MX_ENABLE_GLFW
 			ImGui_ImplGlfw_Shutdown();
-			break;
+			#else
+			MX_CORE_ASSERT(false, "Window::API::GLFW is not supported!");
 			#endif
-			#ifdef MX_ENABLE_WIN32
+			break;
 		case Window::API::Win32:
+			#ifdef MX_ENABLE_WIN32
 			ImGui_ImplWin32_Shutdown();
-			break;
+			#else
+			MX_CORE_ASSERT(false, "Window::API::Win32 is not supported!");
 			#endif
+			break;
 		}
 
 		ImGui::DestroyContext();
@@ -129,30 +157,44 @@ namespace Marx
 	{
 		switch (RendererAPI::getAPI())
 		{
-			#ifdef MX_ENABLE_D3D11
+		case RendererAPI::API::None:
+			MX_CORE_ASSERT(false, "RendererAPI::API::None is not supported!");
+			break;
 		case RendererAPI::API::D3D11:
+			#ifdef MX_ENABLE_D3D11
 			ImGui_ImplDX11_NewFrame();
-			break;
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::API::D3D11 is not supported!");
 			#endif
-			#ifdef MX_ENABLE_OPENGL
+			break;
 		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
 			ImGui_ImplOpenGL3_NewFrame();
-			break;
+			#elif
+			MX_CORE_ASSERT(false, "RendererAPI::API::OpenGL is not supported!");
 			#endif
+			break;
 		}
 
 		switch (Window::getAPI())
 		{
-			#ifdef MX_ENABLE_GLFW
+		case Window::API::None:
+			MX_CORE_ASSERT(false, "Window::API::None is not supported!");
+			break;
 		case Window::API::GLFW:
+			#ifdef MX_ENABLE_GLFW
 			ImGui_ImplGlfw_NewFrame();
-			break;
+			#else
+			MX_CORE_ASSERT(false, "Window::API::GLFW is not supported!");
 			#endif
-			#ifdef MX_ENABLE_WIN32
+			break;
 		case Window::API::Win32:
+			#ifdef MX_ENABLE_WIN32
 			ImGui_ImplWin32_NewFrame();
-			break;
+			#else
+			MX_CORE_ASSERT(false, "Window::API::Win32 is not supported!");
 			#endif
+			break;
 		}
 
 		ImGui::NewFrame();
@@ -168,16 +210,23 @@ namespace Marx
 
 		switch (RendererAPI::getAPI())
 		{
-			#ifdef MX_ENABLE_D3D11
+		case RendererAPI::API::None:
+			MX_CORE_ASSERT(false, "RendererAPI::API::None is not supported!");
+			break;
 		case RendererAPI::API::D3D11:
+			#ifdef MX_ENABLE_D3D11
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-			break;
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::API::D3D11 is not supported!");
 			#endif
-			#ifdef MX_ENABLE_OPENGL
+			break;
 		case RendererAPI::API::OpenGL:
+			#ifdef MX_ENABLE_OPENGL
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-			break;
+			#else
+			MX_CORE_ASSERT(false, "RendererAPI::API::OpenGL is not supported!");
 			#endif
+			break;
 		}
 		
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

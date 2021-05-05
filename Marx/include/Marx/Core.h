@@ -18,9 +18,13 @@
    #define MX_ENABLE_OPENGL
    #define MX_ENABLE_WIN32
    #define MX_ENABLE_GLFW
+
+   #define MX_OPENGL_HEADER <GL/gl.h>
+
+   #define MX_FUNCTION_MACRO __FUNCSIG__
 #elif defined MX_PLATFORM_UNIX
    #if MX_DYNAMIC_LINK
-      #error Marx doesn't support dynamice linkage on unix platforms!
+      #error Marx doesn't support dynamic linkage on unix platforms!
    #else
       #define MARX_API
    #endif
@@ -28,6 +32,25 @@
 
    #define MX_ENABLE_OPENGL
    #define MX_ENABLE_GLFW
+
+   #define MX_OPENGL_HEADER <GL/gl.h>
+
+   #define MX_FUNCTION_MACRO __FUNCSIG__
+#elif defined MX_PLATFORM_MACOS
+   #if MX_DYNAMIX_LINK
+      #error Marx doesn't support dynamic linkage in MacOS!
+   #else
+      #define MARX_API
+   #endif
+   #include <signal.h>
+   #define MX_DEBUG_BREAK() raise(SIGTRAP)
+
+   #define MX_ENABLE_OPENGL
+   #define MX_ENABLE_GLFW
+
+   #define MX_OPENGL_HEADER <OpenGL/GL.h>
+
+   #define MX_FUNCTION_MACRO __PRETTY_FUNCTION__
 #else
    #error Marx only supports Windows!
 #endif

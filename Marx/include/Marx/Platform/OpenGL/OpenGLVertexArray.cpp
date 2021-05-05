@@ -9,6 +9,7 @@ namespace Marx
 	{
 		switch (type)
 		{
+		case Marx::ShaderDataType::None: MX_CORE_ASSERT(false, "ShaderDataType::None is not supported!"); break;
 		case Marx::ShaderDataType::Float1: return GL_FLOAT;
 		case Marx::ShaderDataType::Float2: return GL_FLOAT;
 		case Marx::ShaderDataType::Float3: return GL_FLOAT;

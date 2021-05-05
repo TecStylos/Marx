@@ -10,7 +10,7 @@
 #define MX_PROFILER_BEGIN_SESSION(filename) ::Marx::Profiler::get().beginSession(filename)
 #define MX_PROFILER_END_SESSION() ::Marx::Profiler::get().endSession()
 #define MX_PROFILE_SCOPE(name) ::Marx::ProfileTimer profileTimer(name)
-#define MX_PROFILE_FUNCTION() MX_PROFILE_SCOPE(__FUNCSIG__)
+#define MX_PROFILE_FUNCTION() MX_PROFILE_SCOPE(MX_FUNCTION_MACRO)
 
 #else
 

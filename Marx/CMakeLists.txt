@@ -105,7 +105,7 @@ if (WIN32)
 		${MARX_LINK_LIBRARIES}
 		Xinput.lib d3d11.lib dxgi.lib dxguid.lib
 	)
-elseif(UNIX)
+elseif(UNIX AND NOT APPLE)
 	set(
 		MARX_COMPILE_OPTIONS
 		${MARX_COMPILE_OPTIONS}
@@ -115,6 +115,18 @@ elseif(UNIX)
 		MARX_LINK_LIBRARIES
 		${MARX_LINK_LIBRARIES}
 		dl GLFW GL
+	)
+elseif(APPLE)
+	set(
+		MARX_COMPILE_OPTIONS
+		${MARX_COMPILE_OPTIONS}
+		"-DMX_PLATFORM_MACOS"
+	)
+
+	set(
+		MARX_LINK_LIBRARIES
+		${MARX_LINK_LIBRARIES}
+		dl glfw
 	)
 endif()
 

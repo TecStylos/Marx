@@ -11,6 +11,7 @@ namespace Marx
 	{
 		switch (type)
 		{
+		case ShaderType::None: MX_CORE_ASSERT(false, "ShaderType::None is not supported!"); break;
 		case ShaderType::Vertex: return GL_VERTEX_SHADER;
 		case ShaderType::Pixel: return GL_FRAGMENT_SHADER;
 		}

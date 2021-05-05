@@ -16,6 +16,9 @@ namespace Marx
 	{
 		switch (RendererAPI::getAPI())
 		{
+		case RendererAPI::API::None:
+			MX_CORE_ASSERT(false, "RendererAPI::API::None is not supported!");
+			return ".UNKNOWN";
 		case RendererAPI::API::OpenGL:
 			return ".glsl";
 		case RendererAPI::API::D3D11:

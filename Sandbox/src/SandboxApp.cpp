@@ -1,6 +1,8 @@
 
 #ifdef MX_DEBUG
+#ifndef MX_ENABLE_PROFILING
 #define MX_ENABLE_PROFILING
+#endif
 #endif
 #include <Marx.h>
 
