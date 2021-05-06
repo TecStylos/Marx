@@ -103,7 +103,7 @@ if (WIN32)
 	set(
 		MARX_LINK_LIBRARIES
 		${MARX_LINK_LIBRARIES}
-		Xinput.lib d3d11.lib dxgi.lib dxguid.lib
+		Xinput.lib d3d11.lib dxgi.lib dxguid.lib glfw
 	)
 elseif(UNIX AND NOT APPLE)
 	set(
@@ -158,4 +158,16 @@ target_link_libraries(
 target_precompile_headers (
 	Marx PUBLIC 
 	"include/mxpch.h"
+)
+
+set(
+	MARX_EXT_COMPILE_OPTIONS
+	${MARX_COMPILE_OPTIONS}
+)
+
+set(
+	MARX_EXT_INCLUDE_DIRECTORIES
+	"${CMAKE_SOURCE_DIR}/Marx/include"
+	"${CMAKE_SOURCE_DIR}/Marx/vendor/spdlog/include"
+	"${CMAKE_SOURCE_DIR}/Marx/vendor"
 )

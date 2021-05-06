@@ -12,9 +12,7 @@ add_executable(
 
 target_include_directories(
 	Sandbox PUBLIC 
-	"${CMAKE_SOURCE_DIR}/Marx/include"
-	"${CMAKE_SOURCE_DIR}/Marx/vendor/spdlog/include"
-	"${CMAKE_SOURCE_DIR}/Marx/vendor"
+	${MARX_EXT_INCLUDE_DIRECTORIES}
 )
 
 target_link_libraries(
@@ -24,29 +22,9 @@ target_link_libraries(
 
 set(
 	SANDBOX_COMPILE_OPTIONS
+	${SANDBOX_COMPILE_OPTIONS}
+	${MARX_EXT_COMPILE_OPTIONS}
 )
-
-if (WIN32)
-	set(
-		SANDBOX_COMPILE_OPTIONS
-		${SANDBOX_COMPILE_OPTIONS}
-		"-DMX_PLATFORM_WINDOWS"
-	)
-elseif(UNIX AND NOT APPLE)
-	set(
-		SANDBOX_COMPILE_OPTIONS
-		${SANDBOX_COMPILE_OPTIONS}
-		"-DMX_PLATFORM_UNIX"
-		"-DGLFW_INCLUDE_VULKAN"
-	)
-elseif(APPLE)
-	set(
-		SANDBOX_COMPILE_OPTIONS
-		${SANDBOX_COMPILE_OPTIONS}
-		"-DMX_PLATFORM_MACOS"
-		"-DGLFW_INCLUDE_VULKAN"
-	)
-endif()
 
 target_compile_options(
 	Sandbox PUBLIC 
