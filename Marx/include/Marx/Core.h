@@ -35,7 +35,7 @@
 
    #define MX_OPENGL_HEADER <GL/gl.h>
 
-   #define MX_FUNCTION_MACRO __FUNCSIG__
+   #define MX_FUNCTION_MACRO __PRETTY_FUNCTION__
 #elif defined MX_PLATFORM_MACOS
    #if MX_DYNAMIX_LINK
       #error Marx doesn't support dynamic linkage in MacOS!
