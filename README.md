@@ -9,10 +9,10 @@ Clone the repository recursively with `git clone --recursive https://github.com/
 ### General
  - CMake
 
- ### Platform specific
- #### Windows
-  - None
- #### Unix
-  - None
- #### MacOS
-  - None
+### Platform specific
+#### Windows
+ - None
+#### Unix
+ - None
+#### MacOS
+ - None
