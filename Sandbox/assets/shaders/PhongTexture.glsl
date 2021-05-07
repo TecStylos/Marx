@@ -15,10 +15,6 @@ out vec3 v_normal;
 
 void main()
 {
-	//v_texCoord = A_TEXCOORD;
-	//v_normal = mat3(c_modelTransform) * A_NORMAL;
-	//gl_Position = c_viewProjection * c_modelTransform * vec4(A_POSITION, 1.0f);
-
 	vec4 temp = c_modelTransform * vec4(A_POSITION, 1.0f);
 
 	v_worldPos = temp.xyz;
@@ -54,12 +50,6 @@ uniform sampler2D c_texture;
 
 void main()
 {
-	//vec3 n = normalize(v_normal);
-	//float brightness = dot(n, vec3(0.5f, 0.5f, 1.0f));
-	//brightness = max(brightness, 0.1f);
-	//color = texture(c_texture, v_texCoord);
-	//color.xyz *= brightness;
-
 	vec3 vToL = c_lightPos - v_worldPos;
 	float distToL = length(vToL);
 	vec3 dirToL = vToL / distToL;
@@ -75,9 +65,9 @@ void main()
 
 	vec4 materialColor = texture(c_texture, v_texCoord);
 
-	vec4 lighting = vec4(clamp(diffuse + c_ambientColor + specular, 0.0f, 1.0f), 1.0f);
+	vec4 lighting = vec4(diffuse + c_ambientColor + specular, 1.0f);
 
-	color = lighting * materialColor;
+	color = clamp(lighting * materialColor, 0.0f, 1.0f);
 
 	//color = lighting;
 }
