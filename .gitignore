@@ -12,17 +12,9 @@
 ### Win Dirs ###
 .vs/
 
-### Win Files ###
-DonHugo.exe
-
 ####################
 ####################
-
-/DonHugo/DonHugo.zip
-/Sandbox/results.json
-
-####################
-####################
+results.json
 .DS_Store
 Marx/.DS_Store
 Marx/vendor/.DS_Storee
