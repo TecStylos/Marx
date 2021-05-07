@@ -47,7 +47,7 @@ set(
 
 	"vendor/imgui/backends/imgui_impl_glfw.cpp"
 	"vendor/imgui/backends/imgui_impl_opengl3.cpp"
-)
+ "include/Marx/Input/KeyCodeConverter.cpp")
 
 set(
 	MARX_COMPILE_OPTIONS

@@ -143,41 +143,41 @@ public:
 		static constexpr float rotSpeed = 90.0f;
 		static float rotation = 0.0f;
 
-		if (Marx::Input::isKeyPressed(MX_KEY_Q))
+		if (Marx::Input::isKeyPressed(Marx::Key::Q))
 			rotation += rotSpeed * ts;
-		if (Marx::Input::isKeyPressed(MX_KEY_E))
+		if (Marx::Input::isKeyPressed(Marx::Key::E))
 			rotation -= rotSpeed * ts;
 
-		if (Marx::Input::isKeyPressed(MX_KEY_W))
+		if (Marx::Input::isKeyPressed(Marx::Key::W))
 			m_position.y += moveSpeed * ts;
-		if (Marx::Input::isKeyPressed(MX_KEY_S))
+		if (Marx::Input::isKeyPressed(Marx::Key::S))
 			m_position.y -= moveSpeed * ts;
-		if (Marx::Input::isKeyPressed(MX_KEY_A))
+		if (Marx::Input::isKeyPressed(Marx::Key::A))
 			m_position.x -= moveSpeed * ts;
-		if (Marx::Input::isKeyPressed(MX_KEY_D))
+		if (Marx::Input::isKeyPressed(Marx::Key::D))
 			m_position.x += moveSpeed * ts;
 
-		if (Marx::Input::isKeyPressed(MX_KEY_LEFT))
+		if (Marx::Input::isKeyPressed(Marx::Key::Left))
 			m_vertexX -= 0.001f;
-		if (Marx::Input::isKeyPressed(MX_KEY_RIGHT))
+		if (Marx::Input::isKeyPressed(Marx::Key::Right))
 			m_vertexX += 0.001f;
-		if (Marx::Input::isKeyPressed(MX_KEY_DOWN))
+		if (Marx::Input::isKeyPressed(Marx::Key::Down))
 			m_vertexY -= 0.001f;
-		if (Marx::Input::isKeyPressed(MX_KEY_UP))
+		if (Marx::Input::isKeyPressed(Marx::Key::Up))
 			m_vertexY += 0.001f;
 
 		glm::vec3 camPos = m_orthographicCam.getPosition();
-		if (Marx::Input::isKeyPressed(MX_KEY_I))
+		if (Marx::Input::isKeyPressed(Marx::Key::I))
 			camPos.y += moveSpeed * ts;
-		if (Marx::Input::isKeyPressed(MX_KEY_K))
+		if (Marx::Input::isKeyPressed(Marx::Key::K))
 			camPos.y -= moveSpeed * ts;
-		if (Marx::Input::isKeyPressed(MX_KEY_J))
+		if (Marx::Input::isKeyPressed(Marx::Key::J))
 			camPos.x -= moveSpeed * ts;
-		if (Marx::Input::isKeyPressed(MX_KEY_L))
+		if (Marx::Input::isKeyPressed(Marx::Key::L))
 			camPos.x += moveSpeed * ts;
-		if (Marx::Input::isKeyPressed(MX_KEY_O))
+		if (Marx::Input::isKeyPressed(Marx::Key::O))
 			camPos.z -= moveSpeed * ts;
-		if (Marx::Input::isKeyPressed(MX_KEY_U))
+		if (Marx::Input::isKeyPressed(Marx::Key::U))
 			camPos.z += moveSpeed * ts;
 
 		m_orthographicCam.setPosition(camPos);
@@ -279,7 +279,7 @@ public:
 	}
 	bool onKeyPress(Marx::KeyPressEvent& e)
 	{
-		if (e.getKeyCode() == MX_KEY_T)
+		if (e.getKeyCode() == Marx::Key::T)
 			m_usePerspective = !m_usePerspective;
 		return true;
 	}

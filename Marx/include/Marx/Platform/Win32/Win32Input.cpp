@@ -2,12 +2,13 @@
 #include "Win32Input.h"
 
 #include "Marx/Application.h"
+#include "Marx/Input/KeyCodeConverter.h"
 
 namespace Marx
 {
-	bool WindowsInput::isKeyPressedImpl(int keyCode) const
+	bool WindowsInput::isKeyPressedImpl(Key keyCode) const
 	{
-		SHORT state = GetKeyState(keyCode);
+		SHORT state = GetKeyState(KeyCodeConverter::toWin32(keyCode));
 		return (state >> 15);
 	}
 

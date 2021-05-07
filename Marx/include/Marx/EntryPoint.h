@@ -4,6 +4,7 @@
 #include "Marx/Exceptions/MarxException.h"
 #include "Marx/Renderer/RendererAPISelector.h"
 #include "Marx/WindowAPISelector.h"
+#include "Marx/Input/KeyCodeConverter.h"
 
 extern Marx::Application* Marx::createApplication();
 
@@ -55,6 +56,9 @@ int main(int argc, char* argv[], char* env[])
 
 			Marx::Input::init();
 			MX_CORE_INFO("Initialized input!");
+
+			Marx::KeyCodeConverter::init();
+			MX_CORE_INFO("Initialized keycode converter!");
 		}
 
 		Marx::Scope<Marx::Application> app;

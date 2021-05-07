@@ -2,14 +2,15 @@
 #include "CrossInput.h"
 
 #include "Marx/Application.h"
+#include "Marx/Input/KeyCodeConverter.h"
 #include <GLFW/glfw3.h>
 
 namespace Marx
 {
-    bool CrossInput::isKeyPressedImpl(int keyCode) const
+    bool CrossInput::isKeyPressedImpl(Key keyCode) const
     {
         auto window = (GLFWwindow*)Application::get()->getWindow()->getNativeWindow();
-        auto state = glfwGetKey(window, keyCode);
+        auto state = glfwGetKey(window, KeyCodeConverter::toGlfw(keyCode));
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
 

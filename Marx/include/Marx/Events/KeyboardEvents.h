@@ -2,27 +2,29 @@
 
 #include "Event.h"
 
+#include "Marx/Input/KeyCodes.h"
+
 namespace Marx
 {
 
 	class MARX_API KeyEvent : public Event
 	{
 	public:
-		inline int getKeyCode() const { return m_keyCode; }
+		inline Key getKeyCode() const { return m_keyCode; }
 
 		EVENT_CLASS_FLAGS(EventFlagInput | EventFlagKeyboard)
 	protected:
-		KeyEvent(Window* pWnd, int keyCode)
+		KeyEvent(Window* pWnd, Key keyCode)
 			: Event(pWnd), m_keyCode(keyCode)
 		{}
 	protected:
-		int m_keyCode;
+		Key m_keyCode;
 	};
 
 	class MARX_API KeyPressEvent : public KeyEvent
 	{
 	public:
-		KeyPressEvent(Window* pWnd, int keyCode, int repeatCount)
+		KeyPressEvent(Window* pWnd, Key keyCode, int repeatCount)
 			: KeyEvent(pWnd, keyCode), m_repeatCount(repeatCount)
 		{}
 	public:
@@ -31,7 +33,7 @@ namespace Marx
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyPress: " << m_keyCode << " (" << m_repeatCount << " repeats)";
+			ss << "KeyPress: " << (int)m_keyCode << " (" << m_repeatCount << " repeats)";
 			return ss.str();
 		}
 
@@ -43,14 +45,14 @@ namespace Marx
 	class MARX_API KeyReleaseEvent : public KeyEvent
 	{
 	public:
-		KeyReleaseEvent(Window* pWnd, int keyCode)
+		KeyReleaseEvent(Window* pWnd, Key keyCode)
 			: KeyEvent(pWnd, keyCode)
 		{}
 	public:
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyRelease: " << m_keyCode;
+			ss << "KeyRelease: " << (int)m_keyCode;
 			return ss.str();
 		}
 
@@ -60,14 +62,14 @@ namespace Marx
 	class MARX_API KeyTypeEvent : public KeyEvent
 	{
 	public:
-		KeyTypeEvent(Window* pWnd, int keyCode)
+		KeyTypeEvent(Window* pWnd, Key keyCode)
 			: KeyEvent(pWnd, keyCode)
 		{}
 	public:
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyType: " << m_keyCode;
+			ss << "KeyType: " << (int)m_keyCode;
 			return ss.str();
 		}
 

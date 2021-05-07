@@ -7,7 +7,7 @@ namespace Marx
 	class WindowsInput : public Input
 	{
 	protected:
-		virtual bool isKeyPressedImpl(int keyCode) const override;
+		virtual bool isKeyPressedImpl(Key keyCode) const override;
 		virtual bool isMouseButtonPressedImpl(int button) const override;
 		virtual std::pair<float, float> getMousePosImpl() const override;
 		virtual float getMouseXImpl() const override;

@@ -7,6 +7,8 @@
 
 #include "Marx/Platform/OpenGL/OpenGLGraphicsContext.h"
 
+#include "Marx/Input/KeyCodeConverter.h"
+
 namespace Marx
 {
 	static bool s_glfwInitialized = false;
@@ -96,19 +98,19 @@ namespace Marx
 				{
 				case GLFW_PRESS:
 				{
-					KeyPressEvent event(data.pWnd, key, 0);
+					KeyPressEvent event(data.pWnd, KeyCodeConverter::fromGlfw(key), 0);
 					data.eventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					KeyReleaseEvent event(data.pWnd, key);
+					KeyReleaseEvent event(data.pWnd, KeyCodeConverter::fromGlfw(key));
 					data.eventCallback(event);
 					break;
 				}
 				case GLFW_REPEAT:
 				{
-					KeyPressEvent event(data.pWnd, key, 1);
+					KeyPressEvent event(data.pWnd, KeyCodeConverter::fromGlfw(key), 1);
 					data.eventCallback(event);
 					break;
 				}
@@ -121,7 +123,7 @@ namespace Marx
 			[](GLFWwindow* wnd, unsigned int key)
 			{
 				WndData& data = *(WndData*)glfwGetWindowUserPointer(wnd);
-				KeyTypeEvent event(data.pWnd, key);
+				KeyTypeEvent event(data.pWnd, KeyCodeConverter::fromGlfw(key));
 				data.eventCallback(event);
 			}
 		);

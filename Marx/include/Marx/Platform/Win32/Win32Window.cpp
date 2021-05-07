@@ -8,6 +8,7 @@
 #include "Marx/Events/WindowEvents.h"
 #include "Marx/Events/KeyboardEvents.h"
 #include "Marx/Input/MouseCodes.h"
+#include "Marx/Input/KeyCodeConverter.h"
 
 #include "backends/imgui_impl_win32.h"
 
@@ -168,20 +169,20 @@ namespace Marx
 			case WM_SYSKEYDOWN:
 			{
 				int isRepeat = (lParam >> 30) & 1;
-				KeyPressEvent event(this, (int)wParam, isRepeat);
+				KeyPressEvent event(this, KeyCodeConverter::fromWin32((int)wParam), isRepeat);
 				m_eventCallback(event);
 				return 0;
 			}
 			case WM_KEYUP:
 			case WM_SYSKEYUP:
 			{
-				KeyReleaseEvent event(this, (int)wParam);
+				KeyReleaseEvent event(this, KeyCodeConverter::fromWin32((int)wParam));
 				m_eventCallback(event);
 				return 0;
 			}
 			case WM_CHAR:
 			{
-				KeyTypeEvent event(this, (int)wParam);
+				KeyTypeEvent event(this, KeyCodeConverter::fromWin32((int)wParam));
 				m_eventCallback(event);
 				return 0;
 			}
