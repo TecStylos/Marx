@@ -254,8 +254,14 @@ public:
 		MX_PROFILE_FUNCTION();
 
 		ImGui::Begin("Color");
-		ImGui::ColorEdit3("Ambient", &m_ambientColor.r);
-		ImGui::ColorEdit3("Light", &m_diffuseColor.r);
+		ImGui::ColorEdit3("Ambient color", &m_ambientColor.r);
+		ImGui::ColorEdit3("Light color", &m_diffuseColor.r);
+		ImGui::SliderFloat("Diffuse Intensity", &m_diffuseIntensity, 0.0f, 1.0f, "%.2f", 1.0f);
+		ImGui::SliderFloat("Specular Intensity", &m_specularIntensity, 0.0f, 1.0f, "%.2f", 1.0f);
+		ImGui::SliderFloat("Specular Power", &m_specularPower, 0.0f, 1.0f, "%.2f", 1.0f);
+		ImGui::SliderFloat("Attenuation Const", &m_attConst, 0.0f, 1.0f, "%.2f", 1.0f);
+		ImGui::SliderFloat("Attenuation Linear", &m_attLin, 0.0f, 1.0f, "%.2f", 1.0f);
+		ImGui::SliderFloat("Attenuation Quadratic", &m_attQuad, 0.0f, 1.0f, "%.2f", 1.0f);
 		ImGui::End();
 	}
 	virtual void onEvent(Marx::Event& event) override
