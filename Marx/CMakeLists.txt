@@ -3,8 +3,12 @@ cmake_minimum_required (VERSION 3.8)
 project ("Marx")
 
 add_subdirectory("vendor/imgui")
-add_subdirectory("vendor/glfw")
 add_subdirectory("vendor/glad")
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory("vendor/glfw")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
