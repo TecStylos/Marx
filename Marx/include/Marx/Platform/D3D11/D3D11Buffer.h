@@ -17,7 +17,7 @@ namespace Marx
 		virtual const BufferLayout& getLayout() const override { return *m_pBufferLayout; }
 		virtual void update(const void* vertices) override;
 		virtual void updatePartial(const void* const* pVertices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers) override;
-	public:
+	private:
 		static std::vector<D3D11_INPUT_ELEMENT_DESC> genElementDesc(const BufferLayout& layout);
 		static ID3DBlob* genDummyShader(const BufferLayout& layout);
 	private:

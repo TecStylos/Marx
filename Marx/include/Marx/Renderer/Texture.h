@@ -22,7 +22,7 @@ namespace Marx
 		virtual uint32_t getNumChannels() const = 0;
 		virtual void bind(uint32_t slot = 0) const = 0;
 	public:
-		// Updates the whole texture data
+		// Updates the whole texture data.
 		//
 		// @param pData The new data for the texture (The size of the buffer must be equal to the size of the texture)
 		virtual void update(const unsigned char* pData) = 0;
@@ -32,7 +32,7 @@ namespace Marx
 	{
 	public:
 		virtual ~Texture2D() = default;
-		// Updates one or more parts of the underlying texture
+		// Updates one or more parts of the underlying texture.
 		//
 		// @param pPixels Array of pixel buffers
 		// @param pOffsetX Array of offsets along the x-axis (in pixels not bytes)

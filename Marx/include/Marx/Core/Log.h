@@ -11,9 +11,18 @@ namespace Marx
 	class MARX_API Log
 	{
 	public:
+		/*
+		* Initialize the logger
+		*/
 		static void init();
 
+		/*
+		* @returns Core Logger
+		*/
 		inline static std::shared_ptr<spdlog::logger>& getCoreLogger() { return s_coreLogger; }
+		/*
+		* @returns Client Logger
+		*/
 		inline static std::shared_ptr<spdlog::logger>& getClientLogger() { return s_clientLogger; }
 	private:
 		DISABLE_DLL_INTERFACE_WARN;
@@ -21,7 +30,6 @@ namespace Marx
 		static std::shared_ptr<spdlog::logger> s_clientLogger;
 		REENABLE_DLL_INTERFACE_WARN;
 	};
-
 }
 
 

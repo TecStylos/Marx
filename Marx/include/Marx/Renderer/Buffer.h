@@ -70,8 +70,19 @@ namespace Marx
 	{
 	public:
 		virtual ~VertexBuffer() {}
+		/*
+		* Binds the vertex buffer.
+		*/
 		virtual void bind() const = 0;
+		/*
+		* Sets the layout of the vertex buffer.
+		*
+		* @param layout The buffer layout to set
+		*/
 		virtual void setLayout(const BufferLayout& layout) = 0;
+		/*
+		* @returns Current buffer layout
+		*/
 		virtual const BufferLayout& getLayout() const = 0;
 		// Updates the whole vertex buffer
 		//
@@ -79,12 +90,20 @@ namespace Marx
 		virtual void update(const void* vertices) = 0;
 		// Updates one or more parts of the underlying vertex buffer
 		//
-		// @param pVertices Array of vertex buffers
+		// @param pVertices Array of pointers to vertex buffers
 		// @param pOffset Array of offsets in the destination buffer (in vertices not bytes)
 		// @param pCount Array of the number of vertices in each buffer
 		// @param nBuffers The number of buffers in pVertices
 		virtual void updatePartial(const void* const* pVertices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers) = 0;
 	public:
+		/*
+		* Creates a new vertex buffer.
+		* 
+		* @param vertices Buffer of vertices
+		* @param size Size of the buffer to be created (in bytes)
+		* 
+		* @returns New vertex buffer
+		*/
 		static Reference<VertexBuffer> create(const void* vertices, uint32_t size);
 	};
 
@@ -103,22 +122,51 @@ namespace Marx
 		};
 	public:
 		virtual ~IndexBuffer() {}
+		/*
+		* Binds the index buffer.
+		*/
 		virtual void bind() const = 0;
+		/*
+		* Sets the number of indices being used in upcoming draw calls.
+		* 
+		* @param count Number of indices
+		*/
 		virtual void setCount(uint32_t count) = 0;
+		/*
+		* Returns the current number of indices being used in upcoming draw calls.
+		* 
+		* @returns Number of indices
+		*/
 		virtual uint32_t getCount() const = 0;
+		/*
+		* Returns the number of indices that can be stored in the index buffer.
+		* 
+		* @returns Number of indices
+		*/
 		virtual uint32_t getMaxCount() const = 0;
-		// Updates the whole index buffer
-		//
-		// @param indices Array of indices (Number of elements must be equal to getCount())
+		/*
+		* Updates the whole index buffer.
+		* 
+		* @param indices Array of indices (Number of elements must be equal to getMaxCount())
+		*/
 		virtual void update(const uint32_t* indices) = 0;
-		// Updates one or more parts of the underlying index buffer
-		//
-		// @param pIndices Array of index buffers
-		// @param pOffset Array of offsets in the destination buffer (in indices not bytes)
-		// @param pCount Array of the number of indices in each buffer
-		// @param nBuffers The number of buffers in pIndices
+		/*
+		* Updates one or more parts of the underlying index buffer.
+		* 
+		* @param pIndices Array of index buffers
+		* @param pOffset Array of offsets in the destination buffer (in indices not bytes)
+		* @param pCount Array of the number of indices in each buffer
+		* @param nBuffers The number of buffers in pIndices
+		*/
 		virtual void updatePartial(const uint32_t* const* pIndices, const uint32_t* pOffset, const uint32_t* pCount, uint32_t nBuffers) = 0;
 	public:
+		/*
+		* Creates a new index buffer.
+		* 
+		* @param indices Array of indices
+		* @param count Number of indices
+		* @param primType Primitive type being used to render the mesh
+		*/
 		static Reference<IndexBuffer> create(const uint32_t* indices, uint32_t count, PrimitiveType primType);
 	};
 }

@@ -23,7 +23,7 @@ namespace Marx
 	public:
 		ControllerID getID() const { return m_id; }
 		void setEventCallback(const EventCallbackFunc& callback) const { m_eventCallback = callback; }
-		// Returnvalue is zero when the controller is not connected.
+		// Returns zero when the controller is not connected.
 		virtual bool onUpdate() = 0;
 		virtual ControllerButtonState buttonState(ControllerButton btn) const = 0;
 		virtual ControllerStickState stickState(ControllerStick stick) const = 0;
