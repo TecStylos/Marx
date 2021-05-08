@@ -8,7 +8,10 @@
       "projectTarget": "Sandbox.exe (Sandbox\\Sandbox.exe)",
       "name": "Sandbox.exe (Sandbox\\Sandbox.exe)",
       "currentDir": "${workspaceRoot}\\Sandbox",
-      "args": []
+      "args": [
+        "--opengl",
+        "--glfw"
+      ]
     }
   ]
 }

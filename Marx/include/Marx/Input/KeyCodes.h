@@ -8,7 +8,7 @@ namespace Marx
 	{
 		None,
 		Cancel,
-		Back,
+		Backspace,
 		Tab,
 		Clear,
 		Return,

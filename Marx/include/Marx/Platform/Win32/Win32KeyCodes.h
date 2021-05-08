@@ -15,7 +15,7 @@ namespace Marx
 			{ Key::None, 0x05 },
 			{ Key::None, 0x06 },
 			{ Key::None, 0x07 },
-			{ Key::Back, 0x08 },
+			{ Key::Backspace, 0x08 },
 			{ Key::Tab, 0x09 },
 			{ Key::None, 0x0A },
 			{ Key::None, 0x0B },
