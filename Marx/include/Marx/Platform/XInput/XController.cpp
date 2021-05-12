@@ -3,6 +3,8 @@
 
 namespace Marx
 {
+	std::set<DWORD> XController::s_availUIDs = { 0, 1, 2, 3 };
+
 	bool XController::onUpdate()
 	{
 		static constexpr int convTable[(uint32_t)ControllerButton::Count]

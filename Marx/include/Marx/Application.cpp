@@ -44,6 +44,8 @@ namespace Marx
 			MX_PROFILE_SCOPE("Frame");
 			m_timestep.update(Timestep::secondsSinceProgramStartup());
 
+			ControllerManager::onUpdate();
+
 			if (!m_isMinimized)
 			{
 				for (Layer* layer : m_layerStack)
@@ -56,8 +58,6 @@ namespace Marx
 			m_pImGuiLayer->end();
 
 			m_pWindow->onUpdate();
-
-			ControllerManager::onUpdate();
 		}
 	}
 

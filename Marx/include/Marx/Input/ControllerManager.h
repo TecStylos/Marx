@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Controller.h"
+#include <map>
 
-#ifdef MX_PLATFORM_WINDOWS
-	#include "Marx/Platform/XInput/XController.h"
-#endif
+#include "Controller.h"
 
 namespace Marx
 {
@@ -17,12 +15,15 @@ namespace Marx
 		static void shutdown();
 		static void onUpdate();
 	public:
-		static const Controller& getController(ControllerID id);
+		static const Reference<Controller> getController(ControllerID id);
+		static ControllerID createController();
+		static void destroyController(ControllerID cid);
 	private:
 		static bool s_initialized;
 		DISABLE_DLL_INTERFACE_WARN;
 		static EventCallbackFunc s_eventCallback;
 		REENABLE_DLL_INTERFACE_WARN;
-		static Reference<Controller> s_controller[MX_USER_MAX_COUNT];
+		static std::map<ControllerID, Reference<Controller>> s_controllers;
+		static ControllerID s_nextControllerID;
 	};
 }

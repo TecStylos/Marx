@@ -11,22 +11,23 @@ namespace Marx
 	{
 		None = 0,
 		XInput,
-		DInput
+		DInput,
+		Unix
 	};
 
 	class MARX_API Controller
 	{
 	public:
 		Controller(ControllerID id)
-			: m_id(id)
+			: m_id(id), m_cState()
 		{}
 	public:
 		ControllerID getID() const { return m_id; }
 		void setEventCallback(const EventCallbackFunc& callback) const { m_eventCallback = callback; }
 		// Returns zero when the controller is not connected.
 		virtual bool onUpdate() = 0;
-		virtual ControllerButtonState buttonState(ControllerButton btn) const = 0;
-		virtual ControllerStickState stickState(ControllerStick stick) const = 0;
+		virtual const ControllerButtonState& buttonState(ControllerButton btn) const = 0;
+		virtual const ControllerStickState& stickState(ControllerStick stick) const = 0;
 		virtual float triggerState(ControllerTrigger trigger) const = 0;
 	public:
 		virtual ControllerType getType() const = 0;
@@ -36,5 +37,12 @@ namespace Marx
 		DISABLE_DLL_INTERFACE_WARN;
 		mutable EventCallbackFunc m_eventCallback;
 		REENABLE_DLL_INTERFACE_WARN;
+	protected:
+		struct ControllerState
+		{
+			ControllerButtonState button[(uint32_t)ControllerButton::Count];
+			float trigger[2];
+			ControllerStickState stick[2];
+		} m_cState;
 	};
 }

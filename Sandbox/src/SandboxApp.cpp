@@ -129,6 +129,8 @@ public:
 
 		m_perspectiveCam.setProperties(90.0f, 16.0f / 9.0f, 0.001f, 1000.0f);
 		m_orthographicCam.setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+
+		m_controller = Marx::ControllerManager::getController(Marx::ControllerManager::createController());
 	}
 	~ExampleLayer()
 	{
@@ -179,6 +181,10 @@ public:
 			camPos.z -= moveSpeed * ts;
 		if (Marx::Input::isKeyPressed(Marx::Key::U))
 			camPos.z += moveSpeed * ts;
+
+		auto& stick = m_controller->stickState(Marx::ControllerStick::Left);
+		camPos.x += stick.x * ts;
+		camPos.y += stick.y * ts;
 
 		m_orthographicCam.setPosition(camPos);
 		m_perspectiveCam.setPosition(camPos);
@@ -312,6 +318,8 @@ private:
 	float m_vertexX = -0.5f;
 	float m_vertexY = -0.5f;
 	bool m_usePerspective = false;
+
+	Marx::Reference<Marx::Controller> m_controller;
 };
 
 class Sandbox : public Marx::Application
