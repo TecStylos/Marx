@@ -186,6 +186,8 @@ public:
 		auto& stick = m_controller->stickState(Marx::ControllerStick::Left);
 		camPos.x += stick.x * ts;
 		camPos.y += stick.y * ts;
+		camPos.z += m_controller->triggerState(Marx::ControllerTrigger::Left) * ts;
+		camPos.z -= m_controller->triggerState(Marx::ControllerTrigger::Right) * ts;
 
 		m_orthographicCam.setPosition(camPos);
 		m_perspectiveCam.setPosition(camPos);
@@ -277,6 +279,12 @@ public:
 		dispatcher.dispatch<Marx::MouseMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseMove));
 		dispatcher.dispatch<Marx::KeyPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onKeyPress));
 		dispatcher.dispatch<Marx::WindowResizeEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onWindowResize));
+		dispatcher.dispatch<Marx::ControllerConnectEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerConnect));
+		dispatcher.dispatch<Marx::ControllerDisconnectEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerDisconnect));
+		dispatcher.dispatch<Marx::ControllerButtonPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerButtonPress));
+		dispatcher.dispatch<Marx::ControllerButtonReleaseEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerButtonRelease));
+		dispatcher.dispatch<Marx::ControllerStickMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerStickMove));
+		dispatcher.dispatch<Marx::ControllerTriggerMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerTriggerMove));
 	}
 	bool onMouseMove(Marx::MouseMoveEvent& e)
 	{
@@ -293,6 +301,36 @@ public:
 	bool onWindowResize(Marx::WindowResizeEvent& e)
 	{
 		m_perspectiveCam.setProperties(90.0f, (float)e.getWidth() / (float)e.getHeight(), 0.001f, 1000.0f);
+		return true;
+	}
+	bool onControllerConnect(Marx::ControllerConnectEvent& e)
+	{
+		MX_INFO("Controller connected!");
+		return true;
+	}
+	bool onControllerDisconnect(Marx::ControllerDisconnectEvent& e)
+	{
+		MX_INFO("Controller disconnected!");
+		return true;
+	}
+	bool onControllerButtonPress(Marx::ControllerButtonPressEvent& e)
+	{
+		MX_INFO("Button pressed: {0}", e.getButton());
+		return true;
+	}
+	bool onControllerButtonRelease(Marx::ControllerButtonReleaseEvent& e)
+	{
+		MX_INFO("Button release: {0}", e.getButton());
+		return true;
+	}
+	bool onControllerStickMove(Marx::ControllerStickMoveEvent& e)
+	{
+		MX_INFO("Stick move: {0}  ->  {1}  |  {2}", e.getStick(), e.getState().x, e.getState().y);
+		return true;
+	}
+	bool onControllerTriggerMove(Marx::ControllerTriggerMoveEvent& e)
+	{
+		MX_INFO("Trigger move: {0}  ->  {1}", e.getTrigger(), e.getDelta());
 		return true;
 	}
 private:

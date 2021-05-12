@@ -1,8 +1,10 @@
 #include "mxpch.h"
 #include "ControllerManager.h"
 
-#ifdef MX_PLATFORM_WINDOWS
+#if defined MX_PLATFORM_WINDOWS
 #include "Marx/Platform/XInput/XController.h"
+#elif defined MX_PLATFORM_UNIX
+#include "Marx/Platform/Unix/UnixController.h"
 #endif
 
 namespace Marx
@@ -46,7 +48,7 @@ namespace Marx
 		#if defined MX_PLATFORM_WINDOWS
 		newController = std::make_shared<XController>(newControllerID);
 		#elif defined MX_PLATFORM_UNIX
-		// newController = std::make_shared<UnixController>(newControllerID);
+		newController = std::make_shared<UnixController>(newControllerID);
 		#endif
 
 		newController->setEventCallback(s_eventCallback);

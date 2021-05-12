@@ -47,7 +47,8 @@ set(
 
 	"vendor/imgui/backends/imgui_impl_glfw.cpp"
 	"vendor/imgui/backends/imgui_impl_opengl3.cpp"
- "include/Marx/Input/KeyCodeConverter.cpp")
+	"include/Marx/Input/KeyCodeConverter.cpp"
+)
 
 set(
 	MARX_COMPILE_OPTIONS
@@ -110,6 +111,11 @@ if (WIN32)
 		Xinput.lib d3d11.lib dxgi.lib dxguid.lib glfw
 	)
 elseif(UNIX AND NOT APPLE)
+	set(
+		MARX_LIB_FILES
+		${MARX_LIB_FILES}
+		"include/Marx/Platform/Unix/UnixController.cpp"
+	)
 	set(
 		MARX_COMPILE_OPTIONS
 		${MARX_COMPILE_OPTIONS}
