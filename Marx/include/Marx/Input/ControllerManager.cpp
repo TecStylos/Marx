@@ -58,6 +58,6 @@ namespace Marx
 
 	void ControllerManager::destroyController(ControllerID cid)
 	{
-
+		s_controllers.erase(cid);
 	}
 }

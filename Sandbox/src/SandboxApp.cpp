@@ -134,6 +134,7 @@ public:
 	}
 	~ExampleLayer()
 	{
+		Marx::ControllerManager::destroyController(m_controller->getID());
 		MX_PROFILER_END_SESSION();
 	}
 public:
