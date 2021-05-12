@@ -12,7 +12,8 @@ namespace Marx
 		None = 0,
 		XInput,
 		DInput,
-		Unix
+		Unix,
+		GLFW
 	};
 
 	class MARX_API Controller

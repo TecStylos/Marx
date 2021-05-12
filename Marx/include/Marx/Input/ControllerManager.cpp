@@ -5,6 +5,8 @@
 #include "Marx/Platform/XInput/XController.h"
 #elif defined MX_PLATFORM_UNIX
 #include "Marx/Platform/Unix/UnixController.h"
+#elif defined MX_PLATFORM_MACOS
+#include "Marx/Platform/GLFW/CrossController.h"
 #endif
 
 namespace Marx
@@ -49,6 +51,8 @@ namespace Marx
 		newController = std::make_shared<XController>(newControllerID);
 		#elif defined MX_PLATFORM_UNIX
 		newController = std::make_shared<UnixController>(newControllerID);
+		#elif defined MX_PLATFORM_MACOS
+		newController = std::make_shared<CrossController>(newControllerID);
 		#endif
 
 		newController->setEventCallback(s_eventCallback);
