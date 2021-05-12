@@ -19,9 +19,6 @@ namespace Marx
         }
     public:
         bool onUpdate() override;
-        const ControllerButtonState& buttonState(ControllerButton btn) const override { return m_cState.button[(uint32_t)btn]; }
-		const ControllerStickState& stickState(ControllerStick stick) const override { return m_cState.stick[(uint32_t)stick]; }
-		float triggerState(ControllerTrigger trigger) const override { return m_cState.trigger[(uint32_t)trigger]; }
 	public:
 		ControllerType getType() const override { return ControllerType::Unix; }
     private:
