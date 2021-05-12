@@ -38,6 +38,7 @@ set(
 
 	"include/Marx/Platform/GLFW/CrossWindow.cpp"
 	"include/Marx/Platform/GLFW/CrossInput.cpp"
+	"include/Marx/Platform/GLFW/CrossController.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLGraphicsContext.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLRendererAPI.cpp"
 	"include/Marx/Platform/OpenGL/OpenGLBuffer.cpp"

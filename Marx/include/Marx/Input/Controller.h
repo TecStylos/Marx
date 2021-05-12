@@ -24,11 +24,12 @@ namespace Marx
 	public:
 		ControllerID getID() const { return m_id; }
 		void setEventCallback(const EventCallbackFunc& callback) const { m_eventCallback = callback; }
+		const ControllerButtonState& buttonState(ControllerButton btn) const { return m_cState.button[(uint32_t)btn]; }
+		const ControllerStickState& stickState(ControllerStick stick) const { return m_cState.stick[(uint32_t)stick]; }
+		float triggerState(ControllerTrigger trigger) const { return m_cState.trigger[(uint32_t)trigger]; }
+	public:
 		// Returns zero when the controller is not connected.
 		virtual bool onUpdate() = 0;
-		virtual const ControllerButtonState& buttonState(ControllerButton btn) const = 0;
-		virtual const ControllerStickState& stickState(ControllerStick stick) const = 0;
-		virtual float triggerState(ControllerTrigger trigger) const = 0;
 	public:
 		virtual ControllerType getType() const = 0;
 	protected:
