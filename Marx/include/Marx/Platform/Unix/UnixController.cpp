@@ -70,14 +70,13 @@ namespace Marx
         case JS_EVENT_AXIS:
         {
             ControllerButton btn = (ControllerButton)0;
-            ControllerStickState stickState;
             switch (m_event.number)
             {
             case 0: // Left thumb X
             case 1: // Left thumb Y
             {
                 int num = m_event.number - 0;
-                stickState = m_cState.stick[0];
+                ControllerStickState stickState = m_cState.stick[0];
                 *((float*)&stickState + num) = SHORT_TO_NORM_FLOAT(m_event.value) * (num ? -1.0f : 1.0f);
                 stickState = calcStickDZ(stickState);
                 if (stickState != m_cState.stick[0])
@@ -103,7 +102,7 @@ namespace Marx
             case 4: // Right thumb Y
             {
                 int num = m_event.number - 3;
-                stickState = m_cState.stick[1];
+                ControllerStickState stickState = m_cState.stick[1];
                 *((float*)&stickState + num) = SHORT_TO_NORM_FLOAT(m_event.value) * (num ? -1.0f : 1.0f);
                 stickState = calcStickDZ(stickState);
                 if (stickState != m_cState.stick[1])
