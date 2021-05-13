@@ -10,6 +10,7 @@ Full Unix and MacOS support is planned.
  - Window APIs:
     - GLFW
     - Win32
+ - XBox One Controller support
 
 ## Getting started
 
@@ -21,8 +22,8 @@ Clone the repository recursively with `git clone --recursive https://github.com/
 
 ### Platform specific
 #### Windows
- - None
+ - DirectX 11
 #### Unix
- - None
+ - X11
 #### MacOS
- - None
+ - Cocoa
