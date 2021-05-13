@@ -92,6 +92,9 @@ VS_OUTPUT main(VS_INPUT inp)
 
 #type pixel
 
+@cbuff 3 int1 c_conConnected;
+@cbuff 3 float3 c_padding4;
+
 struct VS_OUTPUT
 {
 	float4 position : SV_POSITION;
@@ -101,10 +104,15 @@ struct VS_OUTPUT
 
 float4 main(VS_OUTPUT inp) : SV_TARGET
 {
-	float val = 0.05f;
-	if (inp.value >= inp.brightness)
+	float4 color = float4(0.1f, 0.0f, 0.0f, 1.0f);
+	if (c_conConnected)
 	{
-		val = 1.0f;
+		float val = 0.05f;
+		if (inp.value >= inp.brightness)
+		{
+			val = 1.0f;
+		}
+		color = float4(float3(1.0f, 1.0f, 1.0f) * val, 1.0f);
 	}
-	return float4(float3(1.0f, 1.0f, 1.0f) * val, 1.0f);
+	return color;
 }

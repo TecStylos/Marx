@@ -19,7 +19,6 @@ public:
 	bool onControllerTriggerMove(Marx::ControllerTriggerMoveEvent& e);
 	bool onWindowResize(Marx::WindowResizeEvent& e);
 private:
-	bool m_connected = false;
 	Marx::ControllerID m_cid = 0;
 	Marx::OrthographicCamera m_orthoCam;
 	Marx::Reference<Marx::VertexArray> m_model;

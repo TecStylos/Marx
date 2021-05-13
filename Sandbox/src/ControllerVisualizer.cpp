@@ -120,6 +120,13 @@ ControllerVisualizer::ControllerVisualizer()
 	m_model = Marx::VertexArray::create(pVertexBuffer, pIndexBuffer);
 
 	m_shader = Marx::Shader::create("assets/shaders/ControllerVisualizer.hlsl");
+
+	static constexpr int connected = 0;
+	static constexpr Marx::ControllerStickState state = { 0.0f, 0.0f };
+	m_shader->updateUniform("c_conConnected", &connected, Marx::ShaderDataType::Int1);
+	m_shader->updateUniform("c_conStick_Left", &state, Marx::ShaderDataType::Float2);
+	m_shader->updateUniform("c_conStick_Right", &state, Marx::ShaderDataType::Float2);
+
 }
 
 void ControllerVisualizer::onUpdate()
@@ -141,8 +148,14 @@ bool ControllerVisualizer::onControllerConnect(Marx::ControllerConnectEvent& e)
 {
 	bool correct = e.getID() == m_cid;
 
+	static constexpr int connected = 1;
+
 	if (correct)
-		m_connected = true;
+		m_shader->updateUniform(
+			"c_conConnected",
+			&connected,
+			Marx::ShaderDataType::Int1
+		);
 
 	return false;
 }
@@ -151,8 +164,14 @@ bool ControllerVisualizer::onControllerDisconnect(Marx::ControllerDisconnectEven
 {
 	bool correct = e.getID() == m_cid;
 
+	static constexpr int connected = 0;
+
 	if (correct)
-		m_connected = false;
+		m_shader->updateUniform(
+			"c_conConnected",
+			&connected,
+			Marx::ShaderDataType::Int1
+		);
 
 	return false;
 }
