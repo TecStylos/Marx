@@ -24,6 +24,7 @@ set(
 	"include/Marx/Core/Log.cpp"
 	"include/Marx/ImGui/ImGuiLayer.cpp"
 	"include/Marx/Input/ControllerManager.cpp"
+	"include/Marx/Input/Controller.cpp"
 	"include/Marx/Renderer/Buffer.cpp"
 	"include/Marx/Renderer/Camera.cpp"
 	"include/Marx/Renderer/RenderCommand.cpp"

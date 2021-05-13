@@ -16,7 +16,7 @@ namespace Marx
 		GLFW
 	};
 
-	class MARX_API Controller
+	class Controller
 	{
 	public:
 		Controller(ControllerID id)
@@ -28,11 +28,16 @@ namespace Marx
 		const ControllerButtonState& buttonState(ControllerButton btn) const { return m_cState.button[(uint32_t)btn]; }
 		const ControllerStickState& stickState(ControllerStick stick) const { return m_cState.stick[(uint32_t)stick]; }
 		float triggerState(ControllerTrigger trigger) const { return m_cState.trigger[(uint32_t)trigger]; }
+		ControllerDeadzones& getDeadzones() { return m_deadzones; }
 	public:
 		// Returns zero when the controller is not connected.
 		virtual bool onUpdate() = 0;
 	public:
 		virtual ControllerType getType() const = 0;
+	protected:
+		static float calcDZ(float delta, float min, float max);
+		float calcTriggerDZ(float delta) const;
+		ControllerStickState calcStickDZ(const ControllerStickState& stickState) const;
 	protected:
 		ControllerID m_id;
 		bool m_isConnected = false;
@@ -40,6 +45,7 @@ namespace Marx
 		mutable EventCallbackFunc m_eventCallback;
 		REENABLE_DLL_INTERFACE_WARN;
 	protected:
+		ControllerDeadzones m_deadzones;
 		struct ControllerState
 		{
 			ControllerButtonState button[(uint32_t)ControllerButton::Count];

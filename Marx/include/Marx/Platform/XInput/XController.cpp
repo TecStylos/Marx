@@ -68,32 +68,34 @@ namespace Marx
 				}
 			}
 
-			if (gpNew.bLeftTrigger != gpOld.bLeftTrigger) // Left trigger moved
+			float triggerDelta;
+			triggerDelta = calcTriggerDZ(BYTE_TO_NORM_FLOAT(gpNew.bLeftTrigger));
+			if (triggerDelta != m_cState.trigger[(uint32_t)ControllerTrigger::Left]) // Left trigger moved
 			{
-				m_cState.trigger[(uint32_t)ControllerTrigger::Left] = BYTE_TO_NORM_FLOAT(gpNew.bLeftTrigger);
+				m_cState.trigger[(uint32_t)ControllerTrigger::Left] = triggerDelta;
 				ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Left, m_cState.trigger[(uint32_t)ControllerTrigger::Left]);
 				m_eventCallback(event);
 			}
-			if (gpNew.bRightTrigger != gpOld.bRightTrigger) // Right trigger moved
+			triggerDelta = calcTriggerDZ(BYTE_TO_NORM_FLOAT(gpNew.bRightTrigger));
+			if (triggerDelta != m_cState.trigger[(uint32_t)ControllerTrigger::Right]) // Right trigger moved
 			{
-				m_cState.trigger[(uint32_t)ControllerTrigger::Right] = BYTE_TO_NORM_FLOAT(gpNew.bRightTrigger);
+				m_cState.trigger[(uint32_t)ControllerTrigger::Right] = triggerDelta;
 				ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Right, m_cState.trigger[(uint32_t)ControllerTrigger::Right]);
 				m_eventCallback(event);
 			}
 
-			if (gpNew.sThumbLX != gpOld.sThumbLX ||
-				gpNew.sThumbLY != gpOld.sThumbLY) // Left stick moved
+			ControllerStickState stickState;
+			stickState = calcStickDZ({ SHORT_TO_NORM_FLOAT(gpNew.sThumbLX), SHORT_TO_NORM_FLOAT(gpNew.sThumbLY) });
+			if (stickState != m_cState.stick[(uint32_t)ControllerStick::Left]) // Left stick moved
 			{
-				m_cState.stick[(uint32_t)ControllerStick::Left].x = SHORT_TO_NORM_FLOAT(gpNew.sThumbLX);
-				m_cState.stick[(uint32_t)ControllerStick::Left].y = SHORT_TO_NORM_FLOAT(gpNew.sThumbLY);
+				m_cState.stick[(uint32_t)ControllerStick::Left] = stickState;
 				ControllerStickMoveEvent event(m_id, ControllerStick::Left, m_cState.stick[(uint32_t)ControllerStick::Left]);
 				m_eventCallback(event);
 			}
-			if (gpNew.sThumbRX != gpOld.sThumbRX ||
-				gpNew.sThumbRY != gpOld.sThumbRY) // Left stick moved
+			stickState = calcStickDZ({ SHORT_TO_NORM_FLOAT(gpNew.sThumbRX), SHORT_TO_NORM_FLOAT(gpNew.sThumbRY) });
+			if (stickState != m_cState.stick[(uint32_t)ControllerStick::Right]) // Left stick moved
 			{
-				m_cState.stick[(uint32_t)ControllerStick::Right].x = SHORT_TO_NORM_FLOAT(gpNew.sThumbRX);
-				m_cState.stick[(uint32_t)ControllerStick::Right].y = SHORT_TO_NORM_FLOAT(gpNew.sThumbRY);
+				m_cState.stick[(uint32_t)ControllerStick::Right] = stickState;
 				ControllerStickMoveEvent event(m_id, ControllerStick::Right, m_cState.stick[(uint32_t)ControllerStick::Right]);
 				m_eventCallback(event);
 			}

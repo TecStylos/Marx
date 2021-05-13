@@ -42,4 +42,17 @@ namespace Marx
 	{
 		float x, y;
 	};
+
+	struct ControllerDeadzones
+	{
+		float triggerMin = 0.0f;
+		float triggerMax = 1.0f;
+		float stickMin = 0.1f;
+		float stickMax = 1.0f;
+	};
+
+	inline bool operator!=(const ControllerStickState& left, const ControllerStickState& right)
+	{
+		return (left.x != right.x) || (left.y != right.y);
+	}
 }
