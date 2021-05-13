@@ -278,15 +278,19 @@ public:
 	virtual void onEvent(Marx::Event& event) override
 	{
 		Marx::EventDispatcher dispatcher(event);
-		dispatcher.dispatch<Marx::MouseMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseMove));
-		dispatcher.dispatch<Marx::KeyPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onKeyPress));
-		dispatcher.dispatch<Marx::WindowResizeEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onWindowResize));
+
 		dispatcher.dispatch<Marx::ControllerConnectEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerConnect));
 		dispatcher.dispatch<Marx::ControllerDisconnectEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerDisconnect));
 		dispatcher.dispatch<Marx::ControllerButtonPressEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerButtonPress));
 		dispatcher.dispatch<Marx::ControllerButtonReleaseEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerButtonRelease));
 		dispatcher.dispatch<Marx::ControllerStickMoveEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerStickMove));
 		dispatcher.dispatch<Marx::ControllerTriggerMoveEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerTriggerMove));
+		dispatcher.dispatch<Marx::WindowResizeEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onWindowResize));
+
+		dispatcher.dispatch<Marx::ControllerButtonPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerButtonPress));
+		dispatcher.dispatch<Marx::MouseMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseMove));
+		dispatcher.dispatch<Marx::KeyPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onKeyPress));
+		dispatcher.dispatch<Marx::WindowResizeEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onWindowResize));
 	}
 	bool onMouseMove(Marx::MouseMoveEvent& e)
 	{
@@ -303,6 +307,12 @@ public:
 	bool onWindowResize(Marx::WindowResizeEvent& e)
 	{
 		m_perspectiveCam.setProperties(90.0f, (float)e.getWidth() / (float)e.getHeight(), 0.001f, 1000.0f);
+		return true;
+	}
+	bool onControllerButtonPress(Marx::ControllerButtonPressEvent& e)
+	{
+		if (e.getButton() == Marx::ControllerButton::Start)
+			m_usePerspective = !m_usePerspective;
 		return true;
 	}
 private:

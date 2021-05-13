@@ -8,7 +8,7 @@ struct ControllerVertex
 };
 
 ControllerVisualizer::ControllerVisualizer()
-	: m_orthoCam(-1.6f, 1.6f, -0.9f, 0.9f)
+	: m_orthoCam(0.0f, 1.6f / 0.9f, 0.0f, 1.0f)
 {
 	ControllerVertex vertices[] = {
 		{ 0.0f, 0.0f, 1.0f, 0 }, // Button A
@@ -40,6 +40,56 @@ ControllerVisualizer::ControllerVisualizer()
 		{ -0.5f, 0.2f, 1.0f, 5 },
 		{ -0.4f, 0.2f, 1.0f, 5 },
 		{ -0.4f, 0.1f, 1.0f, 5 },
+
+		{ -0.6f, -0.1f, 1.0f, 6 }, // DPAD Up
+		{ -0.6f, 0.0f, 1.0f, 6 },
+		{ -0.5f, 0.0f, 1.0f, 6 },
+		{ -0.5f, -0.1f, 1.0f, 6 },
+
+		{ -0.6f, -0.3f, 1.0f, 7 }, // DPAD Down
+		{ -0.6f, -0.2f, 1.0f, 7 },
+		{ -0.5f, -0.2f, 1.0f, 7 },
+		{ -0.5f, -0.3f, 1.0f, 7 },
+
+		{ -0.7f, -0.2f, 1.0f, 8 }, // DPAD Left
+		{ -0.7f, -0.1f, 1.0f, 8 },
+		{ -0.6f, -0.1f, 1.0f, 8 },
+		{ -0.6f, -0.2f, 1.0f, 8 },
+
+		{ -0.5f, -0.2f, 1.0f, 9 }, // DPAD Right
+		{ -0.5f, -0.1f, 1.0f, 9 },
+		{ -0.4f, -0.1f, 1.0f, 9 },
+		{ -0.4f, -0.2f, 1.0f, 9 },
+
+		{ -0.8f, 0.1f, 1.0f, 10 }, // Thumb Left
+		{ -0.8f, 0.2f, 1.0f, 10 },
+		{ -0.7f, 0.2f, 1.0f, 10 },
+		{ -0.7f, 0.1f, 1.0f, 10 },
+
+		{ -0.2f, -0.2f, 1.0f, 11 }, // Thumb Right
+		{ -0.2f, -0.1f, 1.0f, 11 },
+		{ -0.1f, -0.1f, 1.0f, 11 },
+		{ -0.1f, -0.2f, 1.0f, 11 },
+
+		{ -0.9f, 0.35f, 1.0f, 12 }, // Shoulder Left
+		{ -0.9f, 0.4f, 1.0f, 12 },
+		{ -0.6f, 0.4f, 0.0f, 12 },
+		{ -0.6f, 0.35f, 0.0f, 12 },
+
+		{ -0.1f, 0.35f, 0.0f, 13 }, // Shoulder Right
+		{ -0.1f, 0.4f, 0.0f, 13 },
+		{ 0.2f, 0.4f, 1.0f, 13 },
+		{ 0.2f, 0.35f, 1.0f, 13 },
+
+		{ -0.9f, 0.4f, 1.0f, 14 }, // Trigger Left
+		{ -0.9f, 0.45f, 1.0f, 14 },
+		{ -0.6f, 0.45f, 0.0f, 14 },
+		{ -0.6f, 0.4f, 0.0f, 14 },
+
+		{ -0.1f, 0.4f, 0.0f, 15 }, // Trigger Right
+		{ -0.1f, 0.45f, 0.0f, 15 },
+		{ 0.2f, 0.45f, 1.0f, 15 },
+		{ 0.2f, 0.4f, 1.0f, 15 },
 	};
 	uint32_t vBuffSize = sizeof(vertices);
 	auto pVertexBuffer = Marx::VertexBuffer::create(vertices, vBuffSize);
@@ -50,29 +100,20 @@ ControllerVisualizer::ControllerVisualizer()
 		{ Marx::ShaderDataType::Int1, "A_PARTID" }
 	});
 
-	uint32_t indices[] = {
-		 4 * 0 + 0, 4 * 0 + 1, 4 * 0 + 2, // Button A
-		 4 * 0 + 0, 4 * 0 + 2, 4 * 0 + 3,
-
-		 4 * 1 + 0, 4 * 1 + 1, 4 * 1 + 2, // Button B
-		 4 * 1 + 0, 4 * 1 + 2, 4 * 1 + 3,
-
-		 4 * 2 + 0, 4 * 2 + 1, 4 * 2 + 2, // Button X
-		 4 * 2 + 0, 4 * 2 + 2, 4 * 2 + 3,
-
-		 4 * 3 + 0, 4 * 3 + 1, 4 * 3 + 2, // Button Y
-		 4 * 3 + 0, 4 * 3 + 2, 4 * 3 + 3,
-
-		 4 * 4 + 0, 4 * 4 + 1, 4 * 4 + 2, // Button Start
-		 4 * 4 + 0, 4 * 4 + 2, 4 * 4 + 3,
-
-		 4 * 5 + 0, 4 * 5 + 1, 4 * 5 + 2, // Button Back
-		 4 * 5 + 0, 4 * 5 + 2, 4 * 5 + 3,
-	};
-	uint32_t iBuffNum = sizeof(indices) / sizeof(uint32_t);
+	constexpr uint32_t nIndices = sizeof(vertices) / sizeof(ControllerVertex) / 4 * 6;
+	uint32_t indices[nIndices];
+	for (uint32_t i = 0; i < nIndices; i += 6)
+	{
+		indices[i + 0] = 4 * (i / 6) + 0;
+		indices[i + 1] = 4 * (i / 6) + 1;
+		indices[i + 2] = 4 * (i / 6) + 2;
+		indices[i + 3] = 4 * (i / 6) + 0;
+		indices[i + 4] = 4 * (i / 6) + 2;
+		indices[i + 5] = 4 * (i / 6) + 3;
+	}
 	auto pIndexBuffer = Marx::IndexBuffer::create(
 		indices,
-		iBuffNum,
+		nIndices,
 		Marx::IndexBuffer::PrimitiveType::TriangleList
 	);
 
@@ -85,11 +126,11 @@ void ControllerVisualizer::onUpdate()
 {
 	Marx::Renderer::beginScene(m_orthoCam);
 
-	float scaling = 1.0f;
-	glm::vec3 pos(0.0f, 0.0f, 0.0f);
+	float scaling = 0.3f;
+	glm::vec3 pos(0.9f, 0.3f, 0.0f);
 
 	glm::mat4 scaleMat = glm::scale(glm::mat4(1.0f), glm::vec3(scaling, scaling, scaling));
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scaleMat;
+	glm::mat4 transform = scaleMat * glm::translate(glm::mat4(1.0f), pos);
 
 	Marx::Renderer::submit(m_shader, m_model, transform, nullptr);
 
@@ -103,7 +144,7 @@ bool ControllerVisualizer::onControllerConnect(Marx::ControllerConnectEvent& e)
 	if (correct)
 		m_connected = true;
 
-	return correct;
+	return false;
 }
 
 bool ControllerVisualizer::onControllerDisconnect(Marx::ControllerDisconnectEvent& e)
@@ -113,7 +154,7 @@ bool ControllerVisualizer::onControllerDisconnect(Marx::ControllerDisconnectEven
 	if (correct)
 		m_connected = false;
 
-	return correct;
+	return false;
 }
 
 bool ControllerVisualizer::onControllerButtonPress(Marx::ControllerButtonPressEvent& e)
@@ -130,7 +171,7 @@ bool ControllerVisualizer::onControllerButtonPress(Marx::ControllerButtonPressEv
 			Marx::ShaderDataType::Float1
 		);
 
-	return correct;
+	return false;
 }
 
 bool ControllerVisualizer::onControllerButtonRelease(Marx::ControllerButtonReleaseEvent& e)
@@ -147,7 +188,7 @@ bool ControllerVisualizer::onControllerButtonRelease(Marx::ControllerButtonRelea
 			Marx::ShaderDataType::Float1
 		);
 
-	return correct;
+	return false;
 }
 
 bool ControllerVisualizer::onControllerStickMove(Marx::ControllerStickMoveEvent& e)
@@ -163,7 +204,7 @@ bool ControllerVisualizer::onControllerStickMove(Marx::ControllerStickMoveEvent&
 			Marx::ShaderDataType::Float2
 		);
 
-	return correct;
+	return false;
 }
 
 bool ControllerVisualizer::onControllerTriggerMove(Marx::ControllerTriggerMoveEvent& e)
@@ -179,5 +220,11 @@ bool ControllerVisualizer::onControllerTriggerMove(Marx::ControllerTriggerMoveEv
 			Marx::ShaderDataType::Float1
 		);
 
-	return correct;
+	return false;
+}
+
+bool ControllerVisualizer::onWindowResize(Marx::WindowResizeEvent& e)
+{
+	m_orthoCam = Marx::OrthographicCamera(0.0f, (float)e.getWidth() / (float)e.getHeight(), 0.0f, 1.0f);
+	return false;
 }

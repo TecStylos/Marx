@@ -17,6 +17,7 @@ public:
 	bool onControllerButtonRelease(Marx::ControllerButtonReleaseEvent& e);
 	bool onControllerStickMove(Marx::ControllerStickMoveEvent& e);
 	bool onControllerTriggerMove(Marx::ControllerTriggerMoveEvent& e);
+	bool onWindowResize(Marx::WindowResizeEvent& e);
 private:
 	bool m_connected = false;
 	Marx::ControllerID m_cid = 0;
