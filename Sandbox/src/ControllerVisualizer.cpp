@@ -31,15 +31,15 @@ ControllerVisualizer::ControllerVisualizer()
 		{ 0.1f, 0.3f, 1.0f, 3 },
 		{ 0.1f, 0.2f, 1.0f, 3 },
 
-		{ 0.0f, 0.2f, 1.0f, 4 }, // Button Start
-		{ 0.0f, 0.3f, 1.0f, 4 },
-		{ 0.1f, 0.3f, 1.0f, 4 },
-		{ 0.1f, 0.2f, 1.0f, 4 },
+		{ -0.3f, 0.1f, 1.0f, 4 }, // Button Start
+		{ -0.3f, 0.2f, 1.0f, 4 },
+		{ -0.2f, 0.2f, 1.0f, 4 },
+		{ -0.2f, 0.1f, 1.0f, 4 },
 
-		{ 0.0f, 0.2f, 1.0f, 5 }, // Button Back
-		{ 0.0f, 0.3f, 1.0f, 5 },
-		{ 0.1f, 0.3f, 1.0f, 5 },
-		{ 0.1f, 0.2f, 1.0f, 5 },
+		{ -0.5f, 0.1f, 1.0f, 5 }, // Button Back
+		{ -0.5f, 0.2f, 1.0f, 5 },
+		{ -0.4f, 0.2f, 1.0f, 5 },
+		{ -0.4f, 0.1f, 1.0f, 5 },
 	};
 	uint32_t vBuffSize = sizeof(vertices);
 	auto pVertexBuffer = Marx::VertexBuffer::create(vertices, vBuffSize);
@@ -62,6 +62,12 @@ ControllerVisualizer::ControllerVisualizer()
 
 		 4 * 3 + 0, 4 * 3 + 1, 4 * 3 + 2, // Button Y
 		 4 * 3 + 0, 4 * 3 + 2, 4 * 3 + 3,
+
+		 4 * 4 + 0, 4 * 4 + 1, 4 * 4 + 2, // Button Start
+		 4 * 4 + 0, 4 * 4 + 2, 4 * 4 + 3,
+
+		 4 * 5 + 0, 4 * 5 + 1, 4 * 5 + 2, // Button Back
+		 4 * 5 + 0, 4 * 5 + 2, 4 * 5 + 3,
 	};
 	uint32_t iBuffNum = sizeof(indices) / sizeof(uint32_t);
 	auto pIndexBuffer = Marx::IndexBuffer::create(
