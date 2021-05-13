@@ -76,32 +76,52 @@ namespace Marx
             case GLFW_GAMEPAD_AXIS_LEFT_Y:
             {
                 int num = i - GLFW_GAMEPAD_AXIS_LEFT_X;
-                *((float*)&m_cState.stick[0] + num) = m_pStateNew->axes[i] * (num ? -1.0f : 1.0f);
-                ControllerStickMoveEvent event(m_id, ControllerStick::Left, m_cState.stick[0]);
-                m_eventCallback(event);
+                ControllerStickState stickState = m_cState.stick[0];
+                *((float*)&stickState + num) = m_pStateNew->axes[i] * (num ? -1.0f : 1.0f);
+                stickState = calcStickDZ(stickState);
+                if (stickState != m_cState.stick[0])
+                {
+                    m_cState.stick[0] = stickState;
+                    ControllerStickMoveEvent event(m_id, ControllerStick::Left, m_cState.stick[0]);
+                    m_eventCallback(event);
+                }
                 break;
             }
             case GLFW_GAMEPAD_AXIS_LEFT_TRIGGER:
             {
-                m_cState.trigger[0] = m_pStateNew->axes[i] * 0.5f + 0.5f;
-                ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Left, m_cState.trigger[0]);
-                m_eventCallback(event);
+                float triggerDelta = calcTriggerDZ(m_pStateNew->axes[i] * 0.5f + 0.5f);
+                if (triggerDelta != m_cState.trigger[0])
+                {
+                    m_cState.trigger[0] = triggerDelta;
+                    ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Left, m_cState.trigger[0]);
+                    m_eventCallback(event);
+                }
                 break;
             }
             case GLFW_GAMEPAD_AXIS_RIGHT_X:
             case GLFW_GAMEPAD_AXIS_RIGHT_Y:
             {
                 int num = i - GLFW_GAMEPAD_AXIS_RIGHT_X;
-                *((float*)&m_cState.stick[1] + num) = m_pStateNew->axes[i] * (num ? -1.0f : 1.0f);
-                ControllerStickMoveEvent event(m_id, ControllerStick::Right, m_cState.stick[1]);
-                m_eventCallback(event);
+                ControllerStickState stickState = m_cState.stick[0];
+                *((float*)&stickState + num) = m_pStateNew->axes[i] * (num ? -1.0f : 1.0f);
+                stickState = calcStickDZ(stickState);
+                if (stickState != m_cState.stick[1])
+                {
+                    m_cState.stick[1] = stickState;
+                    ControllerStickMoveEvent event(m_id, ControllerStick::Right, m_cState.stick[1]);
+                    m_eventCallback(event);
+                }
                 break;
             }
             case GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER:
             {
-                m_cState.trigger[1] = m_pStateNew->axes[i] * 0.5f + 0.5f;
-                ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Right, m_cState.trigger[1]);
-                m_eventCallback(event);
+                float triggerDelta = calcTriggerDZ(m_pStateNew->axes[i] * 0.5f + 0.5f);
+                if (triggerDelta != m_cState.trigger[1])
+                {
+                    m_cState.trigger[1] = triggerDelta;
+                    ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Right, m_cState.trigger[1]);
+                    m_eventCallback(event);
+                }
                 break;
             }
             }
