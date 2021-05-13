@@ -11,6 +11,7 @@ extern Marx::Application* Marx::createApplication();
 #define MX_EXCEPT_LOG(except) MX_CRITICAL(except.what())
 #define MX_STD_EXCEPT_LOG(except) MX_CRITICAL(except.what())
 
+#ifndef MX_NO_ENTRY_POINT
 int main(int argc, char* argv[], char* env[])
 {
 	MX_PROFILER_BEGIN_SESSION("results.json");
@@ -78,3 +79,4 @@ int main(int argc, char* argv[], char* env[])
 		catch (const std::exception& except) { MX_STD_EXCEPT_LOG(except); MX_DEBUG_BREAK(); }
 	}
 }
+#endif // MX_NO_ENTRY_POINT

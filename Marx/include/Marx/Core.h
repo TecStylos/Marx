@@ -82,7 +82,8 @@
 #define HAS_FLAG(x, f) (x & f)
 
 // Binding method to class for event callbacks
-#define MX_BIND_EVENT_METHOD(fn) std::bind(&fn, this, std::placeholders::_1)
+#define MX_BIND_EVENT_METHOD_OBJ(obj, fn) std::bind(&fn, obj, std::placeholders::_1)
+#define MX_BIND_EVENT_METHOD(fn) MX_BIND_EVENT_METHOD_OBJ(this, fn)
 
 namespace Marx
 {

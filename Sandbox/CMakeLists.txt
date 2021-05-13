@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 add_executable(
 	Sandbox
 	"src/SandboxApp.cpp"
+	"src/ControllerVisualizer.cpp"
 )
 
 target_include_directories(

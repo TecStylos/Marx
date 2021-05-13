@@ -29,6 +29,7 @@ namespace Marx
 		const ControllerStickState& stickState(ControllerStick stick) const { return m_cState.stick[(uint32_t)stick]; }
 		float triggerState(ControllerTrigger trigger) const { return m_cState.trigger[(uint32_t)trigger]; }
 		ControllerDeadzones& getDeadzones() { return m_deadzones; }
+		const ControllerState& getState() const { return m_cState; }
 	public:
 		// Returns zero when the controller is not connected.
 		virtual bool onUpdate() = 0;
@@ -46,11 +47,6 @@ namespace Marx
 		REENABLE_DLL_INTERFACE_WARN;
 	protected:
 		ControllerDeadzones m_deadzones;
-		struct ControllerState
-		{
-			ControllerButtonState button[(uint32_t)ControllerButton::Count];
-			float trigger[2];
-			ControllerStickState stick[2];
-		} m_cState;
+		ControllerState m_cState;
 	};
 }

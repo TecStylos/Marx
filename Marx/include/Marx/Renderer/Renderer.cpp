@@ -36,7 +36,9 @@ namespace Marx
 		shader->updateUniform("c_modelTransform", &transform, Marx::ShaderDataType::Mat4);
 		shader->bind();
 		vertexArray->bind();
-		texture->bind();
+
+		if (texture)
+			texture->bind();
 
 		RenderCommand::drawIndexed(vertexArray);
 	}

@@ -1,10 +1,9 @@
-
-#ifdef MX_DEBUG
-#ifndef MX_ENABLE_PROFILING
+#if defined(MX_DEBUG) && !defined(MX_ENABLE_PROFILING)
 #define MX_ENABLE_PROFILING
 #endif
-#endif
 #include <Marx.h>
+
+#include "ControllerVisualizer.h"
 
 struct Vertex
 {
@@ -131,6 +130,7 @@ public:
 		m_orthographicCam.setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
 
 		m_controller = Marx::ControllerManager::getController(Marx::ControllerManager::createController());
+		m_conVisualizer.setControllerID(m_controller->getID());
 	}
 	~ExampleLayer()
 	{
@@ -257,6 +257,8 @@ public:
 		Marx::Renderer::submit(texShader, m_pVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.5f, 1.5f)), m_pAlphaTexture);
 
 		Marx::Renderer::endScene();
+
+		m_conVisualizer.onUpdate();
 	}
 	virtual void onImGuiRender() override
 	{
@@ -279,12 +281,12 @@ public:
 		dispatcher.dispatch<Marx::MouseMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onMouseMove));
 		dispatcher.dispatch<Marx::KeyPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onKeyPress));
 		dispatcher.dispatch<Marx::WindowResizeEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onWindowResize));
-		dispatcher.dispatch<Marx::ControllerConnectEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerConnect));
-		dispatcher.dispatch<Marx::ControllerDisconnectEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerDisconnect));
-		dispatcher.dispatch<Marx::ControllerButtonPressEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerButtonPress));
-		dispatcher.dispatch<Marx::ControllerButtonReleaseEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerButtonRelease));
-		dispatcher.dispatch<Marx::ControllerStickMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerStickMove));
-		dispatcher.dispatch<Marx::ControllerTriggerMoveEvent>(MX_BIND_EVENT_METHOD(ExampleLayer::onControllerTriggerMove));
+		dispatcher.dispatch<Marx::ControllerConnectEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerConnect));
+		dispatcher.dispatch<Marx::ControllerDisconnectEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerDisconnect));
+		dispatcher.dispatch<Marx::ControllerButtonPressEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerButtonPress));
+		dispatcher.dispatch<Marx::ControllerButtonReleaseEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerButtonRelease));
+		dispatcher.dispatch<Marx::ControllerStickMoveEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerStickMove));
+		dispatcher.dispatch<Marx::ControllerTriggerMoveEvent>(MX_BIND_EVENT_METHOD_OBJ(&m_conVisualizer, ControllerVisualizer::onControllerTriggerMove));
 	}
 	bool onMouseMove(Marx::MouseMoveEvent& e)
 	{
@@ -301,38 +303,6 @@ public:
 	bool onWindowResize(Marx::WindowResizeEvent& e)
 	{
 		m_perspectiveCam.setProperties(90.0f, (float)e.getWidth() / (float)e.getHeight(), 0.001f, 1000.0f);
-		return true;
-	}
-	bool onControllerConnect(Marx::ControllerConnectEvent& e)
-	{
-		MX_INFO("Controller connected!");
-		return true;
-	}
-	bool onControllerDisconnect(Marx::ControllerDisconnectEvent& e)
-	{
-		MX_INFO("Controller disconnected!");
-		return true;
-	}
-	bool onControllerButtonPress(Marx::ControllerButtonPressEvent& e)
-	{
-		if (e.getButton() == Marx::ControllerButton::Start)
-			m_usePerspective = !m_usePerspective;
-		MX_INFO("Button pressed: {0}", e.getButton());
-		return true;
-	}
-	bool onControllerButtonRelease(Marx::ControllerButtonReleaseEvent& e)
-	{
-		MX_INFO("Button release: {0}", e.getButton());
-		return true;
-	}
-	bool onControllerStickMove(Marx::ControllerStickMoveEvent& e)
-	{
-		MX_INFO("Stick move: {0}  ->  {1}  |  {2}", e.getStick(), e.getState().x, e.getState().y);
-		return true;
-	}
-	bool onControllerTriggerMove(Marx::ControllerTriggerMoveEvent& e)
-	{
-		MX_INFO("Trigger move: {0}  ->  {1}", e.getTrigger(), e.getDelta());
 		return true;
 	}
 private:
@@ -361,6 +331,7 @@ private:
 	bool m_usePerspective = false;
 
 	Marx::Reference<Marx::Controller> m_controller;
+	ControllerVisualizer m_conVisualizer;
 };
 
 class Sandbox : public Marx::Application
