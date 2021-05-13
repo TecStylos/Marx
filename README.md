@@ -10,7 +10,7 @@ Full Unix and MacOS support is planned.
  - Window APIs:
     - GLFW
     - Win32
- - XBox One Controller support
+ - Xbox One Controller support
 
 ## Getting started
 
