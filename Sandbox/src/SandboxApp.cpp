@@ -315,6 +315,8 @@ public:
 	}
 	bool onControllerButtonPress(Marx::ControllerButtonPressEvent& e)
 	{
+		if (e.getButton() == Marx::ControllerButton::Start)
+			m_usePerspective = !m_usePerspective;
 		MX_INFO("Button pressed: {0}", e.getButton());
 		return true;
 	}

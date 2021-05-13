@@ -70,38 +70,59 @@ namespace Marx
         case JS_EVENT_AXIS:
         {
             ControllerButton btn = (ControllerButton)0;
+            ControllerStickState stickState;
             switch (m_event.number)
             {
             case 0: // Left thumb X
             case 1: // Left thumb Y
             {
                 int num = m_event.number - 0;
-                *((float*)&m_cState.stick[0] + num) = SHORT_TO_NORM_FLOAT(m_event.value) * (num ? -1.0f : 1.0f);
-                ControllerStickMoveEvent event(m_id, ControllerStick::Left, m_cState.stick[0]);
-                m_eventCallback(event);
+                stickState = m_cState.stick[0];
+                *((float*)&stickState + num) = SHORT_TO_NORM_FLOAT(m_event.value) * (num ? -1.0f : 1.0f);
+                stickState = calcStickDZ(stickState);
+                if (stickState != m_cState.stick[0])
+                {
+                    m_cState.stick[0] = stickState;
+                    ControllerStickMoveEvent event(m_id, ControllerStick::Left, m_cState.stick[0]);
+                    m_eventCallback(event);
+                }
                 break;
             }
             case 2: // Left trigger
             {
-                m_cState.trigger[0] = SHORT_TO_NORM_FLOAT(m_event.value) * 0.5f + 0.5f;
-                ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Left, m_cState.trigger[0]);
-                m_eventCallback(event);
+                float triggerDelta = calcTriggerDZ(SHORT_TO_NORM_FLOAT(m_event.value) * 0.5f + 0.5f);
+                if (triggerDelta != m_cState.trigger[0])
+                {
+                    m_cState.trigger[0] = triggerDelta;
+                    ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Left, m_cState.trigger[0]);
+                    m_eventCallback(event);
+                }
                 break;
             }
             case 3: // Right thumb X
             case 4: // Right thumb Y
             {
                 int num = m_event.number - 3;
-                *((float*)&m_cState.stick[1] + num) = SHORT_TO_NORM_FLOAT(m_event.value) * (num ? -1.0f : 1.0f);
-                ControllerStickMoveEvent event(m_id, ControllerStick::Right, m_cState.stick[1]);
-                m_eventCallback(event);
+                stickState = m_cState.stick[1];
+                *((float*)&stickState + num) = SHORT_TO_NORM_FLOAT(m_event.value) * (num ? -1.0f : 1.0f);
+                stickState = calcStickDZ(stickState);
+                if (stickState != m_cState.stick[1])
+                {
+                    m_cState.stick[1] = stickState;
+                    ControllerStickMoveEvent event(m_id, ControllerStick::Right, m_cState.stick[1]);
+                    m_eventCallback(event);
+                }
                 break;
             }
             case 5: // Right trigger
             {
-                m_cState.trigger[1] = SHORT_TO_NORM_FLOAT(m_event.value) * 0.5f + 0.5f;
-                ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Right, m_cState.trigger[1]);
-                m_eventCallback(event);
+                float triggerDelta = calcTriggerDZ(SHORT_TO_NORM_FLOAT(m_event.value) * 0.5f + 0.5f);
+                if (triggerDelta != m_cState.trigger[1])
+                {
+                    m_cState.trigger[1] = triggerDelta;
+                    ControllerTriggerMoveEvent event(m_id, ControllerTrigger::Right, m_cState.trigger[1]);
+                    m_eventCallback(event);
+                }
                 break;
             }
             case 6: // DPAD Left/Right

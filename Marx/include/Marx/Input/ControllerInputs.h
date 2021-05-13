@@ -45,8 +45,8 @@ namespace Marx
 
 	struct ControllerDeadzones
 	{
-		float triggerMin = 0.0f;
-		float triggerMax = 1.0f;
+		float triggerMin = 0.4f;
+		float triggerMax = 0.6f;
 		float stickMin = 0.1f;
 		float stickMax = 1.0f;
 	};
