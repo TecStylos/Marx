@@ -58,7 +58,7 @@ struct VS_OUTPUT
 
 float4 main(VS_OUTPUT inp) : SV_TARGET
 {
-	const float3 vToL = c_lightPos - inp.worldPos;
+	const float3 vToL = c_lightPos - inp.worldPos.xyz;
 	const float distToL = length(vToL);
 	const float3 dirToL = vToL / distToL;
 

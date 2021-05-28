@@ -82,6 +82,8 @@ VS_OUTPUT main(VS_INPUT inp)
 		op.value = c_conTrigger_Left; break;
 	case 15: // Trigger Right
 		op.value = c_conTrigger_Right; break;
+	default: // Unknown partID
+		op.value = 0.0f; break;
 	}
 
 	float4 worldPos = mul(float4(inp.position, 0.0f, 1.0f), c_modelTransform);
