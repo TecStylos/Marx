@@ -8,6 +8,12 @@
 
 extern Marx::Application* Marx::createApplication();
 
+#define MX_DEFAULT_CREATE_APPLICATION(APPLICATION_CLASS) \
+Marx::Application* Marx::createApplication() \
+{ \
+	return new APPLICATION_CLASS(); \
+}
+
 #define MX_EXCEPT_LOG(except) MX_CRITICAL(except.what())
 #define MX_STD_EXCEPT_LOG(except) MX_CRITICAL(except.what())
 

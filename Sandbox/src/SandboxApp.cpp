@@ -355,7 +355,4 @@ public:
 	{}
 };
 
-Marx::Application* Marx::createApplication()
-{
-	return new Sandbox();
-}
+MX_DEFAULT_CREATE_APPLICATION(Sandbox)
