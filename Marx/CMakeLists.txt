@@ -126,7 +126,7 @@ elseif(UNIX AND NOT APPLE)
 	set(
 		MARX_LINK_LIBRARIES
 		${MARX_LINK_LIBRARIES}
-		dl glfw GL
+		dl glfw GL GLEW
 	)
 elseif(APPLE)
 	set(
